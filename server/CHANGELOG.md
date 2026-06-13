@@ -6,8 +6,35 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_Phase 1 work will land here: full schema, JWT auth, users/admins/students/masterlist,
-subjects/schedule/notes/announcements, Cloudinary, and the remaining routes._
+_Phase 1 in progress. Still to come: auth-gating existing routes, admin role management,
+subjects/schedule/notes/announcements, Cloudinary._
+
+### Added
+
+- **JWT authentication** (Hono `hono/jwt`, HS256, 7-day tokens signed with `JWT_SECRET`).
+- `users` table (`email` unique, `password_hash`, `name`, `role` enum `student|admin`).
+- Password hashing via Web Crypto **PBKDF2/SHA-256** (no native deps; Workers-safe),
+  with constant-time verification.
+- Auth routes:
+  - `POST /auth/register` → `{ email, password, name }`; `400` invalid / `409` email taken;
+    returns `201 { user, token }`. Always creates `student` (role in body is ignored).
+  - `POST /auth/login` → `{ email, password }`; `401` generic message on bad credentials;
+    returns `{ user, token }`.
+  - `GET /auth/me` → requires `Authorization: Bearer <token>`; returns the current user.
+- `requireAuth` and `requireAdmin` middleware.
+- New migration `drizzle/0001_*.sql` for the `users` table + `user_role` enum.
+
+### Changed
+
+- Refactored routes into `src/routes/` (`auth.ts`, `tasks.ts`); `index.ts` now mounts routers.
+- Shared types moved to `src/types.ts` (`Env`, `Role`, `AuthUser`, `AppEnv`).
+- CORS now allows the `Authorization` header.
+
+### Notes
+
+- Code complete and typechecks clean; validation + middleware paths verified locally with
+  dummy vars. Not yet migrated to Neon or deployed — the DB-backed register/login success
+  path is unverified end-to-end. `JWT_SECRET` is now functional (was a placeholder).
 
 ## [0.0.0] — 2026-06-13
 

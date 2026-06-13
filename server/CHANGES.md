@@ -5,6 +5,39 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-13 — Phase 1, part 1: authentication
+
+**Goal:** add JWT auth + a `users` table (register / login / me) as the first Phase 1 slice.
+
+### Key decisions (all Workers-correct, easy to change)
+- **JWT via `hono/jwt`** — built into Hono, no new dependency. HS256, 7-day tokens, signed
+  with `JWT_SECRET` (which was a Phase-0 placeholder and is now actually used).
+- **Password hashing via Web Crypto PBKDF2/SHA-256**, not bcrypt/argon2 — those need native
+  Node bindings that don't run on Workers. Stored as `pbkdf2$<iters>$<salt>$<hash>`, verified
+  in constant time.
+- **Public registration always creates `student`.** Any `role` in the request body is ignored
+  so nobody can self-promote to `admin`. Admin will be granted out-of-band later.
+- **Left `/tasks` public this round** to keep the change focused on auth; gating it is next.
+
+### Structure
+- Refactored into `src/routes/` (`auth.ts`, `tasks.ts`) with `index.ts` mounting routers;
+  shared types in `src/types.ts`; auth middleware in `src/middleware/auth.ts`; hashing in
+  `src/lib/password.ts`. Added `Authorization` to the CORS allow-list.
+
+### Gotcha hit (and fixed)
+- **`verify` from `hono/jwt` required a 3rd argument** in this Hono version
+  (`verify(token, secret, alg)`). Typecheck caught it; passed `"HS256"` explicitly to both
+  `sign` and `verify` so they always agree on the algorithm.
+
+### Verified / not yet
+- `tsc` clean; migration `0001_*.sql` generated (correct enum + unique email).
+- Smoke-tested wiring with dummy vars: `/health`, all register/login `400` branches, and
+  `/auth/me` `401` branches pass.
+- **Not yet:** `db:migrate` for `users`, a real `JWT_SECRET`, the full register→login→me
+  round-trip against Neon, and deploy. Those are the user's next steps.
+
+---
+
 ## 2026-06-13 — Phase 0 build & deploy
 
 **Goal:** stand up a deployable "walking skeleton" — one vertical slice (`tasks`) running
