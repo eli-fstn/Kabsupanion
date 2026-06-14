@@ -1,24 +1,38 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { verifyLogin } from "../../api/auth";
 import Button from "../../components/Button";
 
 function LogIn() {
 
 	const isNumber = (value) => /^[0-9]+$/.test(value);
-	const [studentNumber, setStudentNumber] = useState("");
+	const [password, setPassword] = useState("");
+	const [email, setEmail] = useState("");
+	const [error, setError] = useState(false);
 	const navigate = useNavigate();
 
-// WILL CHANGE THE ALERT INTO MODALS SOON
-	const handleLogIn = (e) => {
-		if (studentNumber.length === 0) {
-			alert("Input field can not be empty!");
+	const handleLogIn = async (e) => {
+		e.preventDefault();
+
+		if (!password || !email) {
+			setError("Input fields can not be empty!");
+			return;
 		}
-		else if (studentNumber.length < 9 || !isNumber(studentNumber)) {
-			alert("Invalid Credentials");
-		} 
-		else {
-			e.preventDefault();
+		if (!isNumber(password)) {
+			setError("Password must be a number.");
+			return;
+		}
+		if (!email.includes("@cvsu.edu.ph")) {
+			setError("Please use your CvSU Email.");
+			return;
+		}
+		try {
+			// COMMENT TEMPORARILY
+			// const data = await login(email, password);
+      // localStorage.setItem("token", data.token);
 			navigate("/dashboard");
+		} catch (error) {
+			setError("Invalid Credentials!")
 		}
 	}
 
@@ -33,12 +47,15 @@ function LogIn() {
 						<p className="font-bold text-xl sm:text-2xl pl-3 text-[#1B651B]">MyKabsupanion</p>
 					</div>
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" maxLength={9} id="cvsu-email"/>
+					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" id="cvsu-email"/>
 
-					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="password">Password</label>
-					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" maxLength={9} id="password"/>
+					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
+					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" maxLength={9} id="password"/>
+
+					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
+					
 					{/* BUTTON */}
-					<div className="flex justify-center mt-8">
+					<div className="flex justify-center mt-5">
 						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem]" padding="px-6 py-2"/>
 					</div>
 				</form>
