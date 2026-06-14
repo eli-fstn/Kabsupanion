@@ -4,9 +4,9 @@ import { useState } from "react";
 
 function ClassSched() {
 
-  const [imageSrc, setImageSrc] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null); //<---- put the image src here
 
-  async function downloadAsPDF(filename = "BSCS-2A Class Schedule.pdf") {
+  async function downloadAsPDF(filename = "BSCS-2A Class Schedule") {
     const img = new Image();
     img.src = imageSrc;
 
@@ -32,7 +32,7 @@ function ClassSched() {
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-120 flex flex-col items-center justify-between p-4">
 
         {imageSrc ? (
-          <img src={imageSrc} alt="Class Schedule" className="w-full object-contain flex-1" />
+          <img src={imageSrc} alt="Class Schedule" className="w-50 object-contain flex-1" />
         ) : (
           <div className="flex justify-center items-center flex-1">
             <p className="text-gray-400">There's no image uploaded yet.</p>

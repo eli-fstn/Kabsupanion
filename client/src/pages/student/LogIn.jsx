@@ -32,9 +32,11 @@ function LogIn() {
 						<img className="w-10 sm:w-13" src="/assets/CvSU-logo.png" alt="Logo"/>
 						<p className="font-bold text-xl sm:text-2xl pl-3 text-[#1B651B]">MyKabsupanion</p>
 					</div>
-					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="student-number">Student Number</label>
-					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="text" maxLength={9} id="student-number"/>
+					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
+					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" maxLength={9} id="cvsu-email"/>
 
+					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="password">Password</label>
+					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" maxLength={9} id="password"/>
 					{/* BUTTON */}
 					<div className="flex justify-center mt-8">
 						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem]" padding="px-6 py-2"/>
