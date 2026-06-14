@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 📘 MyKabsupanion — BSCS-1A Section Portal
 
 **MyKabsupanion** is a section-centric academic web portal developed to support the academic needs of BSCS students.  
@@ -72,12 +72,3 @@ This is a **personal development project concept**, not an official school syste
 
 This project is intended for academic and personal use only.  
 All rights reserved.
-=======
-<div align="center">
-
-<h1>🚧 Ongoing Project</h1>
-
-<p>This project is currently in development. Features and improvements are continuously being added.</p>
-
-</div>
->>>>>>> 9bd1812 (Revise README for project status and formatting)
