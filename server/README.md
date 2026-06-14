@@ -23,8 +23,10 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/auth/register` | —      | Claim a roster spot: `{ studentNumber, email, password }` → `201 { user, token }`. `name`/`role` come from the masterlist. |
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`                  |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
-| GET    | `/tasks`         | Bearer | List all tasks, newest first                                       |
+| GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` for the current user |
 | POST   | `/tasks`         | Bearer | Create a task from `{ title, description?, dueDate? }`; `title` required |
+| POST   | `/tasks/:id/complete` | Bearer | Mark the task done **for the current user** (idempotent) |
+| DELETE | `/tasks/:id/complete` | Bearer | Unmark the task for the current user (idempotent) |
 
 Authenticated requests send `Authorization: Bearer <token>` (the `token` returned by
 register/login). Tokens are HS256 JWTs signed with `JWT_SECRET`, valid for 7 days.
@@ -78,7 +80,8 @@ A **user** (returned by register, login, and `/auth/me` — never includes the p
 - `/auth/me` → `{ "user": { ...user } }`
 - `role` is `"student"` or `"admin"`.
 
-A **task** (returned by `/tasks`):
+A **task** from `GET /tasks` (the `completed`/`completedAt` fields reflect the **current
+user** — tasks are communal, completion is per-user):
 
 ```json
 {
@@ -86,14 +89,23 @@ A **task** (returned by `/tasks`):
   "title": "Read chapter 3",
   "description": null,
   "dueDate": null,
+  "completed": false,
+  "completedAt": null,
   "createdAt": "2026-06-13T08:00:00.000Z",
   "updatedAt": "2026-06-13T08:00:00.000Z"
 }
 ```
 
-`GET /tasks` returns an **array** of these; `POST /tasks` returns the single created task.
-Both `/tasks` routes now **require** the `Authorization: Bearer <token>` header — an
-unauthenticated call gets `401` (the auth check runs before body validation).
+`GET /tasks` returns an **array** of these. `POST /tasks` returns the single created task
+(without the `completed` fields — a brand-new task is uncompleted for everyone).
+
+**Completion:** `POST /tasks/:id/complete` marks a task done for the logged-in user;
+`DELETE /tasks/:id/complete` undoes it. Both are idempotent and return
+`{ taskId, completed, completedAt }`. The same task can be `completed: true` for one student
+and `false` for another. `404` if the task id doesn't exist, `400` if it isn't a valid UUID.
+
+All `/tasks` routes **require** `Authorization: Bearer <token>` — an unauthenticated call
+gets `401` (the auth check runs before body validation).
 
 ### Error conventions
 
@@ -143,7 +155,8 @@ const me = (await api.get("/auth/me")).data.user;
 | JWT auth (register/login/me) | ✅ live | Full flow verified against prod; token signing confirmed. |
 | Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
-| Neon `tasks` + `users` + `masterlist` tables | ✅ migrated | `0000`–`0002` applied; masterlist seeded via `npm run db:seed`. |
+| Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
+| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`) | ✅ migrated | `0000`–`0003` applied to Neon; masterlist seeded via `npm run db:seed`. |
 | Admin roles, other tables | 🔲 next | admin management API, subjects, schedule, notes, announcements, Cloudinary. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)

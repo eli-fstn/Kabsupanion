@@ -11,6 +11,11 @@ subjects/schedule/notes/announcements, Cloudinary._
 
 ### Added
 
+- **Per-user task completion.** New `task_completions` table (composite PK `(user_id, task_id)`,
+  cascade FKs) records which user completed which communal task. `GET /tasks` now annotates each
+  task with `completed`/`completedAt` for the requesting user; `POST /tasks/:id/complete` and
+  `DELETE /tasks/:id/complete` mark/unmark (idempotent; `400` bad uuid, `404` unknown task).
+  Migration `drizzle/0003_*.sql`. _(Deployed and verified live — per-user isolation confirmed.)_
 - **JWT authentication** (Hono `hono/jwt`, HS256, 7-day tokens signed with `JWT_SECRET`).
 - `users` table (`student_number` unique FK → masterlist, `email` unique, `password_hash`,
   `name`, `role` enum `student|admin`).
