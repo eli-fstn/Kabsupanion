@@ -36,7 +36,7 @@ function AdminLogIn(){
 
 					{/* BUTTON */}
 					<div className="flex justify-center mt-8">
-						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" width="w-fit"/>
+						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem]" padding="px-6 py-2"/>
 					</div>
 				</form>
 			</div>

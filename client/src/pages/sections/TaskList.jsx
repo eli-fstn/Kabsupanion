@@ -7,7 +7,7 @@ function TaskList({ studentName="Juan" }) {
 
   const subjects = ["All", "GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];
 
-  const taskData = [
+  const taskData = [ 
     { task: "Calculator GUI", subject: "DCIT 50A", dueDate: "Mon, 04 Dec 2026" },
   ];
 
@@ -41,18 +41,18 @@ function TaskList({ studentName="Juan" }) {
             </tr>
           </thead>
         </table>
-        <div className="h-80 overflow-y-auto">
-          <table className="w-full">
+        <div className="h-125 overflow-y-auto">
+          <table className="w-full h-full">
             <tbody>
               {filteredTasks.map((t, i) => (
-                <tr key={i} className="grid grid-cols-[2fr_1fr_1fr] gap-4 border-b border-gray-100 p-3 items-center font-medium">
+                <tr key={i} className="grid grid-cols-[2fr_1fr_1fr] gap-5 border-b border-gray-100 p-3 items-center font-medium">
                   <td>{t.task}</td>
                   <td>{t.subject}</td>
                   <td>{t.dueDate}</td>
                 </tr>
               ))}
               {filteredTasks.length === 0 && (
-                <tr>
+                <tr className="flex justify-center items-center flex-1 h-full">
                   <td colSpan={3} className="text-center text-gray-400 p-5">No tasks for this subject. Keep up the good work!</td>
                 </tr>
               )}
