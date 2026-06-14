@@ -1,14 +1,13 @@
 import api from "./axios";
 
-// Register - TEMPORARY
-// export async function register(studentNumber, email, password) {
-//   const response = await api.post("/auth/register", {
-//     studentNumber,
-//     email,
-//     password
-//   });
-//   return response.data; // { user, token }
-// }
+export async function registerAccount(studentNumber, email, password) {
+  const response = await api.post("/auth/register", {
+    studentNumber,
+    email,
+    password
+  });
+  return response.data;
+}
 
 // Login
 export async function verifyLogin(email, password) {

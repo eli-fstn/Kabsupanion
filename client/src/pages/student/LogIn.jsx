@@ -1,13 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { verifyLogin } from "../../api/auth";
 import Button from "../../components/Button";
 
 function LogIn() {
 
-	const isNumber = (value) => /^[0-9]+$/.test(value);
-	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [error, setError] = useState(false);
 	const navigate = useNavigate();
 
@@ -16,10 +15,6 @@ function LogIn() {
 
 		if (!password || !email) {
 			setError("Input fields can not be empty!");
-			return;
-		}
-		if (!isNumber(password)) {
-			setError("Password must be a number.");
 			return;
 		}
 		if (!email.includes("@cvsu.edu.ph")) {
@@ -32,14 +27,30 @@ function LogIn() {
       // localStorage.setItem("token", data.token);
 			navigate("/dashboard");
 		} catch (error) {
-			setError("Invalid Credentials!")
+			const status = err.response?.status;
+
+			if (status === 401) {
+				setError("Incorrect email or password.");
+			} else if (status === 403) {
+				setError("You are not authorized to access this.");
+			} else if (status === 404) {
+				setError("Account not found.");
+			} else if (status === 429) {
+				setError("Too many attempts. Please try again later.");
+			} else if (status === 500) {
+				setError("Server error. Please try again later.");
+			} else if (status === 503) {
+				navigate("/error/503");
+			} else {
+				setError("Something went wrong. Please try again.");
+			}
 		}
 	}
 
 	return(
 		<div className="relative min-h-screen">
 
-			{/* LOG IN FORM */}
+			{/* Sign In Form */}
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
 				<form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
 					<div className="flex items-center justify-center mb-10">
@@ -50,7 +61,7 @@ function LogIn() {
 					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" id="cvsu-email"/>
 
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" maxLength={9} id="password"/>
+					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] mt-2 p-1 w-full max-w outline-none focus:border-green-700" type="password"  id="password"/>
 
 					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
 					
@@ -58,6 +69,7 @@ function LogIn() {
 					<div className="flex justify-center mt-5">
 						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem]" padding="px-6 py-2"/>
 					</div>
+					<p className="text-[.8rem] text-center mt-5">Don't have an account? <Link to="/register"><span className="text-[#1B651B] font-semibold" li>Register here</span></Link></p>
 				</form>
 			</div>
 
