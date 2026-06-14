@@ -2,4 +2,6 @@
 # Copy this file to `.dev.vars` and fill in real values.
 # Use the Neon POOLED connection string (the one containing `-pooler`).
 DATABASE_URL="postgresql://USER:PASSWORD@ep-xxxx-pooler.REGION.aws.neon.tech/DBNAME?sslmode=require"
-JWT_SECRET="change-me-in-phase-1"
+# Used to sign/verify auth JWTs. Generate a strong value, e.g.:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+JWT_SECRET="generate-a-strong-random-secret"
