@@ -7,6 +7,7 @@ function Register(){
 
 	const isNumber = (value) => /^[0-9]+$/.test(value);
   const [email, setEmail] = useState("");
+  const [studentNumber, setStudentNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(false);
@@ -19,8 +20,8 @@ function Register(){
 			setError("Input fields can not be empty!");
 			return;
 		}
-		if (!isNumber(password)) {
-			setError("Password must be a number.");
+		if (!isNumber(studentNumber)) {
+			setError("Student Number must be a number.");
 			return;
 		}
 		if (!email.includes("@cvsu.edu.ph")) {
@@ -36,7 +37,21 @@ function Register(){
       // localStorage.setItem("token", data.token);
 			navigate("/dashboard");
 		} catch (error) {
-			setError("Account can't be registered!")
+			const status = err.response?.status;
+
+      if (status === 403) {
+        setError("Student number doesn't exist in the class record.");
+      } else if (status === 409) {
+				setError("Student number was already claimed. Try again.");
+			} else if (status === 429) {
+				setError("Too many attempts. Please try again later.");
+			} else if (status === 500) {
+				setError("Server error. Please try again later.");
+			} else if (status === 503) {
+				navigate("/error/503");
+			} else {
+				setError("Something went wrong. Please try again.");
+			}
 		}
   }
 
@@ -46,18 +61,22 @@ function Register(){
 			{/* Registration Form */}
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
 				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
-					<div className="flex items-center justify-center mb-10">
-						<img className="w-10 sm:w-13" src="/assets/CvSU-logo.png" alt="Logo"/>
+					<div className="flex items-center justify-center mb-7">
+						{/* <img className="w-10 sm:w-13" src="/assets/CvSU-logo.png" alt="Logo"/> */}
 						<p className="font-bold text-xl sm:text-2xl pl-3 text-[#1B651B]">Registration Form</p>
 					</div>
+          
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
 					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" id="cvsu-email"/>
 
+          <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="studentNumber">Student Number</label>
+					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="text" maxLength={9} id="studentNumber"/>
+
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" maxLength={9} id="password"/>
+					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" id="password"/>
 
           <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => setConfirmPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" maxLength={9} id="verifyPassword"/>
+					<input onChange={(e) => setConfirmPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" id="verifyPassword"/>
 
 					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
 					

@@ -53,10 +53,11 @@ function LogIn() {
 			{/* Sign In Form */}
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
 				<form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
-					<div className="flex items-center justify-center mb-10">
+					<div className="flex items-center justify-center mb-7">
 						<img className="w-10 sm:w-13" src="/assets/CvSU-logo.png" alt="Logo"/>
 						<p className="font-bold text-xl sm:text-2xl pl-3 text-[#1B651B]">MyKabsupanion</p>
 					</div>
+
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
 					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" id="cvsu-email"/>
 
@@ -66,7 +67,7 @@ function LogIn() {
 					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
 					
 					{/* BUTTON */}
-					<div className="flex justify-center mt-5">
+					<div className="flex justify-center mt-7">
 						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem]" padding="px-6 py-2"/>
 					</div>
 					<p className="text-[.8rem] text-center mt-5">Don't have an account? <Link to="/register"><span className="text-[#1B651B] font-semibold" li>Register here</span></Link></p>
