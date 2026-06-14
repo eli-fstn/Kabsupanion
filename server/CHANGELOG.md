@@ -6,35 +6,46 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_Phase 1 in progress. Still to come: auth-gating existing routes, admin role management,
+_Phase 1 in progress. Still to come: admin role management,
 subjects/schedule/notes/announcements, Cloudinary._
 
 ### Added
 
 - **JWT authentication** (Hono `hono/jwt`, HS256, 7-day tokens signed with `JWT_SECRET`).
-- `users` table (`email` unique, `password_hash`, `name`, `role` enum `student|admin`).
+- `users` table (`student_number` unique FK → masterlist, `email` unique, `password_hash`,
+  `name`, `role` enum `student|admin`).
+- **`masterlist` table** — the pre-loaded section roster (`student_number`, `full_name`,
+  `role`; no emails), plus `scripts/seed.ts` + `npm run db:seed` to load it from a
+  git-ignored `seed/masterlist.json`.
 - Password hashing via Web Crypto **PBKDF2/SHA-256** (no native deps; Workers-safe),
   with constant-time verification.
 - Auth routes:
-  - `POST /auth/register` → `{ email, password, name }`; `400` invalid / `409` email taken;
-    returns `201 { user, token }`. Always creates `student` (role in body is ignored).
+  - `POST /auth/register` → `{ studentNumber, email, password }`; **roster-gated** — the
+    student number must be on the masterlist and unclaimed. `name`/`role` come from the
+    masterlist (server-side), never the body. `400` invalid / `403` not on roster /
+    `409` claimed or email taken; returns `201 { user, token }`.
   - `POST /auth/login` → `{ email, password }`; `401` generic message on bad credentials;
     returns `{ user, token }`.
   - `GET /auth/me` → requires `Authorization: Bearer <token>`; returns the current user.
+- **Auth-gated `/tasks`:** `requireAuth` applies to the whole `/tasks` router (`GET`/`POST`
+  require a valid Bearer token; `401` before body validation).
 - `requireAuth` and `requireAdmin` middleware.
-- New migration `drizzle/0001_*.sql` for the `users` table + `user_role` enum.
+- Migrations `drizzle/0001_*.sql` (users + `user_role` enum) and `0002_*.sql`
+  (masterlist + `users.student_number`).
 
 ### Changed
 
 - Refactored routes into `src/routes/` (`auth.ts`, `tasks.ts`); `index.ts` now mounts routers.
 - Shared types moved to `src/types.ts` (`Env`, `Role`, `AuthUser`, `AppEnv`).
 - CORS now allows the `Authorization` header.
+- Added `tsx` devDependency (runs the seed script).
 
 ### Notes
 
-- Code complete and typechecks clean; validation + middleware paths verified locally with
-  dummy vars. Not yet migrated to Neon or deployed — the DB-backed register/login success
-  path is unverified end-to-end. `JWT_SECRET` is now functional (was a placeholder).
+- **Deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev`
+  (prod `JWT_SECRET` set via `wrangler secret put`; full happy path + `400`/`401`/`403`/`409`
+  negatives all pass against prod; `passwordHash` never leaked). Real section roster (35)
+  seeded; no test data remains. First admin account not yet registered.
 
 ## [0.0.0] — 2026-06-13
 

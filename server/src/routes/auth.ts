@@ -3,7 +3,7 @@ import { sign } from "hono/jwt";
 import { eq } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
-import { users, type User } from "../db/schema";
+import { masterlist, users, type User } from "../db/schema";
 import { hashPassword, verifyPassword } from "../lib/password";
 import { requireAuth } from "../middleware/auth";
 
@@ -36,8 +36,10 @@ function issueToken(user: User, secret: string) {
   );
 }
 
-// POST /auth/register — public sign-up. Always creates a `student`; any `role`
-// supplied in the body is ignored so admin can't be self-assigned.
+// POST /auth/register — roster-gated sign-up. Requires a valid, unclaimed
+// student number from the masterlist; the registrant supplies their own email +
+// password. `name` and `role` are taken from the masterlist row (server-side),
+// so neither the display name nor the admin role can be forged via the body.
 authRoutes.post("/register", async (c) => {
   let body: unknown;
   try {
@@ -46,12 +48,15 @@ authRoutes.post("/register", async (c) => {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
 
-  const { email, password, name } = (body ?? {}) as {
+  const { studentNumber, email, password } = (body ?? {}) as {
+    studentNumber?: unknown;
     email?: unknown;
     password?: unknown;
-    name?: unknown;
   };
 
+  if (!isNonEmptyString(studentNumber)) {
+    return c.json({ error: "`studentNumber` is required" }, 400);
+  }
   if (!isNonEmptyString(email) || !EMAIL_RE.test(email.trim())) {
     return c.json({ error: "A valid `email` is required" }, 400);
   }
@@ -61,19 +66,44 @@ authRoutes.post("/register", async (c) => {
       400
     );
   }
-  if (!isNonEmptyString(name)) {
-    return c.json({ error: "`name` is required" }, 400);
-  }
 
   const db = createDb(c.env.DATABASE_URL);
+  const normalizedStudentNumber = studentNumber.trim();
   const normalizedEmail = email.trim().toLowerCase();
 
-  const existing = await db
+  // Must be on the section roster.
+  const [rosterEntry] = await db
+    .select()
+    .from(masterlist)
+    .where(eq(masterlist.studentNumber, normalizedStudentNumber))
+    .limit(1);
+  if (!rosterEntry) {
+    return c.json(
+      { error: "That student number is not on the section roster" },
+      403
+    );
+  }
+
+  // One account per student number.
+  const [claimed] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.studentNumber, normalizedStudentNumber))
+    .limit(1);
+  if (claimed) {
+    return c.json(
+      { error: "An account has already been registered for that student number" },
+      409
+    );
+  }
+
+  // Email must be free.
+  const [emailTaken] = await db
     .select({ id: users.id })
     .from(users)
     .where(eq(users.email, normalizedEmail))
     .limit(1);
-  if (existing.length > 0) {
+  if (emailTaken) {
     return c.json({ error: "An account with that email already exists" }, 409);
   }
 
@@ -81,10 +111,11 @@ authRoutes.post("/register", async (c) => {
   const [created] = await db
     .insert(users)
     .values({
+      studentNumber: normalizedStudentNumber,
       email: normalizedEmail,
       passwordHash,
-      name: name.trim(),
-      role: "student",
+      name: rosterEntry.fullName,
+      role: rosterEntry.role,
     })
     .returning();
 

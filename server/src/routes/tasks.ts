@@ -3,8 +3,12 @@ import { desc } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
 import { tasks } from "../db/schema";
+import { requireAuth } from "../middleware/auth";
 
 export const taskRoutes = new Hono<AppEnv>();
+
+// All task routes require a valid Bearer token.
+taskRoutes.use("*", requireAuth);
 
 // GET /tasks — list all tasks, newest first.
 taskRoutes.get("/", async (c) => {

@@ -1,12 +1,29 @@
 import { pgTable, pgEnum, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-// Phase 1: authentication. Roles gate access — `student` is the default for
-// public sign-ups; `admin` is granted out-of-band (seed/admin route), never
-// self-assigned at registration.
+// Phase 1: authentication. Roles gate access. Role is assigned server-side from
+// the masterlist at registration — never from the request body — so admin can't
+// be self-claimed.
 export const userRole = pgEnum("user_role", ["student", "admin"]);
+
+// The section roster, pre-loaded from data the school provides (student numbers
+// + names only — no emails). Registration is gated against this table: only a
+// valid, unclaimed student number can create an account.
+export const masterlist = pgTable("masterlist", {
+  studentNumber: text("student_number").primaryKey(),
+  fullName: text("full_name").notNull(),
+  role: userRole("role").notNull().default("student"),
+});
+
+export type MasterlistEntry = typeof masterlist.$inferSelect;
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
+  // Links the account to the roster entry it claimed. Unique = one account per
+  // student number.
+  studentNumber: text("student_number")
+    .notNull()
+    .unique()
+    .references(() => masterlist.studentNumber),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   name: text("name").notNull(),

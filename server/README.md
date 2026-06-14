@@ -4,9 +4,9 @@ A deployable **Cloudflare Workers** API built with **Hono**, talking to **Neon P
 through **Drizzle** (Neon HTTP driver).
 
 - **Phase 0 (done):** a `tasks` resource + health check, live on Workers.
-- **Phase 1 (in progress):** JWT auth + a `users` table (register/login/me). Still to come:
-  auth-gating existing routes, admin role management, subjects/schedule/notes/announcements,
-  and Cloudinary.
+- **Phase 1 (done):** JWT auth, a `users` table, roster-gated registration (`masterlist`),
+  and auth-gated `/tasks` — **deployed and verified live**. Still to come: admin role
+  management, subjects/schedule/notes/announcements, and Cloudinary.
 
 ## Stack
 
@@ -20,11 +20,11 @@ through **Drizzle** (Neon HTTP driver).
 | Method | Path             | Auth   | Description                                                        |
 | ------ | ---------------- | ------ | ------------------------------------------------------------------ |
 | GET    | `/health`        | —      | Liveness check → `{ "ok": true }`                                  |
-| POST   | `/auth/register` | —      | Sign up: `{ email, password, name }` → `201 { user, token }` (always `student`) |
+| POST   | `/auth/register` | —      | Claim a roster spot: `{ studentNumber, email, password }` → `201 { user, token }`. `name`/`role` come from the masterlist. |
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`                  |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
-| GET    | `/tasks`         | —      | List all tasks, newest first                                       |
-| POST   | `/tasks`         | —      | Create a task from `{ title, description?, dueDate? }`; `title` required |
+| GET    | `/tasks`         | Bearer | List all tasks, newest first                                       |
+| POST   | `/tasks`         | Bearer | Create a task from `{ title, description?, dueDate? }`; `title` required |
 
 Authenticated requests send `Authorization: Bearer <token>` (the `token` returned by
 register/login). Tokens are HS256 JWTs signed with `JWT_SECRET`, valid for 7 days.
@@ -38,7 +38,7 @@ Everything you need to call this API from the client.
 | Environment | URL |
 | ----------- | --- |
 | Local dev | `http://localhost:8787` |
-| Production | `https://kabsupanion-api.<subdomain>.workers.dev` _(ask the backend dev for the exact subdomain)_ |
+| Production | `https://kabsupanion-api.kabsupanion.workers.dev` |
 
 **CORS:** the API currently allows `http://localhost:5173` (Vite dev server) and the
 placeholder Vercel origin. If your dev server runs on a different port, or once the real
@@ -46,10 +46,17 @@ Vercel URL exists, the backend must add it — ping the backend dev.
 
 ### Auth flow
 
-1. Call `POST /auth/register` or `POST /auth/login`. Both return `{ user, token }`.
-2. Store the `token` (it's a JWT, valid 7 days) and send it on protected requests as
-   the header `Authorization: Bearer <token>`.
-3. On a `401`, treat the token as missing/invalid/expired and route the user back to login.
+1. **Register** with `{ studentNumber, email, password }`. Registration is **roster-gated**:
+   the student number must be on the pre-loaded section masterlist and not already claimed,
+   or you get `403`/`409`. The display `name` and `role` come from the masterlist — they are
+   **not** accepted from the request body. Returns `{ user, token }`.
+2. **Login** with `{ email, password }` → `{ user, token }`.
+3. Store the `token` (a JWT, valid 7 days) and send it on protected requests as
+   `Authorization: Bearer <token>`.
+4. On a `401`, treat the token as missing/invalid/expired and route the user back to login.
+
+Registration error codes: `400` malformed input · `403` student number not on the roster ·
+`409` student number already claimed **or** email already in use.
 
 ### Response shapes
 
@@ -58,6 +65,7 @@ A **user** (returned by register, login, and `/auth/me` — never includes the p
 ```json
 {
   "id": "uuid",
+  "studentNumber": "2024-00001",
   "email": "student@kabsu.edu",
   "name": "Test Student",
   "role": "student",
@@ -84,6 +92,8 @@ A **task** (returned by `/tasks`):
 ```
 
 `GET /tasks` returns an **array** of these; `POST /tasks` returns the single created task.
+Both `/tasks` routes now **require** the `Authorization: Bearer <token>` header — an
+unauthenticated call gets `401` (the auth check runs before body validation).
 
 ### Error conventions
 
@@ -93,7 +103,8 @@ Every failure returns a JSON body `{ "error": "human-readable message" }` with a
 | ------ | ------- |
 | `400` | Missing/invalid fields, or a malformed JSON body |
 | `401` | Missing/invalid/expired token, or wrong login credentials |
-| `409` | Email already registered (on `register`) |
+| `403` | Student number not on the section roster (on `register`) |
+| `409` | Student number already claimed, or email already registered (on `register`) |
 
 Timestamps are ISO 8601 strings (UTC). Field names are `camelCase`.
 
@@ -123,17 +134,17 @@ const me = (await api.get("/auth/me")).data.user;
 
 ## Status — what's up and running
 
-**Phase 0: ✅ complete and deployed. Phase 1 auth: code complete, pending migrate + deploy.**
+**Phase 0 & Phase 1: ✅ deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev`.
 
 | Capability | Status | Notes |
 | ---------- | ------ | ----- |
 | `GET /health` | ✅ live | Returns `{ "ok": true }`; no DB access. |
-| `GET /tasks` / `POST /tasks` | ✅ live | Create/list against Neon; data persists. Still **public** (not auth-gated yet). |
-| Neon `tasks` table | ✅ migrated | Live in Neon. |
-| Production deploy | ✅ deployed | Live `*.workers.dev` URL passes all Phase 0 checks. |
-| JWT auth (register/login/me) | 🟡 code complete | Routes + middleware written; validation/middleware paths verified locally. Needs `db:migrate` + a real `JWT_SECRET`, then end-to-end verification + deploy. |
-| Neon `users` table | 🟡 migration generated | `drizzle/0001_*.sql` ready; **not yet applied** — run `npm run db:migrate`. |
-| Auth-gating `/tasks`, admin roles, other tables | 🔲 Phase 1 (next) | subjects, schedule, notes, announcements, Cloudinary. |
+| `GET /tasks` / `POST /tasks` | ✅ live | Create/list against Neon; data persists. **Auth-gated** (Bearer token required). |
+| JWT auth (register/login/me) | ✅ live | Full flow verified against prod; token signing confirmed. |
+| Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
+| Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
+| Neon `tasks` + `users` + `masterlist` tables | ✅ migrated | `0000`–`0002` applied; masterlist seeded via `npm run db:seed`. |
+| Admin roles, other tables | 🔲 next | admin management API, subjects, schedule, notes, announcements, Cloudinary. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.
