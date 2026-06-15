@@ -4,6 +4,7 @@ import { registerAccount } from "../../api/auth";
 import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
+import { handleApiError } from "../../api/errorHandler";
 
 function Register(){
 
@@ -33,12 +34,12 @@ function Register(){
 			general: ""
 		});
     let hasError = false;
-    const newErrors = { email: "", password: "", verifyPass: "", studentNumber: "", general: "" };
-
-		if (!email || !studentNumber || !password){
-			newErrors.general = "Input fields can not be empty";
-			hasError = true;
-		}
+    const newErrors = { email: "",
+			password: "",
+			verifyPass: "",
+			studentNumber: "",
+			general: ""
+		};
 
 		if (!email) {
 			newErrors.email = "CvSU Email is required."
@@ -74,69 +75,14 @@ function Register(){
     }
 
 		try {
-      // const data = await registerAccount(email, password, studentNumber);
-      // localStorage.setItem("token", data.token);
+      const data = await registerAccount(email, password, studentNumber);
+      localStorage.setItem("token", data.token);
 			setModalOpen(true);
 			setTimeout(() => {
 				navigate("/dashboard");
 			}, 4000);
 		} catch (error) {
-			const res = error.response;
-
-      if (!res) {
-        setError({
-          general: "Network error. Please try again."
-        });
-        return;
-      }
-			
-			const { status, data} = res;
-
-			if (data?.field === "email") {
-        setError({
-          email: data.message,
-        });
-        return;
-      }
-
-			if (data?.field === "studentNumber") {
-        setError({
-          studentNumber: data.message,
-        });
-        return;
-      }
-
-			if (data?.field === "password") {
-        setError({
-					verifyPass: data.message,
-        });
-        return;
-      }
-
-      switch (status) {
-				case 403:
-					setError({ studentNumber: "Student number doesn't exist in the class record."});
-					break;
-
-				case 409:
-					setError({ studentNumber: "Student number already registered."});
-					break;
-
-				case 429:
-					setError({ general: "Too many attempts. Please try again later." });
-          break;
-
-        case 500:
-          setError({ general: "Server error. Please try again later." });
-          break;
-
-        case 503:
-          setError({ general: "Service unavailable. Please try again later." });
-          break;
-
-        default:
-          setError({ general: "Something went wrong. Please try again." });
-			}
+			handleApiError(error, setGeneralError);
 		}
   }
 
@@ -170,7 +116,7 @@ function Register(){
 					)}
 
           <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} className={`border ${confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
+					<input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
 					{error.confirmPassword && (
 						<p className="text-red-500 text-xs">{error.confirmPassword}</p>
 					)}
