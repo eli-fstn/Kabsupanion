@@ -4,18 +4,15 @@ import ClassSched from "../sections/ClassSched";
 
 function Dashboard() {
   return (
-    <html className="scroll-smooth">
-      <div className="bg-[#F4F4F4] min-h-screen">
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <Navbar />
-        </div>
-        <div className="pt-16">
-          <TaskList />
-          <ClassSched />
-        </div>
+    <div className="bg-[#F4F4F4] min-h-screen">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <Navbar />
       </div>
-    </html>
-    
+      <div className="pt-16">
+        <TaskList />
+        <ClassSched />
+      </div>
+    </div>
   );
 }
 
