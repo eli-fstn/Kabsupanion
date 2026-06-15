@@ -18,9 +18,12 @@ function LogIn() {
   const handleLogIn = async (e) => {
     e.preventDefault();
 
-    setErrors({ email: "", password: "", general: "" });
     let hasError = false;
-    const newErrors = { email: "", password: "", general: "" };
+    const newErrors = {
+      email: "",
+      password: "", 
+      general: ""
+    };
 
     if (!email) {
       newErrors.email = "Email is required.";
@@ -41,7 +44,8 @@ function LogIn() {
 
     try {
       const data = await verifyLogin(email, password);
-      localStorage.setItem("token", data.token);
+      localStorage.removeItem('token');
+      localStorage.setItem('token', data.token);
       navigate("/dashboard");
     } catch (error) {
       handleApiError(error, setGeneralError);

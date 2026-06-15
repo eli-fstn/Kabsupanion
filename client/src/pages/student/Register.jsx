@@ -26,18 +26,12 @@ function Register(){
   const handleRegister = async (e) => {
     e.preventDefault();
 
-		setError({
+    let hasError = false;
+    const newErrors = {
 			email: "",
 			studentNumber: "",
 			password: "",
 			confirmPassword: "",
-			general: ""
-		});
-    let hasError = false;
-    const newErrors = { email: "",
-			password: "",
-			verifyPass: "",
-			studentNumber: "",
 			general: ""
 		};
 
@@ -75,12 +69,11 @@ function Register(){
     }
 
 		try {
-      const data = await registerAccount(email, password, studentNumber);
-      localStorage.setItem("token", data.token);
+      const data = await registerAccount(email, studentNumber, password);
+			localStorage.removeItem('token')
+      localStorage.setItem('token', data.token);
 			setModalOpen(true);
-			setTimeout(() => {
-				navigate("/dashboard");
-			}, 4000);
+			const timer = setTimeout(() => navigate("/dashboard"), 4000);
 		} catch (error) {
 			handleApiError(error, setGeneralError);
 		}
