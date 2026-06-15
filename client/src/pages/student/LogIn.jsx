@@ -25,25 +25,22 @@ function LogIn() {
       newErrors.email = "Email is required.";
       hasError = true;
     }
-
     if (!password) {
       newErrors.password = "Password is required.";
       hasError = true;
     }
-
     if (email && !email.includes("@cvsu.edu.ph")) {
       newErrors.email = "Please use your CvSU email.";
       hasError = true;
     }
-
     if (hasError) {
       setErrors(newErrors);
       return;
     }
 
     try {
-      const data = await verifyLogin(email, password);
-      localStorage.setItem("token", data.token);
+      // const data = await verifyLogin(email, password);
+      // localStorage.setItem("token", data.token);
 
       navigate("/dashboard");
     } catch (error) {
@@ -51,60 +48,37 @@ function LogIn() {
 
       if (!res) {
         setErrors({
-          email: "",
-          password: "",
           general: "Network error. Please try again."
         });
         return;
       }
 
-      const { status, data } = res;
-
-      if (data?.field === "email") {
-        setErrors({
-          email: data.message,
-          password: "",
-          general: ""
-        });
-        return;
-      }
-
-      if (data?.field === "password") {
-        setErrors({
-          email: "",
-          password: data.message,
-          general: ""
-        });
-        return;
-      }
+      const { status } = res;
 
       switch (status) {
         case 400:
-          setErrors({ email: "", password: "", general: "Invalid input." });
+          setErrors({ general: "Invalid request. Please check your input." });
           break;
 
         case 401:
-          setErrors({ email: "", password: "Incorrect password.", general: "" });
-          break;
-
         case 404:
-          setErrors({ email: "Account not found.", password: "", general: "" });
+          setErrors({ general: "Invalid credentials." });
           break;
 
         case 429:
-          setErrors({ email: "", password: "", general: "Too many attempts. Try again later." });
+          setErrors({ general: "Too many attempts. Please try again later." });
           break;
 
         case 500:
-          setErrors({ email: "", password: "", general: "Server error. Please try again later." });
+          setErrors({ general: "Server error. Please try again later." });
           break;
 
         case 503:
-          navigate("/error/503");
+          setErrors({ general: "Service unavailable. Please try again later." });
           break;
 
         default:
-          setErrors({ email: "", password: "", general: "Something went wrong." });
+          setErrors({ general: "Something went wrong. Please try again." });
       }
     }
   };
