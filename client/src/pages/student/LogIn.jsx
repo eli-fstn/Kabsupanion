@@ -39,9 +39,8 @@ function LogIn() {
     }
 
     try {
-      // const data = await verifyLogin(email, password);
-      // localStorage.setItem("token", data.token);
-
+      const data = await verifyLogin(email, password);
+      localStorage.setItem("token", data.token);
       navigate("/dashboard");
     } catch (error) {
       const res = error.response;
@@ -94,13 +93,13 @@ function LogIn() {
           </div>
 
           <label className="text-gray-500 font-bold text-sm">CvSU Email</label>
-          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md my-2 p-2 w-full outline-none text-sm ${errors.email ? "border-red-500" : "border-gray-300"}`}/>
+          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm ${errors.email ? "border-red-500" : "border-gray-300"}`}/>
           {errors.email && (
             <p className="text-red-500 text-xs">{errors.email}</p>
           )}
 
           <label className="text-gray-500 font-bold text-sm mt-3">Password</label>
-          <input type="password" value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 p-2 w-full outline-none text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}/>
+          <input type="password" value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}/>
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password}</p>
           )}

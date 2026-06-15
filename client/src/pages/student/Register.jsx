@@ -12,51 +12,130 @@ function Register(){
   const [studentNumber, setStudentNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({
+		email: "",
+		studentNumber: "",
+		password: "",
+		confirmPassword: "",
+		general: "",
+	});
 	const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-		if (!password || !email) {
-			setError("Input fields can not be empty!");
-			return;
+		setError({
+			email: "",
+			studentNumber: "",
+			password: "",
+			confirmPassword: "",
+			general: ""
+		});
+    let hasError = false;
+    const newErrors = { email: "", password: "", verifyPass: "", studentNumber: "", general: "" };
+
+		if (!email || !studentNumber || !password){
+			newErrors.general = "Input fields can not be empty";
+			hasError = true;
+		}
+
+		if (!email) {
+			newErrors.email = "CvSU Email is required."
+			hasError = true;
+		}
+		if (!studentNumber) {
+      newErrors.studentNumber = "Student Number is required.";
+      hasError = true;
+    }
+		if (!password) {
+      newErrors.password = "Password is required.";
+      hasError = true;
+    }
+		if (password.length < 8){
+			newErrors.password = "Password must be 8 characters and above.";
+			hasError = true;
 		}
 		if (!isNumber(studentNumber)) {
-			setError("Student Number must be a number.");
-			return;
+			newErrors.studentNumber = "Student Number must be a number.";
+			hasError = true;
 		}
-		if (!email.includes("@cvsu.edu.ph")) {
-			setError("Please use your CvSU Email.");
-			return;
+		if (email && !email.includes("@cvsu.edu.ph")) {
+      newErrors.email = "Please use your CvSU email.";
+      hasError = true;
+    }
+    if (password !== confirmPassword) {
+			newErrors.confirmPassword = "Passwords don't match!";
+			hasError = true;
 		}
-    if (!(password === confirmPassword)) {
-      setError("Passwords don't match!")
+		if (hasError) {
+      setError(newErrors);
       return;
     }
+
 		try {
-      // const data = await login(email, password, studentNumber);
+      // const data = await registerAccount(email, password, studentNumber);
       // localStorage.setItem("token", data.token);
 			setModalOpen(true);
 			setTimeout(() => {
 				navigate("/dashboard");
 			}, 4000);
 		} catch (error) {
-			const status = error.response?.status;
+			const res = error.response;
 
-      if (status === 403) {
-        setError("Student number doesn't exist in the class record.");
-      } else if (status === 409) {
-				setError("Student number was already claimed. Try again.");
-			} else if (status === 429) {
-				setError("Too many attempts. Please try again later.");
-			} else if (status === 500) {
-				setError("Server error. Please try again later.");
-			} else if (status === 503) {
-				navigate("/error/503");
-			} else {
-				setError("Something went wrong. Please try again.");
+      if (!res) {
+        setError({
+          general: "Network error. Please try again."
+        });
+        return;
+      }
+			
+			const { status, data} = res;
+
+			if (data?.field === "email") {
+        setError({
+          email: data.message,
+        });
+        return;
+      }
+
+			if (data?.field === "studentNumber") {
+        setError({
+          studentNumber: data.message,
+        });
+        return;
+      }
+
+			if (data?.field === "password") {
+        setError({
+					verifyPass: data.message,
+        });
+        return;
+      }
+
+      switch (status) {
+				case 403:
+					setError({ studentNumber: "Student number doesn't exist in the class record."});
+					break;
+
+				case 409:
+					setError({ studentNumber: "Student number already registered."});
+					break;
+
+				case 429:
+					setError({ general: "Too many attempts. Please try again later." });
+          break;
+
+        case 500:
+          setError({ general: "Server error. Please try again later." });
+          break;
+
+        case 503:
+          setError({ general: "Service unavailable. Please try again later." });
+          break;
+
+        default:
+          setError({ general: "Something went wrong. Please try again." });
 			}
 		}
   }
@@ -73,18 +152,32 @@ function Register(){
 					</div>
           
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="email" id="cvsu-email"/>
+					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"}  rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
+					{error.email && (
+						<p className="text-red-500 text-xs">{error.email}</p>
+					)}
 
           <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="studentNumber">Student Number</label>
-					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="text" maxLength={9} id="studentNumber"/>
+					<input onChange={(e) => {setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" }));}} value={studentNumber} className={`border ${error.studentNumber ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="text" maxLength={9} id="studentNumber"/>
+					{error.studentNumber && (
+						<p className="text-red-500 text-xs">{error.studentNumber}</p>
+					)}
 
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="password" id="password"/>
+					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password" minLength={8}/>
+					{error.password && (
+						<p className="text-red-500 text-xs">{error.password}</p>
+					)}
 
           <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => setConfirmPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="password" id="verifyPassword"/>
+					<input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} className={`border ${confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
+					{error.confirmPassword && (
+						<p className="text-red-500 text-xs">{error.confirmPassword}</p>
+					)}
 
-					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
+					{error.general && (
+            <p className="text-red-500 text-sm font-bold mt-3 text-center">{error.general}</p>
+          )}
 
 					<Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
 						<div className="text-center w-80 py-4">
