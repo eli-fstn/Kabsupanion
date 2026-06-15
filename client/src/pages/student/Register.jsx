@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { registerAccount } from "../../api/auth";
+import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
+import Modal from "../../components/Modal";
 
 function Register(){
 
@@ -11,6 +13,7 @@ function Register(){
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(false);
+	const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -35,9 +38,12 @@ function Register(){
 		try {
       // const data = await login(email, password, studentNumber);
       // localStorage.setItem("token", data.token);
-			navigate("/dashboard");
+			setModalOpen(true);
+			setTimeout(() => {
+				navigate("/dashboard");
+			}, 4000);
 		} catch (error) {
-			const status = err.response?.status;
+			const status = error.response?.status;
 
       if (status === 403) {
         setError("Student number doesn't exist in the class record.");
@@ -67,18 +73,26 @@ function Register(){
 					</div>
           
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" id="cvsu-email"/>
+					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="email" id="cvsu-email"/>
 
           <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="studentNumber">Student Number</label>
-					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="text" maxLength={9} id="studentNumber"/>
+					<input onChange={(e) => setStudentNumber(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="text" maxLength={9} id="studentNumber"/>
 
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" id="password"/>
+					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="password" id="password"/>
 
           <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => setConfirmPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="password" id="verifyPassword"/>
+					<input onChange={(e) => setConfirmPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="password" id="verifyPassword"/>
 
 					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
+
+					<Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+						<div className="text-center w-80 py-4">
+							<Icon className="text-[#1B651B] text-2xl mx-auto" icon="gg:check-o" width="60"/>
+							<p className="text-[#1B651B] text-2xl font-bold mt-3">Account Created!</p>
+							<p className="text-[#A9A9A9] text-sm mt-2">Your account has been successfully registered. Redirecting you to the dashboard.</p>
+						</div>
+					</Modal>
 					
 					{/* BUTTON */}
 					<div className="flex justify-center mt-5">

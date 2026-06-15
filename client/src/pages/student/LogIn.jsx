@@ -27,7 +27,7 @@ function LogIn() {
       // localStorage.setItem("token", data.token);
 			navigate("/dashboard");
 		} catch (error) {
-			const status = err.response?.status;
+			const status = error.response?.status;
 
 			if (status === 401) {
 				setError("Incorrect email or password.");
@@ -59,10 +59,10 @@ function LogIn() {
 					</div>
 
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700" type="email" id="cvsu-email"/>
+					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="email" id="cvsu-email"/>
 
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] mt-2 p-1 w-full max-w outline-none focus:border-green-700" type="password"  id="password"/>
+					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] mt-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="password"  id="password"/>
 
 					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
 					

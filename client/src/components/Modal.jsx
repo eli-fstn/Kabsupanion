@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function Modal({ dimensions, margins, title, text, isOpen, onClose }) {
+function Modal({ isOpen, onClose, children }) {
 
   const modalRef = useRef(null);
 
@@ -18,11 +18,9 @@ function Modal({ dimensions, margins, title, text, isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-10 bg-black/40 flex justify-center items-center">
-      <div ref={modalRef} className={`bg-white rounded-xl p-6 ${margins} ${dimensions}`}>
-        <p className="font-bold text-lg">{title}</p>
-        <p className="text-gray-600">{text}</p>
+      <div ref={modalRef} className={`bg-white rounded-xl p-3`}>
+        {children}
       </div>
-
     </div>
   );
 }

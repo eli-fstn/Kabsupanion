@@ -3,7 +3,7 @@ function Error404() {
     <div className="h-screen flex flex-col items-center justify-center text-center px-6">
       
       {/* IMAGE */}
-      <img src="/assets/lost.png" alt="404 Not Found" className="w-40 mb-6"/>
+      <img src="/assets/forErrors/lost.png" alt="404 Not Found" className="w-40 mb-6"/>
 
       {/* STATUS CODE */}
       <h1 className="text-4xl font-bold text-gray-800">ERROR: 404</h1>
