@@ -46,11 +46,11 @@ function Navbar() {
             <Icon className="text-gray-400" icon="akar-icons:person" width="25" height="25" />
           </div>
           <div className="flex flex-col text-[#E5E5E5] font-bold leading-4">
-            {studentDetails.map((s) => (
-              <>
+            {studentDetails.map((s, i) => (
+              <div key={i}>
                 <p className="uppercase">{s.studentName}</p>
                 <p className="text-[.7rem]">{s.studentNumber}</p>
-              </>
+              </div>
             ))}
           </div>
         </div>

@@ -5,81 +5,151 @@ import Button from "../../components/Button";
 
 function LogIn() {
 
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState(false);
-	const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    general: ""
+  });
+  const navigate = useNavigate();
 
-	const handleLogIn = async (e) => {
-		e.preventDefault();
+  const handleLogIn = async (e) => {
+    e.preventDefault();
 
-		if (!password || !email) {
-			setError("Input fields can not be empty!");
-			return;
-		}
-		if (!email.includes("@cvsu.edu.ph")) {
-			setError("Please use your CvSU Email.");
-			return;
-		}
-		try {
-			// COMMENT TEMPORARILY
-			// const data = await login(email, password);
-      // localStorage.setItem("token", data.token);
-			navigate("/dashboard");
-		} catch (error) {
-			const status = error.response?.status;
+    setErrors({ email: "", password: "", general: "" });
+    let hasError = false;
+    const newErrors = { email: "", password: "", general: "" };
 
-			if (status === 401) {
-				setError("Incorrect email or password.");
-			} else if (status === 403) {
-				setError("You are not authorized to access this.");
-			} else if (status === 404) {
-				setError("Account not found.");
-			} else if (status === 429) {
-				setError("Too many attempts. Please try again later.");
-			} else if (status === 500) {
-				setError("Server error. Please try again later.");
-			} else if (status === 503) {
-				navigate("/error/503");
-			} else {
-				setError("Something went wrong. Please try again.");
-			}
-		}
-	}
+    if (!email) {
+      newErrors.email = "Email is required.";
+      hasError = true;
+    }
 
-	return(
-		<div className="relative min-h-screen">
+    if (!password) {
+      newErrors.password = "Password is required.";
+      hasError = true;
+    }
 
-			{/* Sign In Form */}
-			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
-				<form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
-					<div className="flex items-center justify-center mb-7">
-						<img className="w-10 sm:w-13" src="/assets/CvSU-logo.png" alt="Logo"/>
-						<p className="font-bold text-xl sm:text-2xl pl-3 text-[#1B651B]">MyKabsupanion</p>
-					</div>
+    if (email && !email.includes("@cvsu.edu.ph")) {
+      newErrors.email = "Please use your CvSU email.";
+      hasError = true;
+    }
 
-					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => setEmail(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] my-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="email" id="cvsu-email"/>
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
 
-					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => setPassword(e.target.value)} className="border border-gray-300 rounded-md text-[.9rem] mt-2 p-1 w-full max-w outline-none focus:border-green-700 text-sm" type="password"  id="password"/>
+    try {
+      const data = await verifyLogin(email, password);
+      localStorage.setItem("token", data.token);
 
-					{error && <p className="text-sm font-bold mt-3 mb-0 text-center text-red-500">{error}</p>}
-					
-					{/* BUTTON */}
-					<div className="flex justify-center mt-7">
-						<Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem]" padding="px-6 py-2"/>
-					</div>
-					<p className="text-[.8rem] text-center mt-5">Don't have an account? <Link to="/register"><span className="text-[#1B651B] font-semibold" li>Register here</span></Link></p>
-				</form>
-			</div>
+      navigate("/dashboard");
+    } catch (error) {
+      const res = error.response;
 
-			{/* LAYA AT DIWA BACKGROUND */}
-			<div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
-				<img className="opacity-50 w-80" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
-			</div>
-		</div>
-	);
+      if (!res) {
+        setErrors({
+          email: "",
+          password: "",
+          general: "Network error. Please try again."
+        });
+        return;
+      }
+
+      const { status, data } = res;
+
+      if (data?.field === "email") {
+        setErrors({
+          email: data.message,
+          password: "",
+          general: ""
+        });
+        return;
+      }
+
+      if (data?.field === "password") {
+        setErrors({
+          email: "",
+          password: data.message,
+          general: ""
+        });
+        return;
+      }
+
+      switch (status) {
+        case 400:
+          setErrors({ email: "", password: "", general: "Invalid input." });
+          break;
+
+        case 401:
+          setErrors({ email: "", password: "Incorrect password.", general: "" });
+          break;
+
+        case 404:
+          setErrors({ email: "Account not found.", password: "", general: "" });
+          break;
+
+        case 429:
+          setErrors({ email: "", password: "", general: "Too many attempts. Try again later." });
+          break;
+
+        case 500:
+          setErrors({ email: "", password: "", general: "Server error. Please try again later." });
+          break;
+
+        case 503:
+          navigate("/error/503");
+          break;
+
+        default:
+          setErrors({ email: "", password: "", general: "Something went wrong." });
+      }
+    }
+  };
+
+  return (
+    <div className="relative min-h-screen">
+
+      <div className="absolute inset-0 flex items-center justify-center px-4">
+        <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80">
+          <div className="flex items-center justify-center mb-7">
+            <img className="w-10" src="/assets/CvSU-logo.png" alt="Logo" />
+            <p className="font-bold text-xl pl-3 text-[#1B651B]">MyKabsupanion</p>
+          </div>
+
+          <label className="text-gray-500 font-bold text-sm">CvSU Email</label>
+          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md my-2 p-2 w-full outline-none text-sm ${errors.email ? "border-red-500" : "border-gray-300"}`}/>
+          {errors.email && (
+            <p className="text-red-500 text-xs">{errors.email}</p>
+          )}
+
+          <label className="text-gray-500 font-bold text-sm mt-3">Password</label>
+          <input type="password" value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 p-2 w-full outline-none text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}/>
+          {errors.password && (
+            <p className="text-red-500 text-xs">{errors.password}</p>
+          )}
+
+          {errors.general && (
+            <p className="text-red-500 text-sm font-bold mt-3 text-center">{errors.general}</p>
+          )}
+
+          <div className="flex justify-center mt-6">
+            <Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2"/>
+          </div>
+
+          <p className="text-xs text-center mt-5">Don't have an account?{" "}
+            <Link to="/register"><span className="text-[#1B651B] font-semibold">Register here</span>
+            </Link>
+          </p>
+        </form>
+      </div>
+      <div className="absolute bottom-0 right-10 opacity-50">
+        <img className="w-72" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
+      </div>
+    </div>
+  );
 }
 
 export default LogIn;
