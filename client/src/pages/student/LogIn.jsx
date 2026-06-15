@@ -2,6 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { verifyLogin } from "../../api/auth";
 import Button from "../../components/Button";
+import { handleApiError } from "../../api/errorHandler";
 
 function LogIn() {
 
@@ -43,42 +44,7 @@ function LogIn() {
       localStorage.setItem("token", data.token);
       navigate("/dashboard");
     } catch (error) {
-      const res = error.response;
-
-      if (!res) {
-        setErrors({
-          general: "Network error. Please try again."
-        });
-        return;
-      }
-
-      const { status } = res;
-
-      switch (status) {
-        case 400:
-          setErrors({ general: "Invalid request. Please check your input." });
-          break;
-
-        case 401:
-        case 404:
-          setErrors({ general: "Invalid credentials." });
-          break;
-
-        case 429:
-          setErrors({ general: "Too many attempts. Please try again later." });
-          break;
-
-        case 500:
-          setErrors({ general: "Server error. Please try again later." });
-          break;
-
-        case 503:
-          setErrors({ general: "Service unavailable. Please try again later." });
-          break;
-
-        default:
-          setErrors({ general: "Something went wrong. Please try again." });
-      }
+      handleApiError(error, setGeneralError);
     }
   };
 
@@ -99,7 +65,7 @@ function LogIn() {
           )}
 
           <label className="text-gray-500 font-bold text-sm mt-3">Password</label>
-          <input type="password" value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}/>
+          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}/>
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password}</p>
           )}

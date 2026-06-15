@@ -13,6 +13,7 @@ function Navbar() {
 
   const userSignOut = () => {
     setDropdownOpen(false);
+    localStorage.removeItem("token");
     navigate("/");
   }
 
