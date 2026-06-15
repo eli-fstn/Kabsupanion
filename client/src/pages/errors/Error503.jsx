@@ -3,7 +3,7 @@ function Error503() {
     <div className="h-screen flex flex-col items-center justify-center text-center px-6">
       
       {/* IMAGE */}
-      <img src="/assets/hook.png" alt="503 Server Error" className="w-40 mb-6" />
+      <img src="/assets/forErrors/hook.png" alt="503 Server Error" className="w-40 mb-6" />
 
       {/* STATUS CODE */}
       <h1 className="text-4xl font-bold text-gray-800">ERROR: 503</h1>
