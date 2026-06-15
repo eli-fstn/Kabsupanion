@@ -1,4 +1,4 @@
-export function handleApiError(error, setError) {
+export function handleApiError(error, setGeneralError) {
   const res = error.response;
 
   if (!res) {
