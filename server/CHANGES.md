@@ -5,6 +5,28 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-14 — Phase 1: per-user task completion
+
+**Goal:** let each student tick off communal tasks individually — A marking a task done must
+not mark it done for B.
+
+- New **`task_completions`** table: `(user_id FK→users, task_id FK→tasks, completed_at)` with a
+  **composite PK** so there's at most one completion per (user, task); both FKs cascade on delete.
+- `GET /tasks` left-joins completions for the current user and adds `completed` (bool) +
+  `completedAt`. New `POST /tasks/:id/complete` (idempotent — keeps the original timestamp on
+  re-complete) and `DELETE /tasks/:id/complete` (idempotent). `400` invalid uuid, `404` unknown
+  task, `401` unauth. Migration `0003`.
+- **Design:** tasks remain communal (no owner); only completion is per-user. The alternative —
+  a single `completed` flag on the task row — was rejected because one student's tick would flip
+  it for everyone.
+- Verified locally against Neon: **per-user isolation** (user1 completes taskA → user1 sees
+  `completed:true`, user2 still sees `false`), idempotent re-complete (timestamp unchanged),
+  unmark, `404`/`400`/`401`. Test data (TEST-CMPL users/tasks) cleaned up — DB back to 0
+  users/tasks/completions, 35 roster rows.
+- **Deployed & verified live:** redeployed the Worker and re-ran the full matrix against
+  `https://kabsupanion-api.kabsupanion.workers.dev` (per-user isolation, idempotency,
+  `404`/`400`/`401`) — all pass. Test data cleaned up (0 users/tasks/completions, 35 roster rows).
+
 ## 2026-06-14 — Phase 1 deployed & verified live
 
 - Deployed to `https://kabsupanion-api.kabsupanion.workers.dev`; prod `JWT_SECRET` set via

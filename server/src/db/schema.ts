@@ -1,4 +1,11 @@
-import { pgTable, pgEnum, uuid, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  pgEnum,
+  primaryKey,
+  uuid,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 // Phase 1: authentication. Roles gate access. Role is assigned server-side from
 // the masterlist at registration — never from the request body — so admin can't
@@ -55,3 +62,24 @@ export const tasks = pgTable("tasks", {
 
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
+
+// Per-user completion of communal tasks. A row means "this user has marked this
+// task done". Composite PK → at most one completion per (user, task). Cascades
+// so deleting a task or user cleans up its completions.
+export const taskCompletions = pgTable(
+  "task_completions",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    taskId: uuid("task_id")
+      .notNull()
+      .references(() => tasks.id, { onDelete: "cascade" }),
+    completedAt: timestamp("completed_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.taskId] })]
+);
+
+export type TaskCompletion = typeof taskCompletions.$inferSelect;
