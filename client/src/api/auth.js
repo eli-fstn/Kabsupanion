@@ -1,7 +1,7 @@
 import api from "./axios";
 
 // Register
-export async function registerAccount(studentNumber, email, password) {
+export async function registerAccount(email, studentNumber, password) {
   const response = await api.post("/auth/register", {
     studentNumber,
     email,
