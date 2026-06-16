@@ -2,6 +2,7 @@ import Navbar from "../../components/Navbar";
 import TaskList from "../sections/TaskList";
 import ClassSched from "../sections/ClassSched";
 import ClassResources from "../sections/ClassResources";
+import ClassList from "../sections/ClassList";
 
 function Dashboard() {
   return (
@@ -13,6 +14,7 @@ function Dashboard() {
         <TaskList />
         <ClassSched />
         <ClassResources />
+        <ClassList />
       </div>
     </div>
   );

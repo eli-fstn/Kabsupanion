@@ -40,7 +40,15 @@ export async function getResources(title, subject, uploadedBy, fileURL) {
   return response.data;
 }
 
-
+// Masterlist
+// export async function getMasterList(task, subject, dueDate) {
+//   const response = await api.post("", {
+//     task,
+//     subject,
+//     dueDate
+//   });
+//   return response.data;
+// }
 
 // Get current user
 export async function getMe() {
