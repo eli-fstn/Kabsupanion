@@ -36,30 +36,30 @@ function Register(){
 		};
 
 		if (!email) {
-			newErrors.email = "CvSU Email is required."
+			newErrors.email = "CvSU Email is required.";
+			hasError = true;
+		} else if (!email.includes("@cvsu.edu.ph")) {
+			newErrors.email = "Please use your CvSU email.";
 			hasError = true;
 		}
+
 		if (!studentNumber) {
-      newErrors.studentNumber = "Student Number is required.";
-      hasError = true;
-    }
-		if (!password) {
-      newErrors.password = "Password is required.";
-      hasError = true;
-    }
-		if (password.length < 8){
-			newErrors.password = "Password must be 8 characters and above.";
+			newErrors.studentNumber = "Student Number is required.";
 			hasError = true;
-		}
-		if (!isNumber(studentNumber)) {
+		} else if (!isNumber(studentNumber)) {
 			newErrors.studentNumber = "Student Number must be a number.";
 			hasError = true;
 		}
-		if (email && !email.includes("@cvsu.edu.ph")) {
-      newErrors.email = "Please use your CvSU email.";
-      hasError = true;
-    }
-    if (password !== confirmPassword) {
+
+		if (!password) {
+			newErrors.password = "Password is required.";
+			hasError = true;
+		} else if (password.length < 8) {
+			newErrors.password = "Password must be 8 characters and above.";
+			hasError = true;
+		}
+
+		if (password && password !== confirmPassword) {
 			newErrors.confirmPassword = "Passwords don't match!";
 			hasError = true;
 		}
