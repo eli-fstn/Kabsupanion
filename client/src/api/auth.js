@@ -19,6 +19,29 @@ export async function verifyLogin(email, password) {
   return response.data;
 }
 
+// Tasklist
+export async function getTasks(task, subject, dueDate) {
+  const response = await api.post("", {
+    task,
+    subject,
+    dueDate
+  });
+  return response.data;
+}
+
+// Resources
+export async function getResources(title, subject, uploadedBy, fileURL) {
+  const response = await api.post("", {
+    title,
+    subject,
+    uploadedBy,
+    fileURL
+  });
+  return response.data;
+}
+
+
+
 // Get current user
 export async function getMe() {
   const response = await api.get("/auth/me");

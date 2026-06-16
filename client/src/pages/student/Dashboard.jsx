@@ -1,6 +1,7 @@
 import Navbar from "../../components/Navbar";
 import TaskList from "../sections/TaskList";
 import ClassSched from "../sections/ClassSched";
+import ClassResources from "../sections/ClassResources";
 
 function Dashboard() {
   return (
@@ -11,6 +12,7 @@ function Dashboard() {
       <div className="pt-16">
         <TaskList />
         <ClassSched />
+        <ClassResources />
       </div>
     </div>
   );
