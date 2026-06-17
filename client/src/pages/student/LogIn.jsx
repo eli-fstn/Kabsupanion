@@ -5,7 +5,6 @@ import Button from "../../components/Button";
 import { handleApiError } from "../../services/errorHandler";
 
 function LogIn() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
@@ -13,7 +12,6 @@ function LogIn() {
     password: "",
     general: ""
   });
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const handleLogIn = async (e) => {
@@ -50,9 +48,7 @@ function LogIn() {
       navigate("/dashboard");
     } catch (error) {
        handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   return (

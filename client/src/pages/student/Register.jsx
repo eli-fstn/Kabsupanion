@@ -7,7 +7,6 @@ import Modal from "../../components/Modal";
 import { handleApiError } from "../../services/errorHandler";
 
 function Register(){
-
 	const isNumber = (value) => /^[0-9]+$/.test(value);
   const [email, setEmail] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
@@ -75,7 +74,7 @@ function Register(){
 			setModalOpen(true);
 			const timer = setTimeout(() => navigate("/dashboard"), 4000);
 		} catch (error) {
-			handleApiError(error, setError);
+			handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
 		}
   }
 
