@@ -5,6 +5,12 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-18 — Restrict task creation to admins
+
+- Added `requireAdmin` to `POST /tasks`. Students can only `GET /tasks` and mark/unmark
+  completion — task creation (and any future edit/delete) is admin-only. This matches the
+  classroom checklist model: the admin sets the assignments, classmates tick them off.
+
 ## 2026-06-18 — Phase 1: admin management API
 
 **Goal:** give the admin account control over users and the masterlist without direct DB access.
