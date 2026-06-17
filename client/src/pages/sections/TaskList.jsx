@@ -1,14 +1,12 @@
 import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
 import { useState, useEffect } from "react";
-import { getTasks } from "../../api/auth";
-import { handleApiError } from "../../api/errorHandler";
+import { getMe, getTasks } from "../../services/auth";
 
 function TaskList({ studentName="Juan" }) {
   const [activeSubject, setActiveSubject] = useState("All");
   const [task, setTask] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [student, setStudent] = useState([]);
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -17,12 +15,20 @@ function TaskList({ studentName="Juan" }) {
         setTask(data);
       } catch (error) {
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     }
 
+    const fetchMe = async () => {
+      try {
+        const data = await getMe();
+        setStudent(data);
+      } catch (error) {
+        console.log(error);
+      } 
+    }
+
     fetchTask();
+    fetchMe();
   }, []);
 
   const subjects = ["All", "GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];
@@ -32,7 +38,7 @@ function TaskList({ studentName="Juan" }) {
   return (
     <section className="min-h-screen p-10">
       <div>
-        <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{studentName}!</span></h1>
+        <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{student.surname}!</span></h1>
         <div className="mt-3">
           <p className="font-bold text-[1.3rem]">Today's Tasks</p>
           <p className="text-[1rem]">You have <span className="text-[#003A02] font-bold text-[1.3rem]">{task.length}</span> tasks ongoing. {task.length === 0 ? (
@@ -44,7 +50,7 @@ function TaskList({ studentName="Juan" }) {
       </div>
 
       {/* FILTER BUTTONS */}
-      <div className="mt-10">
+      <div className="mt-5">
         {subjects.map((subject) => (
           <Button key={subject} text={subject} BGColor={activeSubject === subject ? "bg-[#1B651B]" : "bg-white"} typography={activeSubject === subject ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"} padding="px-5 py-1" shadow="shadow-md border border-gray-200" margin="mr-4" onClick={() => setActiveSubject(subject)}/>
         ))}

@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { registerAccount } from "../../api/auth";
+import { registerAccount } from "../../services/auth";
 import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
-import { handleApiError } from "../../api/errorHandler";
+import { handleApiError } from "../../services/errorHandler";
 
 function Register(){
 

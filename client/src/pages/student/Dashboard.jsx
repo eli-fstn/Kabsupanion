@@ -2,6 +2,7 @@ import Navbar from "../../components/Navbar";
 import TaskList from "../sections/TaskList";
 import ClassSched from "../sections/ClassSched";
 import ClassResources from "../sections/ClassResources";
+import ActivityTracker from "../sections/ActivityTracker";
 import ClassList from "../sections/ClassList";
 
 function Dashboard() {
@@ -14,6 +15,7 @@ function Dashboard() {
         <TaskList />
         <ClassSched />
         <ClassResources />
+        <ActivityTracker />
         <ClassList />
       </div>
     </div>

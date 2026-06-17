@@ -1,8 +1,8 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { verifyLogin } from "../../api/auth";
+import { verifyLogin } from "../../services/auth";
 import Button from "../../components/Button";
-import { handleApiError } from "../../api/errorHandler";
+import { handleApiError } from "../../services/errorHandler";
 
 function LogIn() {
 
@@ -13,6 +13,7 @@ function LogIn() {
     password: "",
     general: ""
   });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const handleLogIn = async (e) => {
@@ -49,6 +50,8 @@ function LogIn() {
       navigate("/dashboard");
     } catch (error) {
        handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
+    } finally {
+      setLoading(false);
     }
   };
 
