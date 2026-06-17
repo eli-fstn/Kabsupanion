@@ -5,6 +5,24 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-18 — Phase 1: admin management API
+
+**Goal:** give the admin account control over users and the masterlist without direct DB access.
+
+- New **`src/routes/admin.ts`** router mounted at `/admin` in `index.ts`. No schema change,
+  no new migration — reuses existing `masterlist`, `users`, and `userRole` enum.
+- All routes guarded by `requireAuth` + `requireAdmin` (applied via `adminRoutes.use("*", ...)`):
+  `401` for missing/invalid token, `403` for non-admin users.
+- **User management:** `GET /admin/users` (all users, no passwordHash) and
+  `PATCH /admin/users/:id/role` (promote/demote; self-demotion blocked with `400` to prevent
+  locking out the only admin).
+- **Masterlist CRUD:** `GET`, `POST`, `PATCH /:studentNumber`, `DELETE /:studentNumber`.
+  Delete returns `409` if a user has already registered with that student number (FK constraint
+  would block it anyway, but we surface a friendlier message first).
+- Verified locally: auth gate (`401`/`403`), user list, role promote/demote, masterlist
+  add/edit/delete, dup-entry `409`, claimed-entry `409`, `404` cases. All 13 checks passed.
+- **Pending:** `npm run deploy` to ship the `/admin/*` routes to production (no migration needed).
+
 ## 2026-06-14 — Phase 1: per-user task completion
 
 **Goal:** let each student tick off communal tasks individually — A marking a task done must

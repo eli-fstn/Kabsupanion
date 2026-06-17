@@ -6,11 +6,23 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_Phase 1 in progress. Still to come: admin role management,
-subjects/schedule/notes/announcements, Cloudinary._
+_Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Cloudinary._
 
 ### Added
 
+- **Admin management API** (`/admin/*` router, no schema change). All routes require
+  `requireAuth` + `requireAdmin` (`401` no token / `403` non-admin):
+  - `GET /admin/users` — all registered users (password hash excluded).
+  - `PATCH /admin/users/:id/role` — promote/demote a user (`{ role }`); `400` on invalid
+    role or self-demotion, `404` unknown user.
+  - `GET /admin/masterlist` — full section roster.
+  - `POST /admin/masterlist` — add a roster entry (`{ studentNumber, fullName, role? }`);
+    `409` if the student number already exists.
+  - `PATCH /admin/masterlist/:studentNumber` — update name/role (`{ fullName?, role? }`);
+    `404` if not found.
+  - `DELETE /admin/masterlist/:studentNumber` — remove a roster entry; `409` if a user
+    has already claimed it, `404` if not found.
+  _(Locally verified. Deploy pending.)_
 - **Per-user task completion.** New `task_completions` table (composite PK `(user_id, task_id)`,
   cascade FKs) records which user completed which communal task. `GET /tasks` now annotates each
   task with `completed`/`completedAt` for the requesting user; `POST /tasks/:id/complete` and

@@ -5,8 +5,8 @@ through **Drizzle** (Neon HTTP driver).
 
 - **Phase 0 (done):** a `tasks` resource + health check, live on Workers.
 - **Phase 1 (done):** JWT auth, a `users` table, roster-gated registration (`masterlist`),
-  and auth-gated `/tasks` — **deployed and verified live**. Still to come: admin role
-  management, subjects/schedule/notes/announcements, and Cloudinary.
+  auth-gated `/tasks`, per-user task completion, and admin management API (`/admin/*`) —
+  **deployed and verified live**. Still to come: subjects/schedule/notes/announcements, Cloudinary.
 
 ## Stack
 
@@ -27,6 +27,12 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/tasks`         | Bearer | Create a task from `{ title, description?, dueDate? }`; `title` required |
 | POST   | `/tasks/:id/complete` | Bearer | Mark the task done **for the current user** (idempotent) |
 | DELETE | `/tasks/:id/complete` | Bearer | Unmark the task for the current user (idempotent) |
+| GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
+| PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
+| GET    | `/admin/masterlist`   | Bearer + Admin | List the full section roster |
+| POST   | `/admin/masterlist`   | Bearer + Admin | Add a roster entry: `{ studentNumber, fullName, role? }` |
+| PATCH  | `/admin/masterlist/:studentNumber` | Bearer + Admin | Update a roster entry: `{ fullName?, role? }` |
+| DELETE | `/admin/masterlist/:studentNumber` | Bearer + Admin | Remove a roster entry (blocked if a user has claimed it) |
 
 Authenticated requests send `Authorization: Bearer <token>` (the `token` returned by
 register/login). Tokens are HS256 JWTs signed with `JWT_SECRET`, valid for 7 days.
@@ -157,7 +163,8 @@ const me = (await api.get("/auth/me")).data.user;
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
 | Neon tables (`tasks`/`users`/`masterlist`/`task_completions`) | ✅ migrated | `0000`–`0003` applied to Neon; masterlist seeded via `npm run db:seed`. |
-| Admin roles, other tables | 🔲 next | admin management API, subjects, schedule, notes, announcements, Cloudinary. |
+| Admin management API (`/admin/*`) | 🟡 pending deploy | Code complete and locally verified. Mount added to `index.ts`; deploy to make it live. |
+| Other tables | 🔲 next | subjects, schedule, notes, announcements, Cloudinary. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.
