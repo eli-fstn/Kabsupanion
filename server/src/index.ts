@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import type { AppEnv } from "./types";
 import { authRoutes } from "./routes/auth";
 import { taskRoutes } from "./routes/tasks";
+import { adminRoutes } from "./routes/admin";
 
 const app = new Hono<AppEnv>();
 
@@ -23,5 +24,6 @@ app.get("/health", (c) => c.json({ ok: true }));
 
 app.route("/auth", authRoutes);
 app.route("/tasks", taskRoutes);
+app.route("/admin", adminRoutes);
 
 export default app;
