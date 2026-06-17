@@ -1,32 +1,35 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { handleApiError } from "../../api/errorHandler";
+import { getMasterlist } from "../../api/auth";
 import Button from "../../components/Button";
 
 function ClassList() {
-
   const [academicStatus, setAcademicStatus] = useState("Regular");
   const [masterList, setMasterList] = useState([]);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const acadStatus = [ "Regular", "Irregular" ];
 
-  const student = [
-    { name: "Festin, Elijah Joshua E.",
-      studentNumber: "251080056",
-      studentStatus: "Active",
-      acadStatus: "Regular" 
-    },
-    { name: "Tuboro, Lorenz E.",
-      studentNumber: "251080351",
-      studentStatus: "Inactive",
-      acadStatus: "Regular" 
+  useEffect(() => {
+    const fetchMasterlist = async () => {
+      try {
+        const data = await getMasterlist();
+        setMasterList(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ]
 
-  const filteredStudents = student.filter((t) => t.acadStatus === academicStatus).sort((a, b) => a.name.localeCompare(b.name));
+    fetchMasterlist();
+  }, []);
+
+  const filteredStudents = masterList.filter((t) => t.acadStatus === academicStatus).sort((a, b) => a.name.localeCompare(b.name));
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 

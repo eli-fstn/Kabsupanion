@@ -1,17 +1,33 @@
 import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getTasks } from "../../api/auth";
+import { handleApiError } from "../../api/errorHandler";
 
 function TaskList({ studentName="Juan" }) {
   const [activeSubject, setActiveSubject] = useState("All");
+  const [task, setTask] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      try {
+        const data = await getTasks();
+        setTask(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTask();
+  }, []);
 
   const subjects = ["All", "GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];
 
-  const taskData = [ 
-    { task: "Calculator GUI", subject: "DCIT 50A", dueDate: "Mon, 04 Dec 2026" },
-  ];
-
-  const filteredTasks = activeSubject === "All" ? taskData : taskData.filter((t) => t.subject === activeSubject);
+  const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject === activeSubject);
 
   return (
     <section className="min-h-screen p-10">
@@ -19,7 +35,11 @@ function TaskList({ studentName="Juan" }) {
         <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{studentName}!</span></h1>
         <div className="mt-3">
           <p className="font-bold text-[1.3rem]">Today's Tasks</p>
-          <p className="text-[1rem]">You have <span className="text-[#003A02] font-bold text-[1.3rem]">{taskData.length}</span> tasks ongoing. Stay focused and complete them on time!</p>
+          <p className="text-[1rem]">You have <span className="text-[#003A02] font-bold text-[1.3rem]">{task.length}</span> tasks ongoing. {task.length === 0 ? (
+            <span>Well done!</span>
+          ) : (
+            <span>Stay focused and complete them on time!</span>
+          )}</p>
         </div>
       </div>
 
@@ -51,11 +71,15 @@ function TaskList({ studentName="Juan" }) {
                   <td>{t.dueDate}</td>
                 </tr>
               ))}
-              {filteredTasks.length === 0 && (
+              {activeSubject == "All" && filteredTasks.length === 0 ? (
+                <tr className="flex justify-center items-center flex-1 h-full">
+                  <td colSpan={3} className="text-center text-gray-400 p-5">No tasks for today. Great job!</td>
+                </tr>
+              ) : (
                 <tr className="flex justify-center items-center flex-1 h-full">
                   <td colSpan={3} className="text-center text-gray-400 p-5">No tasks for this subject. Keep up the good work!</td>
                 </tr>
-              )}
+              ) }
             </tbody>
           </table>
         </div>
