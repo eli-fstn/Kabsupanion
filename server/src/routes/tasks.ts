@@ -3,7 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
 import { tasks, taskCompletions } from "../db/schema";
-import { requireAuth } from "../middleware/auth";
+import { requireAuth, requireAdmin } from "../middleware/auth";
 
 export const taskRoutes = new Hono<AppEnv>();
 
@@ -48,8 +48,8 @@ taskRoutes.get("/", async (c) => {
   return c.json(result);
 });
 
-// POST /tasks — create a (communal) task.
-taskRoutes.post("/", async (c) => {
+// POST /tasks — create a (communal) task. Admin only.
+taskRoutes.post("/", requireAdmin, async (c) => {
   let body: unknown;
   try {
     body = await c.req.json();

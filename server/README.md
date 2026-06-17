@@ -24,7 +24,7 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`                  |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
 | GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` for the current user |
-| POST   | `/tasks`         | Bearer | Create a task from `{ title, description?, dueDate? }`; `title` required |
+| POST   | `/tasks`         | Bearer + Admin | Create a task from `{ title, description?, dueDate? }`; `title` required |
 | POST   | `/tasks/:id/complete` | Bearer | Mark the task done **for the current user** (idempotent) |
 | DELETE | `/tasks/:id/complete` | Bearer | Unmark the task for the current user (idempotent) |
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |

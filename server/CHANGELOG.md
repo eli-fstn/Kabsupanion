@@ -44,8 +44,9 @@ _Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Clou
   - `POST /auth/login` → `{ email, password }`; `401` generic message on bad credentials;
     returns `{ user, token }`.
   - `GET /auth/me` → requires `Authorization: Bearer <token>`; returns the current user.
-- **Auth-gated `/tasks`:** `requireAuth` applies to the whole `/tasks` router (`GET`/`POST`
-  require a valid Bearer token; `401` before body validation).
+- **Auth-gated `/tasks`:** `requireAuth` applies to the whole `/tasks` router; `POST /tasks`
+  additionally requires `requireAdmin` — only admins can create tasks, students can only
+  read and mark completion.
 - `requireAuth` and `requireAdmin` middleware.
 - Migrations `drizzle/0001_*.sql` (users + `user_role` enum) and `0002_*.sql`
   (masterlist + `users.student_number`).
