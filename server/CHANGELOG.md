@@ -10,6 +10,20 @@ _Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Clou
 
 ### Added
 
+- **Subjects + schedules.** New `subjects` table (`code` unique, `name`, `description?`) and
+  `schedules` table (FK → subjects cascade, `day` enum `monday`–`sunday`, `startTime`/`endTime`
+  as 12-hour text strings, `room?`). Migration `drizzle/0004_*.sql`.
+  - `GET /subjects` — all subjects with schedule slots nested (any authenticated user).
+  - `POST /subjects` — create (`{ code, name, description? }`); `409` duplicate code. Admin only.
+  - `PATCH /subjects/:id` — update any field; `404` unknown. Admin only.
+  - `DELETE /subjects/:id` — cascades to schedules + tasks; `404` unknown. Admin only.
+  - `POST /subjects/:id/schedules` — add a slot (`{ day, startTime, endTime, room? }`). Admin only.
+  - `PATCH /subjects/:id/schedules/:scheduleId` — update a slot. Admin only.
+  - `DELETE /subjects/:id/schedules/:scheduleId` — remove a slot. Admin only.
+- **Tasks are now tied to subjects.** `tasks.subject_id` (NOT NULL FK → subjects, cascade).
+  `POST /tasks` now requires `subjectId`. `GET /tasks` includes `subject: { id, code, name }`
+  on each task and accepts optional `?subjectId=` query param to filter by subject.
+
 - **Admin management API** (`/admin/*` router, no schema change). All routes require
   `requireAuth` + `requireAdmin` (`401` no token / `403` non-admin):
   - `GET /admin/users` — all registered users (password hash excluded).

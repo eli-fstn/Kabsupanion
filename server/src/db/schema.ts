@@ -7,6 +7,16 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
+export const dayOfWeek = pgEnum("day_of_week", [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+]);
+
 // Phase 1: authentication. Roles gate access. Role is assigned server-side from
 // the masterlist at registration — never from the request body — so admin can't
 // be self-claimed.
@@ -46,9 +56,43 @@ export const users = pgTable("users", {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
+// Phase 1: subjects + schedules.
+export const subjects = pgTable("subjects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export type Subject = typeof subjects.$inferSelect;
+
+// Each subject can have multiple timetable slots (e.g. MWF 8:00 AM – 9:00 AM).
+// Times are stored as 12-hour text strings (e.g. "8:00 AM").
+export const schedules = pgTable("schedules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subjectId: uuid("subject_id")
+    .notNull()
+    .references(() => subjects.id, { onDelete: "cascade" }),
+  day: dayOfWeek("day").notNull(),
+  startTime: text("start_time").notNull(),
+  endTime: text("end_time").notNull(),
+  room: text("room"),
+});
+
+export type Schedule = typeof schedules.$inferSelect;
+
 // Phase 0 walking skeleton: a single minimal `tasks` table.
 export const tasks = pgTable("tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
+  subjectId: uuid("subject_id")
+    .notNull()
+    .references(() => subjects.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description"),
   dueDate: timestamp("due_date", { withTimezone: true }),
