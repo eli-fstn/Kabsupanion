@@ -41,7 +41,7 @@ export default function ClassResources() {
   return (
     <section className="min-h-screen p-10">
       <div className="mt-3">
-        <p className="font-bold text-[1.3rem]">Class Resources</p>
+        <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Class Resources</p>
         <p className="text-[1rem]">Collaborate and exchange notes with your fellow Kabsuhenyos.</p>
       </div>
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-140 p-4 flex flex-col">

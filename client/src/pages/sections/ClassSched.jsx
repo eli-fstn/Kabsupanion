@@ -26,7 +26,7 @@ function ClassSched() {
   return(
     <section className="min-h-screen p-10">
       <div className="mt-3">
-        <p className="font-bold text-[1.3rem]">Class Schedule</p>
+        <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Class Schedule</p>
         <p className="text-[1rem]">Keep track of your classes and never miss an important session.</p>
       </div>
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-120 flex flex-col items-center justify-between p-4">

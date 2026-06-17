@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { registerAccount } from "../../services/auth";
+import { registerAccount, getMe } from "../../services/auth";
 import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
@@ -69,8 +69,8 @@ function Register(){
 
 		try {
       const data = await registerAccount(email, studentNumber, password);
-			localStorage.removeItem('token')
       localStorage.setItem('token', data.token);
+			const user = getMe();
 			setModalOpen(true);
 			const timer = setTimeout(() => navigate("/dashboard"), 4000);
 		} catch (error) {
@@ -84,9 +84,9 @@ function Register(){
 			{/* Registration Form */}
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
 				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
-					<div className="flex items-center justify-center mb-7">
-						{/* <img className="w-10 sm:w-13" src="/assets/CvSU-logo.png" alt="Logo"/> */}
-						<p className="font-bold text-xl sm:text-2xl pl-3 text-[#1B651B]">Registration Form</p>
+					<div className="flex items-center justify-center mb-7 z-10">
+						<img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo"/>
+						<p className="font-bold text-xl pl-2 text-[#1B651B]">Registration Form</p>
 					</div>
           
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
@@ -134,7 +134,7 @@ function Register(){
 
 			{/* LAYA AT DIWA BACKGROUND */}
 			<div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
-				<img className="opacity-50 w-80" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
+				<img className="opacity-50 w-72" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
 			</div>
 		</div>
   );

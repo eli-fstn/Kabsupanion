@@ -8,6 +8,8 @@ export default {
       fontFamily: {
         parisienne: ["Parisienne", "cursive"],
         amaranth: ["Amaranth", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
+        robotoCon: ["Roboto Condensed", "sans-serif"],
       },
     },
   },

@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { verifyLogin } from "../../services/auth";
+import { verifyLogin, getMe } from "../../services/auth";
 import Button from "../../components/Button";
 import { handleApiError } from "../../services/errorHandler";
 
@@ -43,8 +43,8 @@ function LogIn() {
 
     try {
       const data = await verifyLogin(email, password);
-      localStorage.removeItem('token');
-      localStorage.setItem('token', data.token);
+      localStorage.setItem("token", data.token);
+      const user = await getMe();
       navigate("/dashboard");
     } catch (error) {
        handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
@@ -53,12 +53,11 @@ function LogIn() {
 
   return (
     <div className="relative min-h-screen">
-
       <div className="absolute inset-0 flex items-center justify-center px-4">
-        <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80">
+        <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 z-10">
           <div className="flex items-center justify-center mb-7">
-            <img className="w-10" src="/assets/CvSU-logo.png" alt="Logo" />
-            <p className="font-bold text-xl pl-3 text-[#1B651B]">MyKabsupanion</p>
+            <img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo" />
+            <p className="font-bold text-xl pl-2 text-[#1B651B]">Kabsupanion</p>
           </div>
 
           <label className="text-gray-500 font-bold text-sm">CvSU Email</label>
@@ -87,7 +86,7 @@ function LogIn() {
           </p>
         </form>
       </div>
-      <div className="absolute bottom-0 right-10 opacity-50">
+      <div className="absolute bottom-0 right-80 opacity-50">
         <img className="w-72" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
       </div>
     </div>

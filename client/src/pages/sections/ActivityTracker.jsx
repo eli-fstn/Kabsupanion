@@ -27,7 +27,7 @@ function ActivityTracker() {
   return(
     <section className="min-h-screen p-10">
       <div className="mt-3">
-        <p className="font-bold text-[1.3rem]">Activity Tracker</p>
+        <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Activity Tracker</p>
         <p className="text-[1rem]">Monitor your academic activities and progress.</p>
       </div>
 

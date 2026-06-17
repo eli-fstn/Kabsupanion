@@ -36,7 +36,7 @@ function ClassList() {
   return(
     <section className="min-h-screen p-10">
       <div className="mt-3">
-        <p className="font-bold text-[1.3rem]">Class List</p>
+        <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Class List</p>
         <p className="text-[1rem]">View the complete list of your blockmates and stay connected with your section.</p>
       </div>
 
