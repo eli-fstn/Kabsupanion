@@ -71,6 +71,31 @@ adminRoutes.patch("/users/:id/role", async (c) => {
   return c.json(toPublicUser(updated));
 });
 
+// DELETE /admin/users/:id — remove a user account. Blocked if the target is
+// the requesting admin (can't delete yourself).
+adminRoutes.delete("/users/:id", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid user id" }, 400);
+  }
+
+  if (id === c.get("user").id) {
+    return c.json({ error: "You cannot delete your own account" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [deleted] = await db
+    .delete(users)
+    .where(eq(users.id, id))
+    .returning({ id: users.id });
+
+  if (!deleted) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  return c.json({ id: deleted.id, deleted: true });
+});
+
 // GET /admin/masterlist — the full section roster.
 adminRoutes.get("/masterlist", async (c) => {
   const db = createDb(c.env.DATABASE_URL);
