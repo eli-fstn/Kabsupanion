@@ -34,6 +34,12 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
   `404` if not found, `400` invalid UUID. Matches the classroom checklist model: admin sets
   assignments, classmates tick them off.
 
+## 2026-06-18 — Add DELETE /admin/users/:id
+
+- Admins can now delete user accounts. Self-delete is blocked (`400`) to prevent
+  accidental lockout. `taskCompletions` cascade via the existing FK so no orphan rows remain.
+  Flagged for later: `GET /admin/users/:id` single-user lookup.
+
 ## 2026-06-18 — Phase 1: admin management API
 
 **Goal:** give the admin account control over users and the masterlist without direct DB access.

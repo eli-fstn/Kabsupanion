@@ -29,6 +29,7 @@ _Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Clou
   - `GET /admin/users` — all registered users (password hash excluded).
   - `PATCH /admin/users/:id/role` — promote/demote a user (`{ role }`); `400` on invalid
     role or self-demotion, `404` unknown user.
+  - `DELETE /admin/users/:id` — remove a user account; `400` on self-delete, `404` unknown.
   - `GET /admin/masterlist` — full section roster.
   - `POST /admin/masterlist` — add a roster entry (`{ studentNumber, fullName, role? }`);
     `409` if the student number already exists.

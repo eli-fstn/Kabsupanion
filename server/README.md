@@ -39,6 +39,7 @@ through **Drizzle** (Neon HTTP driver).
 | DELETE | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Remove a slot |
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
 | PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
+| DELETE | `/admin/users/:id`      | Bearer + Admin | Delete a user account. Cannot delete yourself. |
 | GET    | `/admin/masterlist`   | Bearer + Admin | List the full section roster |
 | POST   | `/admin/masterlist`   | Bearer + Admin | Add a roster entry: `{ studentNumber, fullName, role? }` |
 | PATCH  | `/admin/masterlist/:studentNumber` | Bearer + Admin | Update a roster entry: `{ fullName?, role? }` |
