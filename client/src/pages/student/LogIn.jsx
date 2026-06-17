@@ -48,7 +48,7 @@ function LogIn() {
       localStorage.setItem('token', data.token);
       navigate("/dashboard");
     } catch (error) {
-      handleApiError(error, setGeneralError);
+      handleApiError(error, setErrors);
     }
   };
 
@@ -63,13 +63,13 @@ function LogIn() {
           </div>
 
           <label className="text-gray-500 font-bold text-sm">CvSU Email</label>
-          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm ${errors.email ? "border-red-500" : "border-gray-300"}`}/>
+          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.email ? "border-red-500" : "border-gray-300"}`} required/>
           {errors.email && (
             <p className="text-red-500 text-xs">{errors.email}</p>
           )}
 
           <label className="text-gray-500 font-bold text-sm mt-3">Password</label>
-          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}/>
+          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.password ? "border-red-500" : "border-gray-300"}`} required/>
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password}</p>
           )}
