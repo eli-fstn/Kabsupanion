@@ -176,9 +176,9 @@ const me = (await api.get("/auth/me")).data.user;
 | Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
-| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`) | ✅ migrated | `0000`–`0003` applied to Neon; masterlist seeded via `npm run db:seed`. |
+| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`) | ✅ migrated | `0000`–`0004` applied to Neon; masterlist seeded via `npm run db:seed`. |
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
-| Subjects + schedules (`/subjects/*`) | 🟡 pending deploy | Code complete and locally verified (migration `0004` applied). Deploy to make it live. |
+| Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
 | Other tables | 🔲 next | notes, announcements, Cloudinary. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
