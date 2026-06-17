@@ -5,8 +5,9 @@ through **Drizzle** (Neon HTTP driver).
 
 - **Phase 0 (done):** a `tasks` resource + health check, live on Workers.
 - **Phase 1 (done):** JWT auth, a `users` table, roster-gated registration (`masterlist`),
-  auth-gated `/tasks`, per-user task completion, and admin management API (`/admin/*`) —
-  **deployed and verified live**. Still to come: subjects/schedule/notes/announcements, Cloudinary.
+  auth-gated `/tasks`, per-user task completion, admin management API (`/admin/*`), and
+  subjects + timetable schedules — **deployed and verified live**. Still to come:
+  notes/announcements, Cloudinary.
 
 ## Stack
 
@@ -23,7 +24,7 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/auth/register` | —      | Claim a roster spot: `{ studentNumber, email, password }` → `201 { user, token }`. `name`/`role` come from the masterlist. |
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`                  |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
-| GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` for the current user |
+| GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` + `subject`. Optional `?subjectId=` filter. |
 | POST   | `/tasks`         | Bearer + Admin | Create a task: `{ subjectId, title, description?, dueDate? }` |
 | PATCH  | `/tasks/:id`     | Bearer + Admin | Update a task: `{ title?, description?, dueDate? }`; at least one field required |
 | DELETE | `/tasks/:id`     | Bearer + Admin | Delete a task and all its completions |
@@ -101,9 +102,11 @@ user** — tasks are communal, completion is per-user):
 ```json
 {
   "id": "uuid",
+  "subjectId": "uuid",
   "title": "Read chapter 3",
   "description": null,
   "dueDate": null,
+  "subject": { "id": "uuid", "code": "CSIT101", "name": "Introduction to Programming" },
   "completed": false,
   "completedAt": null,
   "createdAt": "2026-06-13T08:00:00.000Z",
@@ -111,8 +114,9 @@ user** — tasks are communal, completion is per-user):
 }
 ```
 
-`GET /tasks` returns an **array** of these. `POST /tasks` returns the single created task
-(without the `completed` fields — a brand-new task is uncompleted for everyone).
+`GET /tasks` returns an **array** of these, optionally filtered by `?subjectId=<uuid>`.
+`POST /tasks` returns the single created task (without `completed`/`subject` — use
+`GET /tasks` to get the full annotated shape).
 
 **Completion:** `POST /tasks/:id/complete` marks a task done for the logged-in user;
 `DELETE /tasks/:id/complete` undoes it. Both are idempotent and return
@@ -172,8 +176,9 @@ const me = (await api.get("/auth/me")).data.user;
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
 | Neon tables (`tasks`/`users`/`masterlist`/`task_completions`) | ✅ migrated | `0000`–`0003` applied to Neon; masterlist seeded via `npm run db:seed`. |
-| Admin management API (`/admin/*`) | 🟡 pending deploy | Code complete and locally verified. Mount added to `index.ts`; deploy to make it live. |
-| Other tables | 🔲 next | subjects, schedule, notes, announcements, Cloudinary. |
+| Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
+| Subjects + schedules (`/subjects/*`) | 🟡 pending deploy | Code complete and locally verified (migration `0004` applied). Deploy to make it live. |
+| Other tables | 🔲 next | notes, announcements, Cloudinary. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.
