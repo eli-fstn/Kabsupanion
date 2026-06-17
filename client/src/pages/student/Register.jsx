@@ -84,7 +84,7 @@ function Register(){
 			{/* Registration Form */}
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
 				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
-					<div className="flex items-center justify-center mb-7">
+					<div className="flex items-center justify-center mb-7 z-10">
 						<img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo"/>
 						<p className="font-bold text-xl pl-2 text-[#1B651B]">Registration Form</p>
 					</div>
