@@ -21,7 +21,7 @@ export default function ClassResources() {
       const data = await getResources();
       setResources(data);
     } catch (error) {
-      handleApiError(error, setError);
+      console.log(error);
     } finally {
       setLoading(false);
     }
