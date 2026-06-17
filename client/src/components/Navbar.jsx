@@ -1,15 +1,13 @@
 import { Icon } from "@iconify/react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getMe } from "../services/auth";
 
 function Navbar() {
-
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const studentDetails = [
-    { studentName: "Juan Dela Cruz", studentNumber: "251231231"}
-  ]
+  const [student, setStudent] = useState([]);
 
   const userSignOut = () => {
     setDropdownOpen(false);
@@ -29,6 +27,17 @@ function Navbar() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+
+    const fetchMe = async () => {
+      try {
+        const data = await getMe();
+        setStudent(data);
+      } catch (error) {
+        console.log(error);
+      } 
+    }
+
+    fetchMe();
   }, []);
 
   return (
@@ -47,7 +56,7 @@ function Navbar() {
             <Icon className="text-gray-400" icon="akar-icons:person" width="25" height="25" />
           </div>
           <div className="flex flex-col text-[#E5E5E5] font-bold leading-4">
-            {studentDetails.map((s, i) => (
+            {student.map((s, i) => (
               <div key={i}>
                 <p className="uppercase">{s.studentName}</p>
                 <p className="text-[.7rem]">{s.studentNumber}</p>

@@ -36,6 +36,12 @@ export async function uploadResource(title, subject, uploadedBy, fileURL) {
   return response.data;
 }
 
+// Activity Tracker
+export async function getActivity() {
+  const response = await api.get("/");
+  return response.data;
+}
+
 // Masterlist
 export async function getMasterlist() {
   const response = await api.get("/");

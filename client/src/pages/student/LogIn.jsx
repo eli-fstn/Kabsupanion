@@ -1,11 +1,10 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { verifyLogin } from "../../api/auth";
+import { verifyLogin } from "../../services/auth";
 import Button from "../../components/Button";
-import { handleApiError } from "../../api/errorHandler";
+import { handleApiError } from "../../services/errorHandler";
 
 function LogIn() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
@@ -49,7 +48,7 @@ function LogIn() {
       navigate("/dashboard");
     } catch (error) {
        handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
-    }
+    } 
   };
 
   return (

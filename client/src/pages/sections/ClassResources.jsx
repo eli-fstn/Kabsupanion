@@ -1,16 +1,12 @@
 import { useState , useEffect } from "react";
 import ResourceCard from "../../components/ResourceCard";
-import { handleApiError } from "../../api/errorHandler";
-import { getResources } from "../../api/auth";
-import { uploadResource } from "../../api/auth";
+import { getResources, uploadResource } from "../../services/auth";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 
 
 export default function ClassResources() {
   const [resources, setResources] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -22,9 +18,7 @@ export default function ClassResources() {
       setResources(data);
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   }
 
   useEffect(() => {

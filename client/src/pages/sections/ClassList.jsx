@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { handleApiError } from "../../api/errorHandler";
-import { getMasterlist } from "../../api/auth";
+import { getMasterlist } from "../../services/auth";
 import Button from "../../components/Button";
 
 function ClassList() {
   const [academicStatus, setAcademicStatus] = useState("Regular");
   const [masterList, setMasterList] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -21,9 +18,7 @@ function ClassList() {
         setMasterList(data);
       } catch (error) {
         console.log(error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     }
 
     fetchMasterlist();
