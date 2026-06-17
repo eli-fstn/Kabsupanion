@@ -83,6 +83,82 @@ taskRoutes.post("/", requireAdmin, async (c) => {
   return c.json(created, 201);
 });
 
+// PATCH /tasks/:id — update a task's fields (admin only). All fields optional;
+// at least one must be provided.
+taskRoutes.patch("/:id", requireAdmin, async (c) => {
+  const taskId = c.req.param("id");
+  if (!UUID_RE.test(taskId)) {
+    return c.json({ error: "Invalid task id" }, 400);
+  }
+
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
+
+  const { title, description, dueDate } = (body ?? {}) as {
+    title?: unknown;
+    description?: unknown;
+    dueDate?: unknown;
+  };
+
+  const patch: { title?: string; description?: string | null; dueDate?: Date | null; updatedAt: Date } = {
+    updatedAt: new Date(),
+  };
+
+  if (title !== undefined) {
+    if (typeof title !== "string" || title.trim() === "") {
+      return c.json({ error: "`title` must be a non-empty string" }, 400);
+    }
+    patch.title = title.trim();
+  }
+  if (description !== undefined) {
+    patch.description = typeof description === "string" ? description : null;
+  }
+  if (dueDate !== undefined) {
+    patch.dueDate = typeof dueDate === "string" ? new Date(dueDate) : null;
+  }
+
+  if (Object.keys(patch).length === 1) {
+    return c.json({ error: "At least one field must be provided" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [updated] = await db
+    .update(tasks)
+    .set(patch)
+    .where(eq(tasks.id, taskId))
+    .returning();
+
+  if (!updated) {
+    return c.json({ error: "Task not found" }, 404);
+  }
+
+  return c.json(updated);
+});
+
+// DELETE /tasks/:id — delete a task and all its completions (admin only).
+taskRoutes.delete("/:id", requireAdmin, async (c) => {
+  const taskId = c.req.param("id");
+  if (!UUID_RE.test(taskId)) {
+    return c.json({ error: "Invalid task id" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [deleted] = await db
+    .delete(tasks)
+    .where(eq(tasks.id, taskId))
+    .returning({ id: tasks.id });
+
+  if (!deleted) {
+    return c.json({ error: "Task not found" }, 404);
+  }
+
+  return c.json({ id: deleted.id, deleted: true });
+});
+
 // POST /tasks/:id/complete — mark a task done for the current user (idempotent).
 taskRoutes.post("/:id/complete", async (c) => {
   const taskId = c.req.param("id");

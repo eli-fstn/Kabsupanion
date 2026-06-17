@@ -5,11 +5,15 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
-## 2026-06-18 — Restrict task creation to admins
+## 2026-06-18 — Restrict task CRUD to admins
 
-- Added `requireAdmin` to `POST /tasks`. Students can only `GET /tasks` and mark/unmark
-  completion — task creation (and any future edit/delete) is admin-only. This matches the
-  classroom checklist model: the admin sets the assignments, classmates tick them off.
+- Added `requireAdmin` to `POST /tasks` and new `PATCH /tasks/:id` + `DELETE /tasks/:id`.
+  Students can only `GET /tasks` and mark/unmark completion. Full task CRUD is admin-only.
+  `PATCH` accepts `{ title?, description?, dueDate? }` (at least one required), updates
+  `updatedAt`, returns the full updated task; `400` empty title / no fields, `404` unknown.
+  `DELETE` cascades to `task_completions` via FK, returns `{ id, deleted: true }`;
+  `404` if not found, `400` invalid UUID. Matches the classroom checklist model: admin sets
+  assignments, classmates tick them off.
 
 ## 2026-06-18 — Phase 1: admin management API
 

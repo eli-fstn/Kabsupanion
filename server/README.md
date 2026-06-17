@@ -25,6 +25,8 @@ through **Drizzle** (Neon HTTP driver).
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
 | GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` for the current user |
 | POST   | `/tasks`         | Bearer + Admin | Create a task from `{ title, description?, dueDate? }`; `title` required |
+| PATCH  | `/tasks/:id`     | Bearer + Admin | Update a task: `{ title?, description?, dueDate? }`; at least one field required |
+| DELETE | `/tasks/:id`     | Bearer + Admin | Delete a task and all its completions |
 | POST   | `/tasks/:id/complete` | Bearer | Mark the task done **for the current user** (idempotent) |
 | DELETE | `/tasks/:id/complete` | Bearer | Unmark the task for the current user (idempotent) |
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
