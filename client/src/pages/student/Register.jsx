@@ -75,7 +75,7 @@ function Register(){
 			setModalOpen(true);
 			const timer = setTimeout(() => navigate("/dashboard"), 4000);
 		} catch (error) {
-			handleApiError(error, setGeneralError);
+			handleApiError(error, setError);
 		}
   }
 
@@ -91,7 +91,7 @@ function Register(){
 					</div>
           
 					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"}  rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
+					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
 					{error.email && (
 						<p className="text-red-500 text-xs">{error.email}</p>
 					)}

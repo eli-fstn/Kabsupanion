@@ -20,29 +20,25 @@ export async function verifyLogin(email, password) {
 }
 
 // Tasklist
-export async function getTasks(task, subject, dueDate) {
-  const response = await api.post("", {
-    task,
-    subject,
-    dueDate
-  });
+export async function getTasks() {
+  const response = await api.get("/");
   return response.data;
 }
 
 // Resources
-export async function getResources(title, subject, uploadedBy, fileURL) {
-  const response = await api.post("", {
-    title,
-    subject,
-    uploadedBy,
-    fileURL
-  });
+export async function getResources() {
+  const response = await api.get("/");
+  return response.data;
+}
+
+export async function uploadResource(title, subject, uploadedBy, fileURL) {
+  const response = await api.post("/", { title, subject, uploadedBy, fileURL });
   return response.data;
 }
 
 // Masterlist
 // export async function getMasterList(task, subject, dueDate) {
-//   const response = await api.post("", {
+//   const response = await api.get("", {
 //     task,
 //     subject,
 //     dueDate

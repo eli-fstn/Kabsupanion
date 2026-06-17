@@ -26,7 +26,7 @@ function ClassList() {
     }
   ]
 
-  const filteredStudents = student.filter((t) => t.acadStatus === academicStatus);
+  const filteredStudents = student.filter((t) => t.acadStatus === academicStatus).sort((a, b) => a.name.localeCompare(b.name));
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -56,7 +56,7 @@ function ClassList() {
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="grid grid-cols-[1fr_3fr_2fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+            <tr className="grid grid-cols-[.2fr_3fr_2fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
               <th className="flex items-center">No.</th>
               <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:person-outline-rounded" width="25" height="25"/>Student</th>
               <th className="flex items-center"><Icon className="mr-2" icon="tabler:id" width="25" height="25"/>Student Number</th>
@@ -68,8 +68,8 @@ function ClassList() {
           <table className="w-full h-full">
             <tbody>
               {paginatedStudents.map((t, i) => (
-                <tr key={i} className="grid grid-cols-[1fr_3fr_2fr_1fr] gap-5 border-b border-gray-100 p-3 items-center font-medium">
-                  <td>{(currentPage - 1) * itemsPerPage + i + 1}</td>
+                <tr key={i} className="grid grid-cols-[.2fr_3fr_2fr_1fr] gap-5 border-b border-gray-100 p-3 items-center font-medium">
+                  <td className="text-[#4a4a4a88]">{(currentPage - 1) * itemsPerPage + i + 1}</td>
                   <td>{t.name}</td>
                   <td>{t.studentNumber}</td>
                   {t.studentStatus === "Active" ? (
