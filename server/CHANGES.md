@@ -5,6 +5,25 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-18 — Subjects, schedules, and tasks tied to subjects
+
+**Goal:** give tasks a subject context and let admins manage a weekly timetable per subject.
+
+- New **`subjects`** table: `code` (unique, uppercased), `name`, `description?`, timestamps.
+- New **`schedules`** table: `subjectId` FK (cascade), `day` enum (`monday`–`sunday`),
+  `startTime`/`endTime` stored as 12-hour text strings (validated with regex, e.g. `"8:00 AM"`),
+  `room?`. A subject can have multiple slots.
+- **`tasks.subject_id`** added as NOT NULL FK → subjects (cascade). Migration 0004 covers
+  all three changes. DB was clean (0 tasks) so the NOT NULL constraint applied without issue.
+- `GET /subjects` returns subjects with schedules nested — open to any authenticated user.
+  Subject CRUD + schedule CRUD are admin-only.
+- `POST /tasks` now requires `subjectId`; validates the subject exists (`404` if not).
+  `GET /tasks` inner-joins subjects and returns `subject: { id, code, name }` on each task;
+  accepts `?subjectId=` query param for filtering.
+- **Design:** cascade-delete on subjects means removing a subject cleans up its schedules
+  and tasks in one shot — chosen for simplicity over blocking deletes.
+- `code` is normalised to uppercase on write (`CSIT101`, not `csit101`).
+
 ## 2026-06-18 — Restrict task CRUD to admins
 
 - Added `requireAdmin` to `POST /tasks` and new `PATCH /tasks/:id` + `DELETE /tasks/:id`.

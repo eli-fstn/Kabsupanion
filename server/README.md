@@ -24,11 +24,18 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`                  |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
 | GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` for the current user |
-| POST   | `/tasks`         | Bearer + Admin | Create a task from `{ title, description?, dueDate? }`; `title` required |
+| POST   | `/tasks`         | Bearer + Admin | Create a task: `{ subjectId, title, description?, dueDate? }` |
 | PATCH  | `/tasks/:id`     | Bearer + Admin | Update a task: `{ title?, description?, dueDate? }`; at least one field required |
 | DELETE | `/tasks/:id`     | Bearer + Admin | Delete a task and all its completions |
 | POST   | `/tasks/:id/complete` | Bearer | Mark the task done **for the current user** (idempotent) |
 | DELETE | `/tasks/:id/complete` | Bearer | Unmark the task for the current user (idempotent) |
+| GET    | `/subjects`           | Bearer | All subjects with nested schedule slots |
+| POST   | `/subjects`           | Bearer + Admin | Create a subject: `{ code, name, description? }` |
+| PATCH  | `/subjects/:id`       | Bearer + Admin | Update a subject: `{ code?, name?, description? }` |
+| DELETE | `/subjects/:id`       | Bearer + Admin | Delete a subject (cascades to schedules + tasks) |
+| POST   | `/subjects/:id/schedules` | Bearer + Admin | Add a timetable slot: `{ day, startTime, endTime, room? }` |
+| PATCH  | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Update a slot |
+| DELETE | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Remove a slot |
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
 | PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
 | GET    | `/admin/masterlist`   | Bearer + Admin | List the full section roster |

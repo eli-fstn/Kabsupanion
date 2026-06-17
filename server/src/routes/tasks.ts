@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { and, desc, eq } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
-import { tasks, taskCompletions } from "../db/schema";
+import { tasks, taskCompletions, subjects } from "../db/schema";
 import { requireAuth, requireAdmin } from "../middleware/auth";
 
 export const taskRoutes = new Hono<AppEnv>();
@@ -14,23 +14,35 @@ const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // GET /tasks — all (communal) tasks, newest first, each annotated with whether
-// the CURRENT user has completed it. Completion is per-user, so the same task
-// can read `completed: true` for one student and `false` for another.
+// the CURRENT user has completed it, and with the subject it belongs to.
+// Optional ?subjectId= to filter by subject.
 taskRoutes.get("/", async (c) => {
   const db = createDb(c.env.DATABASE_URL);
   const userId = c.get("user").id;
+  const subjectId = c.req.query("subjectId");
 
-  const rows = await db
+  if (subjectId !== undefined && !UUID_RE.test(subjectId)) {
+    return c.json({ error: "Invalid subjectId" }, 400);
+  }
+
+  const query = db
     .select({
       id: tasks.id,
+      subjectId: tasks.subjectId,
       title: tasks.title,
       description: tasks.description,
       dueDate: tasks.dueDate,
       createdAt: tasks.createdAt,
       updatedAt: tasks.updatedAt,
       completedAt: taskCompletions.completedAt,
+      subject: {
+        id: subjects.id,
+        code: subjects.code,
+        name: subjects.name,
+      },
     })
     .from(tasks)
+    .innerJoin(subjects, eq(subjects.id, tasks.subjectId))
     .leftJoin(
       taskCompletions,
       and(
@@ -40,6 +52,10 @@ taskRoutes.get("/", async (c) => {
     )
     .orderBy(desc(tasks.createdAt));
 
+  const rows = subjectId
+    ? await query.where(eq(tasks.subjectId, subjectId))
+    : await query;
+
   const result = rows.map(({ completedAt, ...task }) => ({
     ...task,
     completed: completedAt !== null,
@@ -48,7 +64,7 @@ taskRoutes.get("/", async (c) => {
   return c.json(result);
 });
 
-// POST /tasks — create a (communal) task. Admin only.
+// POST /tasks — create a (communal) task under a subject. Admin only.
 taskRoutes.post("/", requireAdmin, async (c) => {
   let body: unknown;
   try {
@@ -57,23 +73,35 @@ taskRoutes.post("/", requireAdmin, async (c) => {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
 
-  const { title, description, dueDate } = (body ?? {}) as {
+  const { subjectId, title, description, dueDate } = (body ?? {}) as {
+    subjectId?: unknown;
     title?: unknown;
     description?: unknown;
     dueDate?: unknown;
   };
 
+  if (typeof subjectId !== "string" || !UUID_RE.test(subjectId)) {
+    return c.json({ error: "`subjectId` is required and must be a valid UUID" }, 400);
+  }
   if (typeof title !== "string" || title.trim() === "") {
-    return c.json(
-      { error: "`title` is required and must be a non-empty string" },
-      400
-    );
+    return c.json({ error: "`title` is required and must be a non-empty string" }, 400);
   }
 
   const db = createDb(c.env.DATABASE_URL);
+
+  const [subject] = await db
+    .select({ id: subjects.id })
+    .from(subjects)
+    .where(eq(subjects.id, subjectId))
+    .limit(1);
+  if (!subject) {
+    return c.json({ error: "Subject not found" }, 404);
+  }
+
   const [created] = await db
     .insert(tasks)
     .values({
+      subjectId,
       title: title.trim(),
       description: typeof description === "string" ? description : null,
       dueDate: typeof dueDate === "string" ? new Date(dueDate) : null,
