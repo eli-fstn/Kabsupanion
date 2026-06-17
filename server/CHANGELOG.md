@@ -6,7 +6,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Cloudinary._
+_Phase 1 in progress. Still to come: notes/announcements, Cloudinary._
 
 ### Added
 
@@ -37,7 +37,7 @@ _Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Clou
     `404` if not found.
   - `DELETE /admin/masterlist/:studentNumber` — remove a roster entry; `409` if a user
     has already claimed it, `404` if not found.
-  _(Locally verified. Deploy pending.)_
+  _(Deployed and verified live.)_
 - **Per-user task completion.** New `task_completions` table (composite PK `(user_id, task_id)`,
   cascade FKs) records which user completed which communal task. `GET /tasks` now annotates each
   task with `completed`/`completedAt` for the requesting user; `POST /tasks/:id/complete` and
@@ -78,7 +78,7 @@ _Phase 1 in progress. Still to come: subjects/schedule/notes/announcements, Clou
 - **Deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev`
   (prod `JWT_SECRET` set via `wrangler secret put`; full happy path + `400`/`401`/`403`/`409`
   negatives all pass against prod; `passwordHash` never leaked). Real section roster (35)
-  seeded; no test data remains. First admin account not yet registered.
+  seeded; no test data remains.
 
 ## [0.0.0] — 2026-06-13
 

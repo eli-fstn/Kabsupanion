@@ -23,6 +23,9 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 - **Design:** cascade-delete on subjects means removing a subject cleans up its schedules
   and tasks in one shot — chosen for simplicity over blocking deletes.
 - `code` is normalised to uppercase on write (`CSIT101`, not `csit101`).
+- **Deployed and verified live** against `https://kabsupanion-api.kabsupanion.workers.dev`:
+  all 7 subject/schedule endpoints tested (GET, POST, PATCH, DELETE for subjects; POST, PATCH,
+  DELETE for schedule slots); auth gate (`401`/`403`) and cascade delete confirmed.
 
 ## 2026-06-18 — Restrict task CRUD to admins
 
@@ -54,9 +57,9 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 - **Masterlist CRUD:** `GET`, `POST`, `PATCH /:studentNumber`, `DELETE /:studentNumber`.
   Delete returns `409` if a user has already registered with that student number (FK constraint
   would block it anyway, but we surface a friendlier message first).
-- Verified locally: auth gate (`401`/`403`), user list, role promote/demote, masterlist
-  add/edit/delete, dup-entry `409`, claimed-entry `409`, `404` cases. All 13 checks passed.
-- **Pending:** `npm run deploy` to ship the `/admin/*` routes to production (no migration needed).
+- Verified locally and **deployed live**: auth gate (`401`/`403`), user list, role
+  promote/demote, masterlist add/edit/delete, dup-entry `409`, claimed-entry `409`, `404`
+  cases. All checks passed against prod.
 
 ## 2026-06-14 — Phase 1: per-user task completion
 
