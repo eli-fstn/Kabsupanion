@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "https://kabsupanion-api.kabsupanion.workers.dev" }); // ACTUAL API
+const api = axios.create({ baseURL: "https://kabsupanion-api.kabsupanion.workers.dev" }); // ACTUAL API URL
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
