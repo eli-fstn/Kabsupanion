@@ -121,7 +121,11 @@ export default function ClassResources() {
           )}
         </div>
         <div className="flex justify-center items-center ">
-          <Button onClick={() => setModalOpen(true)} type="submit" text="Upload resources" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2" dimensions="w-fit rounded-md"/>
+          <Button onClick={() => setModalOpen(true)}>
+            <span className="active:scale-95 transition-transform duration-100 bg-[#1B651B] text-white font-bold px-6 py-2 w-fit rounded-md inline-block">
+              Upload resources
+            </span>
+          </Button>
         </div>
 
         {/* FORM */}
@@ -164,7 +168,9 @@ export default function ClassResources() {
             )}
 
             <div className="flex justify-center items-center">
-              <Button type="submit" text="Submit" BGColor="bg-[#1B651B] hover:bg-green-700" typography="text-white font-bold" padding="px-10 py-2.5" dimensions="w-full rounded-md" />
+              <button type="submit" className="active:scale-95 transition-transform duration-100 bg-[#1B651B] hover:bg-green-700 text-white font-bold px-10 py-2.5 w-full rounded-md">
+                Submit
+              </button>
             </div>
           </form>
         </Modal>

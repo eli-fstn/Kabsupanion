@@ -43,7 +43,11 @@ function ClassList() {
       <div className="mt-5 flex flex-row justify-between items-center">
         <div className="">
           {acadStatus.map((status) => (
-            <Button key={status} text={status} BGColor={academicStatus === status ? "bg-[#1B651B]" : "bg-white"} typography={academicStatus === status ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"} padding="px-5 py-1" shadow="shadow-md border border-gray-200" margin="mr-4" onClick={() => handleStatusChange(status)}/>
+            <Button key={status} onClick={() => handleStatusChange(status)}>
+              <span className={`active:scale-95 transition-transform duration-100 ${academicStatus === status ? "bg-[#1B651B] text-sm font-bold text-white" : "bg-white text-sm font-bold text-gray-700"} px-5 py-1 shadow-md border border-gray-200 mr-4 rounded-md`}>
+                {status}
+              </span>
+            </Button>
           ))}
         </div>
         <div className="">
@@ -90,9 +94,17 @@ function ClassList() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-3 p-4 border-t border-gray-200">
-            <Button text="Previous" BGColor={currentPage === 1 ? "bg-gray-100" : "bg-white"} typography={currentPage === 1 ? "text-sm text-gray-400" : "text-sm text-[#003A02]"} padding="px-3 py-1" shadow="shadow-md border border-gray-200" onClick={() => setCurrentPage((prev) => prev - 1)} disabled={currentPage === 1}/>
+            <Button onClick={() => setCurrentPage((prev) => prev - 1)} disabled={currentPage === 1}>
+              <span className={`active:scale-95 transition-transform duration-100 ${currentPage === 1 ? "bg-gray-100 text-sm text-gray-400" : "bg-white text-sm text-[#003A02]"} px-3 py-1 shadow-md border border-gray-200 rounded-md`}>
+                Previous
+              </span>
+            </Button>
             <span className="text-sm text-gray-500">Page {currentPage} of {totalPages}</span>
-            <Button text="Next" BGColor={currentPage === totalPages ? "bg-gray-100" : "bg-white"} typography={currentPage === totalPages ? "text-sm text-gray-400" : "text-sm text-[#003A02]"} padding="px-3 py-1" shadow="shadow-md border border-gray-200" onClick={() => setCurrentPage((prev) => prev + 1)} disabled={currentPage === totalPages}/>
+            <Button onClick={() => setCurrentPage((prev) => prev + 1)} disabled={currentPage === totalPages}>
+              <span className={`active:scale-95 transition-transform duration-100 ${currentPage === totalPages ? "bg-gray-100 text-sm text-gray-400" : "bg-white text-sm text-[#003A02]"} px-3 py-1 shadow-md border border-gray-200 rounded-md`}>
+                Next
+              </span>
+            </Button>
           </div>
         )}
       </div>
