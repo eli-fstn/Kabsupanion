@@ -5,3 +5,7 @@ DATABASE_URL="postgresql://USER:PASSWORD@ep-xxxx-pooler.REGION.aws.neon.tech/DBN
 # Used to sign/verify auth JWTs. Generate a strong value, e.g.:
 #   node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
 JWT_SECRET="generate-a-strong-random-secret"
+# Cloudinary — from the Cloudinary Dashboard > Settings > API Keys.
+CLOUDINARY_CLOUD_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_api_key"
+CLOUDINARY_API_SECRET="your_api_secret"
