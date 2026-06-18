@@ -2,10 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import LogIn from "./pages/student/LogIn";
 import Register from "./pages/student/Register.jsx";
 import Dashboard from "./pages/student/Dashboard";
-import AdminLogIn from "./pages/admin/AdminLogIn";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import Error503 from "./pages/errors/Error503.jsx";
-import Error404 from "./pages/errors/Error404.jsx";
+import Error404 from "./components/errors/Error404.jsx";
+import Error503 from "./components/errors/Error404.jsx";
 
 function App() {
   return (

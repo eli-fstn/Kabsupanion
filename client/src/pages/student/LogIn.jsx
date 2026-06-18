@@ -2,6 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { verifyLogin, getMe } from "../../services/auth";
 import Button from "../../components/Button";
+import LoadingScreen from "../../components/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler";
 
 function LogIn() {
@@ -12,6 +13,7 @@ function LogIn() {
     password: "",
     general: ""
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogIn = async (e) => {
@@ -41,33 +43,38 @@ function LogIn() {
       return;
     }
 
+    setLoading(true);
+
     try {
       const data = await verifyLogin(email, password);
       localStorage.setItem("token", data.token);
       const user = await getMe();
-      navigate("/dashboard");
+			navigate("/dashboard");
     } catch (error) {
        handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
+       setLoading(false)
     } 
   };
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 flex items-center justify-center px-4">
         <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 z-10">
           <div className="flex items-center justify-center mb-7">
-            <img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo" />
-            <p className="font-bold text-xl pl-2 text-[#1B651B]">Kabsupanion</p>
+            <img className="w-12" src="/assets/Kabsupanion-Logo.png" alt="Logo" />
+            <p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion</p>
           </div>
 
-          <label className="text-gray-500 font-bold text-sm">CvSU Email</label>
-          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.email ? "border-red-500" : "border-gray-300"}`} />
+          <label className="text-gray-500 font-bold text-[.8rem]">CvSU Email</label>
+          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.email ? "border-red-500" : "border-gray-300"}`} />
           {errors.email && (
             <p className="text-red-500 text-xs">{errors.email}</p>
           )}
 
-          <label className="text-gray-500 font-bold text-sm mt-3">Password</label>
-          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-2 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.password ? "border-red-500" : "border-gray-300"}`} />
+          <label className="text-gray-500 font-bold text-[.8rem] mt-3">Password</label>
+          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.password ? "border-red-500" : "border-gray-300"}`} />
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password}</p>
           )}
@@ -80,14 +87,14 @@ function LogIn() {
             <Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2"/>
           </div>
 
-          <p className="text-xs text-center mt-5">Don't have an account?{" "}
+          <p className="text-sm text-center mt-5">Don't have an account?{" "}
             <Link to="/register"><span className="text-[#1B651B] font-semibold">Register here</span>
             </Link>
           </p>
         </form>
       </div>
-      <div className="absolute bottom-0 right-80 opacity-50">
-        <img className="w-72" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
+      <div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
+        <img className="opacity-50 w-72" src="/assets/Laya-at-Diwa.png" alt="Laya at Diwa"/>
       </div>
     </div>
   );

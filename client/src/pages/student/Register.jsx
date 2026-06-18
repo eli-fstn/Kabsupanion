@@ -85,30 +85,30 @@ function Register(){
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
 				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
 					<div className="flex items-center justify-center mb-7 z-10">
-						<img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo"/>
-						<p className="font-bold text-xl pl-2 text-[#1B651B]">Registration Form</p>
+						<img className="w-12" src="/assets/Kabsupanion-Logo.png" alt="Logo"/>
+						<p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Registration Form</p>
 					</div>
           
-					<label className="text-[#A9A9A9] font-bold text-[.9rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
+					<label className="text-[#A9A9A9] font-bold text-[.8rem] my-0" htmlFor="cvsu-email">CvSU email</label>
+					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
 					{error.email && (
 						<p className="text-red-500 text-xs">{error.email}</p>
 					)}
 
-          <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="studentNumber">Student Number</label>
-					<input onChange={(e) => {setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" }));}} value={studentNumber} className={`border ${error.studentNumber ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="text" maxLength={9} id="studentNumber"/>
+          <label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="studentNumber">Student Number</label>
+					<input onChange={(e) => {setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" }));}} value={studentNumber} className={`border ${error.studentNumber ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="text" maxLength={9} id="studentNumber"/>
 					{error.studentNumber && (
 						<p className="text-red-500 text-xs">{error.studentNumber}</p>
 					)}
 
-					<label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password" minLength={8}/>
+					<label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="password">Password</label>
+					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password" minLength={8}/>
 					{error.password && (
 						<p className="text-red-500 text-xs">{error.password}</p>
 					)}
 
-          <label className="text-[#A9A9A9] font-bold text-[.9rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-2 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
+          <label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
+					<input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
 					{error.confirmPassword && (
 						<p className="text-red-500 text-xs">{error.confirmPassword}</p>
 					)}
