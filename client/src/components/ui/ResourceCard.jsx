@@ -1,4 +1,4 @@
-import { getMe, getResources } from "../services/auth";
+import { getMe, getResources } from "../../services/auth";
 import { useState,useEffect } from "react";
 
 function ResourceCard() {

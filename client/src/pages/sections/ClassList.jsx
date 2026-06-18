@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { getMasterlist } from "../../services/auth";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 
 function ClassList() {
   const [academicStatus, setAcademicStatus] = useState("Regular");

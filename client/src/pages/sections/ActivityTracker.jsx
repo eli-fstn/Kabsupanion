@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { getActivity } from "../../services/auth";
 

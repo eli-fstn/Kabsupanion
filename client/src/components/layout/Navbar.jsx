@@ -1,8 +1,8 @@
 import { Icon } from "@iconify/react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMe } from "../services/auth";
-import Button from "./Button";
+import { getMe } from "../../services/auth";
+import Button from "../../components/ui/Button";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -51,7 +51,7 @@ function Navbar() {
 
       {/* LOGO */}
       <div className="flex items-center">
-        <img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo" />
+        <img className="w-10" src="/assets/images/Kabsupanion-Logo.png" alt="Logo" />
         <p className="font-bold text-[1.5rem] pl-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion</p>
       </div>
 

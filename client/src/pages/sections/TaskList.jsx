@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { getMe, getTasks } from "../../services/auth";
 
@@ -36,9 +36,9 @@ function TaskList({ studentName="Juan" }) {
   const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject === activeSubject);
 
   return (
-    <section className="min-h-screen p-10">
+    <section className="min-h-screen p-10" id="task-list">
       <div>
-        <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{student?.user?.name?.split(" ")[0]}!</span></h1>
+        <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{student?.user?.name?.split(" ").slice(-1)[0]}!</span></h1>
         <div className="mt-3">
           <p className="font-bold text-[1.7rem] font-[montserrat]">Today's Tasks</p>
           <p className="text-[1rem]">You have <span className="text-[#003A02] font-bold text-[1.3rem]">{task.length}</span> tasks ongoing. {task.length === 0 ? (
