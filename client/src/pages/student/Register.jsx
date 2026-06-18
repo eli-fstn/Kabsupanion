@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import { handleApiError } from "../../services/errorHandler";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function Register(){
 	const isNumber = (value) => /^[0-9]+$/.test(value);
@@ -19,6 +20,7 @@ function Register(){
 		confirmPassword: "",
 		general: "",
 	});
+	const [loading, setLoading] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -48,6 +50,9 @@ function Register(){
 		} else if (!isNumber(studentNumber)) {
 			newErrors.studentNumber = "Student Number must be a number.";
 			hasError = true;
+		} else if (studentNumber.length < 9) {
+			newErrors.studentNumber = "Student Number should have 9 digits."
+			hasError = true;
 		}
 
 		if (!password) {
@@ -58,7 +63,7 @@ function Register(){
 			hasError = true;
 		}
 
-		if (password && password !== confirmPassword) {
+		if (password !== confirmPassword) {
 			newErrors.confirmPassword = "Passwords don't match!";
 			hasError = true;
 		}
@@ -66,6 +71,8 @@ function Register(){
       setError(newErrors);
       return;
     }
+
+		setLoading(true);
 
 		try {
       const data = await registerAccount(email, studentNumber, password);
@@ -75,8 +82,11 @@ function Register(){
 			const timer = setTimeout(() => navigate("/dashboard"), 4000);
 		} catch (error) {
 			handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
+			setLoading(false);
 		}
   }
+
+	if (loading) return <LoadingScreen />;
 
   return(
     <div className="relative min-h-screen">
@@ -102,19 +112,19 @@ function Register(){
 					)}
 
 					<label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password" minLength={8}/>
+					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password"/>
 					{error.password && (
 						<p className="text-red-500 text-xs">{error.password}</p>
 					)}
 
           <label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
+					<input onChange={(e) => {setConfirmPassword(e.target.value); setError((prev) => ({ ...prev, confirmPassword: "" }));}} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
 					{error.confirmPassword && (
 						<p className="text-red-500 text-xs">{error.confirmPassword}</p>
 					)}
 
 					{error.general && (
-            <p className="text-red-500 text-sm font-bold mt-3 text-center">{error.general}</p>
+            <p className="text-red-500 text-[.8rem] leading-4 font-bold mt-3 text-center">{error.general}</p>
           )}
 
 					<Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>

@@ -80,14 +80,14 @@ function LogIn() {
           )}
 
           {errors.general && (
-            <p className="text-red-500 text-sm font-bold mt-3 text-center">{errors.general}</p>
+            <p className="text-red-500 text-[.8rem] leading-4  font-bold mt-3 text-center">{errors.general}</p>
           )}
 
           <div className="flex justify-center mt-6">
             <Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2"/>
           </div>
 
-          <p className="text-sm text-center mt-5">Don't have an account?{" "}
+          <p className="text-[.8rem] text-center mt-5">Don't have an account?{" "}
             <Link to="/register"><span className="text-[#1B651B] font-semibold">Register here</span>
             </Link>
           </p>
