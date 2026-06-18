@@ -80,7 +80,7 @@ function LogIn() {
           )}
 
           {errors.general && (
-            <p className="text-red-500 text-[.8rem] leading-4  font-bold mt-3 text-center">{errors.general}</p>
+            <p className="text-red-500 text-[.8rem] leading-4 font-bold mt-3 text-center">{errors.general}</p>
           )}
 
           <div className="flex justify-center mt-6">
