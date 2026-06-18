@@ -71,7 +71,7 @@ function Navbar() {
 
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-35 bg-white text-[#1B651B] rounded-lg shadow-lg z-10 text-center">
-            <Button onClick={userSignOut} text={<><Icon icon="gridicons:sign-out" width="25" height="25" /><span className="ml-2">Sign Out</span></>} BGColor="hover:bg-gray-100" typography="text-sm font-bold text-[#1B651B] flex items-center" padding="px-5 py-2" dimensions="w-full"/>
+            <Button onClick={userSignOut} text={<><Icon icon="gridicons:sign-out" width="25" height="25" /><span className="ml-2">Sign Out</span></>} BGColor="hover:bg-gray-100" typography="text-sm font-bold text-[#1B651B] flex items-center" padding="px-5 py-2" dimensions="w-full rounded-md"/>
           </div>
         )}
       </div>

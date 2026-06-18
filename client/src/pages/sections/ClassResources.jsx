@@ -121,7 +121,7 @@ export default function ClassResources() {
           )}
         </div>
         <div className="flex justify-center items-center ">
-          <Button onClick={() => setModalOpen(true)} type="submit" text="Upload resources" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2" dimensions="w-fit"/>
+          <Button onClick={() => setModalOpen(true)} type="submit" text="Upload resources" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2" dimensions="w-fit rounded-md"/>
         </div>
 
         {/* FORM */}
@@ -164,7 +164,7 @@ export default function ClassResources() {
             )}
 
             <div className="flex justify-center items-center">
-              <Button type="submit" text="Submit" BGColor="bg-[#1B651B] hover:bg-green-700" typography="text-white font-bold" padding="px-10 py-2.5" dimensions="w-full" />
+              <Button type="submit" text="Submit" BGColor="bg-[#1B651B] hover:bg-green-700" typography="text-white font-bold" padding="px-10 py-2.5" dimensions="w-full rounded-md" />
             </div>
           </form>
         </Modal>

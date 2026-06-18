@@ -84,7 +84,7 @@ function LogIn() {
           )}
 
           <div className="flex justify-center mt-6">
-            <Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold" padding="px-6 py-2"/>
+            <Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold rounded-md" padding="px-6 py-2"/>
           </div>
 
           <p className="text-[.8rem] text-center mt-5">Don't have an account?{" "}
