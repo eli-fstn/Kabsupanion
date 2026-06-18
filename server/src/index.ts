@@ -5,6 +5,7 @@ import { authRoutes } from "./routes/auth";
 import { taskRoutes } from "./routes/tasks";
 import { adminRoutes } from "./routes/admin";
 import { subjectRoutes } from "./routes/subjects";
+import { noteRoutes } from "./routes/notes";
 
 const app = new Hono<AppEnv>();
 
@@ -27,5 +28,6 @@ app.route("/auth", authRoutes);
 app.route("/tasks", taskRoutes);
 app.route("/admin", adminRoutes);
 app.route("/subjects", subjectRoutes);
+app.route("/notes", noteRoutes);
 
 export default app;

@@ -5,6 +5,37 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-18 — Notes feature + Cloudinary service
+
+**Goal:** communal note sharing where any authenticated user can upload study materials tied to a subject.
+
+- New **`notes`** table: `subjectId` FK → subjects (cascade), `uploadedBy` FK → users (SET NULL —
+  notes survive account deletion), `title`, `description?`, plus Cloudinary metadata fields:
+  `fileUrl`, `publicId`, `resourceType`, `fileName`, `fileSize`, `format`. Migration `0005`.
+- New **`src/lib/cloudinary.ts`**: `uploadFile(file, folder, env)` and `deleteFile(publicId,
+  resourceType, env)`. Signature algorithm is plain SHA-1 (not HMAC) over
+  `sorted_params + api_secret` — implemented via Web Crypto `crypto.subtle.digest`, so no npm
+  deps and fully Workers-safe. Files go to folder `kabsupanion/notes`.
+- Three new env vars (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`)
+  added to `Env` interface, `.dev.vars.example`, and registered as wrangler secrets.
+- `GET /notes` — inner-joins subjects, left-joins users, returns nested shape; optional
+  `?subjectId=` filter. Any authed user.
+- `POST /notes` — multipart/form-data; MIME-type allowlist (images/PDF/Word/PowerPoint) and
+  10 MB cap enforced before upload reaches Cloudinary. `404` if subject doesn't exist. `502`
+  if Cloudinary upload fails. Any authed user.
+- `PATCH /notes/:id` — title/description only (no re-upload); uploader or admin; `403` otherwise.
+- `DELETE /notes/:id` — deletes from Cloudinary (best-effort, failure swallowed) then DB;
+  uploader or admin; `403` otherwise.
+- **Design:** SET NULL on `uploadedBy` (not CASCADE) so class notes survive if the uploader's
+  account is removed. The note content matters more than its author link.
+- **Gotcha (multipart):** .NET's `System.Net.Http.MultipartFormDataContent` sends a quoted
+  boundary (`boundary="abc"`) that Hono's `c.req.formData()` rejects with 400. Browser
+  `FormData` (via `fetch`/Axios) and `curl` send unquoted boundaries and work correctly.
+  Frontend must use the native `FormData` API — do not build multipart payloads manually.
+- Verified locally: 29-check test matrix covering all four endpoints, auth, validation,
+  unknown-resource, cross-user 403, and Cloudinary round-trip (real upload + delete confirmed).
+  **Deploy pending.**
+
 ## 2026-06-18 — Subjects, schedules, and tasks tied to subjects
 
 **Goal:** give tasks a subject context and let admins manage a weekly timetable per subject.

@@ -4,6 +4,7 @@ import {
   primaryKey,
   uuid,
   text,
+  integer,
   timestamp,
 } from "drizzle-orm/pg-core";
 
@@ -127,3 +128,32 @@ export const taskCompletions = pgTable(
 );
 
 export type TaskCompletion = typeof taskCompletions.$inferSelect;
+
+// Phase 1: communal note sharing. Any authenticated user can upload; notes are
+// shared with the whole section. uploadedBy is nullable (SET NULL) so a note
+// survives if its uploader's account is deleted.
+export const notes = pgTable("notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subjectId: uuid("subject_id")
+    .notNull()
+    .references(() => subjects.id, { onDelete: "cascade" }),
+  uploadedBy: uuid("uploaded_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  title: text("title").notNull(),
+  description: text("description"),
+  fileUrl: text("file_url").notNull(),
+  publicId: text("public_id").notNull(),
+  resourceType: text("resource_type").notNull(),
+  fileName: text("file_name").notNull(),
+  fileSize: integer("file_size").notNull(),
+  format: text("format").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export type Note = typeof notes.$inferSelect;

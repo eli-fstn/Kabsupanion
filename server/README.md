@@ -37,6 +37,10 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/subjects/:id/schedules` | Bearer + Admin | Add a timetable slot: `{ day, startTime, endTime, room? }` |
 | PATCH  | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Update a slot |
 | DELETE | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Remove a slot |
+| GET    | `/notes`              | Bearer | All notes with nested subject + uploader; optional `?subjectId=` filter |
+| POST   | `/notes`              | Bearer | Upload a note (multipart): `subjectId`, `title`, `description?`, `file` (image/PDF/Word/PowerPoint, max 10 MB) |
+| PATCH  | `/notes/:id`          | Bearer | Update `title`/`description`; uploader or admin |
+| DELETE | `/notes/:id`          | Bearer | Delete note + remove from Cloudinary; uploader or admin |
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
 | PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
 | DELETE | `/admin/users/:id`      | Bearer + Admin | Delete a user account. Cannot delete yourself. |
@@ -166,7 +170,7 @@ const me = (await api.get("/auth/me")).data.user;
 
 ## Status — what's up and running
 
-**Phase 0 & Phase 1: ✅ deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev`.
+**Phase 0 & Phase 1: ✅ deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev` (notes pending deploy).
 
 | Capability | Status | Notes |
 | ---------- | ------ | ----- |
@@ -176,10 +180,10 @@ const me = (await api.get("/auth/me")).data.user;
 | Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
-| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`) | ✅ migrated | `0000`–`0004` applied to Neon; masterlist seeded via `npm run db:seed`. |
+| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0005` applied to Neon; masterlist seeded via `npm run db:seed`. |
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
 | Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
-| Other tables | 🔲 next | notes, announcements, Cloudinary. |
+| Notes (`/notes/*`) | 🟡 pending deploy | Code complete and locally verified (migration `0005` applied). Cloudinary credentials set. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.

@@ -6,10 +6,30 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_Phase 1 in progress. Still to come: notes/announcements, Cloudinary._
+_Phase 1 complete. Announcements feature cut — the section already has an existing system for that._
 
 ### Added
 
+- **Notes** — communal note sharing tied to subjects. New `notes` table (`subjectId` FK →
+  subjects cascade, `uploadedBy` FK → users SET NULL, `title`, `description?`, Cloudinary
+  fields: `fileUrl`, `publicId`, `resourceType`, `fileName`, `fileSize`, `format`).
+  Migration `drizzle/0005_*.sql`.
+  - `GET /notes` — all notes with nested `subject: { id, code, name }` and `uploadedBy: { id, name }`;
+    optional `?subjectId=` filter. Any authenticated user.
+  - `POST /notes` — multipart/form-data (`subjectId`, `title`, `description?`, `file`).
+    Accepted types: images, PDF, Word (`.docx`), PowerPoint (`.pptx`); max 10 MB.
+    Uploads to Cloudinary folder `kabsupanion/notes`. Any authenticated user.
+  - `PATCH /notes/:id` — update `title` and/or `description` (`{ title?, description? }`);
+    uploader or admin only; `403` otherwise.
+  - `DELETE /notes/:id` — removes DB row and deletes asset from Cloudinary; uploader or admin
+    only. Cloudinary failure is best-effort and does not block DB cleanup.
+  _(Locally verified. Deploy pending.)_
+- **Cloudinary service** (`src/lib/cloudinary.ts`). Signed uploads via SHA-1 over
+  `sorted_params + api_secret` using Web Crypto — no npm deps, Workers-safe. Exports
+  `uploadFile(file, folder, env)` and `deleteFile(publicId, resourceType, env)`. Three new
+  env vars: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+  (`.dev.vars` + `wrangler secret put`).
+  _(Deployed and verified live.)_
 - **Subjects + schedules.** New `subjects` table (`code` unique, `name`, `description?`) and
   `schedules` table (FK → subjects cascade, `day` enum `monday`–`sunday`, `startTime`/`endTime`
   as 12-hour text strings, `room?`). Migration `drizzle/0004_*.sql`.
