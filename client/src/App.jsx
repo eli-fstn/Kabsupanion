@@ -11,8 +11,6 @@ function App() {
       <Route path="/" element={<LogIn />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/adminlogin" element={<AdminLogIn />} />
-      <Route path="/admindashboard" element={<AdminDashboard />} />
       <Route path="/error/503" element={<Error503 />} />
       <Route path="/error/404" element={<Error404 />} />
     </Routes>
