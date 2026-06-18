@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { getMasterlist } from "../../services/auth";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 
 function ClassList() {
   const [academicStatus, setAcademicStatus] = useState("Regular");
@@ -51,6 +51,7 @@ function ClassList() {
         </div>
       </div>
 
+      {/* TABLE */}
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
@@ -86,6 +87,7 @@ function ClassList() {
           </table>
         </div>
 
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-3 p-4 border-t border-gray-200">
             <Button text="Previous" BGColor={currentPage === 1 ? "bg-gray-100" : "bg-white"} typography={currentPage === 1 ? "text-sm text-gray-400" : "text-sm text-[#003A02]"} padding="px-3 py-1" shadow="shadow-md border border-gray-200" onClick={() => setCurrentPage((prev) => prev - 1)} disabled={currentPage === 1}/>

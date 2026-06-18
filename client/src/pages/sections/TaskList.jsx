@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { getMe, getTasks } from "../../services/auth";
 
@@ -36,9 +36,9 @@ function TaskList({ studentName="Juan" }) {
   const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject === activeSubject);
 
   return (
-    <section className="min-h-screen p-10">
+    <section className="min-h-screen p-10" id="task-list">
       <div>
-        <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{student?.user?.name?.split(" ")[0]}!</span></h1>
+        <h1 className="text-[2.8rem] font-bold font-[amaranth] text-[#003A02]">Hello there,<span className="font-[parisienne] font-bold pl-3 text-[3.3rem]">{student?.user?.name?.split(" ").slice(-1)[0]}!</span></h1>
         <div className="mt-3">
           <p className="font-bold text-[1.7rem] font-[montserrat]">Today's Tasks</p>
           <p className="text-[1rem]">You have <span className="text-[#003A02] font-bold text-[1.3rem]">{task.length}</span> tasks ongoing. {task.length === 0 ? (
@@ -52,7 +52,7 @@ function TaskList({ studentName="Juan" }) {
       {/* FILTER BUTTONS */}
       <div className="mt-5">
         {subjects.map((subject) => (
-          <Button key={subject} text={subject} BGColor={activeSubject === subject ? "bg-[#1B651B]" : "bg-white"} typography={activeSubject === subject ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"} padding="px-5 py-1" shadow="shadow-md border border-gray-200" margin="mr-4" onClick={() => setActiveSubject(subject)}/>
+          <Button key={subject} text={subject} BGColor={activeSubject === subject ? "bg-[#1B651B]" : "bg-white"} typography={activeSubject === subject ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"} padding="px-5 py-1" shadow="shadow-md border border-gray-200" margin="mr-4" dimensions="rounded-md" onClick={() => setActiveSubject(subject)}/>
         ))}
       </div>
 
@@ -60,7 +60,7 @@ function TaskList({ studentName="Juan" }) {
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="grid grid-cols-[2fr_1fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+            <tr className="grid grid-cols-[3fr_1fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
               <th className="flex items-center"><Icon className="mr-2" icon="ix:tasks-all" width="25" height="25" />Task</th>
               <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="25" height="25" />Subject</th>
               <th className="flex items-center"><Icon className="mr-2" icon="mingcute:time-line" width="25" height="25" />Due Date</th>

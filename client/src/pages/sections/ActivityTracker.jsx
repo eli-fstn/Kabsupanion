@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { getActivity } from "../../services/auth";
 
@@ -42,7 +42,7 @@ function ActivityTracker() {
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="grid grid-cols-[.2fr_3fr_2fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+            <tr className="grid grid-cols-[.2fr_3fr_1fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
               <th className="flex items-center">No.</th>
               <th className="flex items-center"><Icon className="mr-2" icon="ix:tasks-all" width="25" height="25" />Activity</th>
               <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="25" height="25" />Subject</th>
@@ -54,7 +54,7 @@ function ActivityTracker() {
           <table className="w-full h-full">
             <tbody>
               {filteredActivity.map((t, i) => (
-                <tr key={i} className="grid grid-cols-[.2fr_3fr_2fr_1fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
+                <tr key={i} className="grid grid-cols-[.2fr_3fr_1fr_1fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
                   <td>{i + 1}</td>
                   <td>{t.activity}</td>
                   <td>{t.subject}</td>

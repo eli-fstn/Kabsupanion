@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { useState } from "react";
 
 function ClassSched() {
@@ -24,7 +24,7 @@ function ClassSched() {
   }
 
   return(
-    <section className="min-h-screen p-10">
+    <section className="min-h-screen p-10" id="class-sched">
       <div className="mt-3">
         <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Class Schedule</p>
         <p className="text-[1rem]">Keep track of your classes and never miss an important session.</p>

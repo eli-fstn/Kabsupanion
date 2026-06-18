@@ -1,8 +1,8 @@
 import { Icon } from "@iconify/react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMe } from "../services/auth";
-import Button from "./Button";
+import { getMe } from "../../services/auth";
+import Button from "../../components/ui/Button";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -51,7 +51,7 @@ function Navbar() {
 
       {/* LOGO */}
       <div className="flex items-center">
-        <img className="w-10" src="/assets/Kabsupanion-Logo.png" alt="Logo" />
+        <img className="w-10" src="/assets/images/Kabsupanion-Logo.png" alt="Logo" />
         <p className="font-bold text-[1.5rem] pl-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion</p>
       </div>
 
@@ -71,7 +71,7 @@ function Navbar() {
 
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-35 bg-white text-[#1B651B] rounded-lg shadow-lg z-10 text-center">
-            <Button onClick={userSignOut} text={<><Icon icon="gridicons:sign-out" width="25" height="25" /><span className="ml-2">Sign Out</span></>} BGColor="hover:bg-gray-100" typography="text-sm font-bold text-[#1B651B] flex items-center" padding="px-5 py-2" dimensions="w-full"/>
+            <Button onClick={userSignOut} text={<><Icon icon="gridicons:sign-out" width="25" height="25" /><span className="ml-2">Sign Out</span></>} BGColor="hover:bg-gray-100" typography="text-sm font-bold text-[#1B651B] flex items-center" padding="px-5 py-2" dimensions="w-full rounded-md"/>
           </div>
         )}
       </div>
