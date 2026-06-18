@@ -1,6 +1,8 @@
-function Button({ text, BGColor, typography, dimensions, padding, shadow, margin, onClick, disabled, }) {
+function Button({ children, onClick, disabled }) {
   return (
-    <button onClick={onClick}  disabled={disabled} className={`active:scale-95 transition-transform duration-100 ${BGColor} ${typography} ${dimensions} ${padding} ${shadow} ${margin}`}>{text}</button>
+    <button onClick={onClick} disabled={disabled}>
+      {children}
+    </button>
   );
 }
 

@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { registerAccount, getMe } from "../../services/auth";
 import { Icon } from "@iconify/react";
-import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { handleApiError } from "../../services/errorHandler";
 import LoadingScreen from "../../components/ui/LoadingScreen";
@@ -137,7 +136,9 @@ function Register(){
 					
 					{/* BUTTON */}
 					<div className="flex justify-center mt-5">
-						<Button type="submit" text="Submit" BGColor="bg-[#1B651B]" typography="text-white font-bold text-[1rem] rounded-md" padding="px-6 py-2"/>
+						<button type="submit" className="active:scale-95 transition-transform duration-100 bg-[#1B651B] text-white font-bold text-[1rem] rounded-md px-6 py-2 block text-center">
+							Submit
+						</button>
 					</div>
 				</form>
 			</div>

@@ -1,7 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { verifyLogin, getMe } from "../../services/auth";
-import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler";
 
@@ -84,7 +83,9 @@ function LogIn() {
           )}
 
           <div className="flex justify-center mt-6">
-            <Button type="submit" text="Sign In" BGColor="bg-[#1B651B]" typography="text-white font-bold rounded-md" padding="px-6 py-2"/>
+            <button type="submit" className="active:scale-95 transition-transform duration-100 bg-[#1B651B] text-white font-bold rounded-md px-6 py-2 block text-center">
+              Sign In
+            </button>
           </div>
 
           <p className="text-[.8rem] text-center mt-5">Don't have an account?{" "}
