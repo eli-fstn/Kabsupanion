@@ -170,7 +170,7 @@ const me = (await api.get("/auth/me")).data.user;
 
 ## Status — what's up and running
 
-**Phase 0 & Phase 1: ✅ deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev` (notes pending deploy).
+**Phase 0 & Phase 1: ✅ deployed and verified live** at `https://kabsupanion-api.kabsupanion.workers.dev`.
 
 | Capability | Status | Notes |
 | ---------- | ------ | ----- |
@@ -183,7 +183,7 @@ const me = (await api.get("/auth/me")).data.user;
 | Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0005` applied to Neon; masterlist seeded via `npm run db:seed`. |
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
 | Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
-| Notes (`/notes/*`) | 🟡 pending deploy | Code complete and locally verified (migration `0005` applied). Cloudinary credentials set. |
+| Notes (`/notes/*`) | ✅ live | Communal note sharing with Cloudinary-backed file storage. Migration `0005` applied. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.

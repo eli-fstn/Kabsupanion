@@ -34,7 +34,7 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
   Frontend must use the native `FormData` API — do not build multipart payloads manually.
 - Verified locally: 29-check test matrix covering all four endpoints, auth, validation,
   unknown-resource, cross-user 403, and Cloudinary round-trip (real upload + delete confirmed).
-  **Deploy pending.**
+  **Deployed and verified live.**
 
 ## 2026-06-18 — Subjects, schedules, and tasks tied to subjects
 

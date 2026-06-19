@@ -23,7 +23,7 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
     uploader or admin only; `403` otherwise.
   - `DELETE /notes/:id` — removes DB row and deletes asset from Cloudinary; uploader or admin
     only. Cloudinary failure is best-effort and does not block DB cleanup.
-  _(Locally verified. Deploy pending.)_
+  _(Deployed and verified live.)_
 - **Cloudinary service** (`src/lib/cloudinary.ts`). Signed uploads via SHA-1 over
   `sorted_params + api_secret` using Web Crypto — no npm deps, Workers-safe. Exports
   `uploadFile(file, folder, env)` and `deleteFile(publicId, resourceType, env)`. Three new
