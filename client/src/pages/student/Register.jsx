@@ -79,7 +79,7 @@ function Register(){
       localStorage.setItem('token', data.token);
 			const user = getMe();
 			setModalOpen(true);
-			const timer = setTimeout(() => navigate("/dashboard"), 4000);
+			const timer = setTimeout(() => navigate("/student/dashboard"), 4000);
 		} catch (error) {
 			handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
 			setLoading(false);

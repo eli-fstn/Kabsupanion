@@ -10,9 +10,6 @@ function StudentRoutes() {
       <Route element={<PrivateRoute />} >
         <Route path="/dashboard" element={<Dashboard />} />
       </Route>
-
-      <Route path="/" element={<LogIn />} />
-      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }

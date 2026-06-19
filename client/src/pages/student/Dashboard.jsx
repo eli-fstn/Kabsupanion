@@ -16,8 +16,6 @@ function Dashboard() {
         <TaskList />
         <ClassSched />
         <ClassResources />
-        <ActivityTracker />
-        <ClassList />
       </div>
       <Footer />
     </div>

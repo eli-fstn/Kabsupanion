@@ -48,8 +48,15 @@ function LogIn() {
     try {
       const data = await verifyLogin(email, password);
       localStorage.setItem("token", data.token);
-      const user = await getMe();
-      navigate("/dashboard");
+      const response = await getMe();
+      const user = response.user;
+
+      if (user?.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
+
     } catch (error) {
       handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
       setLoading(false)

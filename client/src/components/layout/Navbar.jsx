@@ -38,8 +38,6 @@ function Navbar() {
       setStudent(data);
     } catch (error) {
       console.log(error);
-      localStorage.removeItem("token");
-      navigate("/", { replace: true });
     }
   };
 
