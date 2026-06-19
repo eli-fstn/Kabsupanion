@@ -77,7 +77,7 @@ export default function ClassResources() {
       setModalOpen(false);
       fetchResources();
     } catch (error) {
-      handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
+      handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
     }
   };
 
@@ -121,11 +121,15 @@ export default function ClassResources() {
           )}
         </div>
         <div className="flex justify-center items-center ">
-          <Button onClick={() => setModalOpen(true)}>
-            <span className="active:scale-95 transition-transform duration-100 bg-[#1B651B] text-white font-bold px-6 py-2 w-fit rounded-md inline-block">
-              Upload resources
-            </span>
-          </Button>
+          <Button
+            text="Upload resources"
+            onClick={() => setModalOpen(true)}
+            bgColor="bg-[#1B651B]"
+            typography="text-white font-bold"
+            padding="px-6 py-2"
+            dimensions="w-fit rounded-md"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+          />
         </div>
 
         {/* FORM */}
@@ -168,9 +172,15 @@ export default function ClassResources() {
             )}
 
             <div className="flex justify-center items-center">
-              <button type="submit" className="active:scale-95 transition-transform duration-100 bg-[#1B651B] hover:bg-green-700 text-white font-bold px-10 py-2.5 w-full rounded-md">
-                Submit
-              </button>
+              <Button
+                type="submit"
+                text="Submit"
+                bgColor="bg-[#1B651B]"
+                typography="text-white font-bold"
+                padding="px-10 py-2.5"
+                dimensions="w-full rounded-md"
+                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+              />
             </div>
           </form>
         </Modal>

@@ -24,11 +24,14 @@ function Footer() {
       {/* Lower Half */}
       <div className="grid grid-cols-3 px-30">
         <div className="flex items-center">
-          <Button>
-            <span className="active:scale-95 transition-transform duration-200 bg-white/15 hover:bg-white/20 text-white/70 text-sm hover:text-white rounded-2xl border border-white/30 px-4 py-1 inline-block">
-              Send Feedback
-            </span>
-          </Button>
+          <Button
+            text="Send Feedback"
+            bgColor="bg-white/15"
+            typography="text-white/70 text-sm"
+            dimensions="rounded-2xl border border-white/30"
+            padding="px-4 py-1"
+            animation="active:scale-95 transition-transform duration-200 hover:bg-white/20 hover:text-white"
+          />
         </div>
         <div className="flex flex-col items-center text-center"> 
           <p className="text-xs text-white/70">© {new Date().getFullYear()} Kabsupanion. All rights reserved.</p>

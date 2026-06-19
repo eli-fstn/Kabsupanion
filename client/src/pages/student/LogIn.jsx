@@ -1,13 +1,14 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { verifyLogin, getMe } from "../../services/auth";
+import Button from "../../components/ui/Button";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler";
 
 function LogIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({
+  const [error, setError] = useState({
     email: "",
     password: "",
     general: ""
@@ -38,7 +39,7 @@ function LogIn() {
       hasError = true;
     }
     if (hasError) {
-      setErrors(newErrors);
+      setError(newErrors);
       return;
     }
 
@@ -50,7 +51,7 @@ function LogIn() {
       const user = await getMe();
 			navigate("/dashboard");
     } catch (error) {
-       handleApiError(error, (msg) => setErrors((prev) => ({ ...prev, general: msg })));
+       handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
        setLoading(false)
     } 
   };
@@ -67,25 +68,31 @@ function LogIn() {
           </div>
 
           <label className="text-gray-500 font-bold text-[.8rem]">CvSU Email</label>
-          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.email ? "border-red-500" : "border-gray-300"}`} />
-          {errors.email && (
-            <p className="text-red-500 text-xs">{errors.email}</p>
+          <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.email ? "border-red-500" : "border-gray-300"}`} />
+          {error.email && (
+            <p className="text-red-500 text-xs">{error.email}</p>
           )}
 
           <label className="text-gray-500 font-bold text-[.8rem] mt-3">Password</label>
-          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${errors.password ? "border-red-500" : "border-gray-300"}`} />
-          {errors.password && (
-            <p className="text-red-500 text-xs">{errors.password}</p>
+          <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.password ? "border-red-500" : "border-gray-300"}`} />
+          {error.password && (
+            <p className="text-red-500 text-xs">{error.password}</p>
           )}
 
-          {errors.general && (
-            <p className="text-red-500 text-[.8rem] leading-4 font-bold mt-3 text-center">{errors.general}</p>
+          {error.general && (
+            <p className="text-red-500 text-[.8rem] leading-4 font-bold mt-3 text-center">{error.general}</p>
           )}
 
           <div className="flex justify-center mt-6">
-            <button type="submit" className="active:scale-95 transition-transform duration-100 bg-[#1B651B] text-white font-bold rounded-md px-6 py-2 block text-center">
-              Sign In
-            </button>
+            <Button
+              type="submit"
+              text="Sign In"
+              bgColor="bg-[#1B651B]"
+              typography="text-white font-bold"
+              padding="px-6 py-2"
+              dimensions="rounded-md w-full"
+              animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+            />
           </div>
 
           <p className="text-[.8rem] text-center mt-5">Don't have an account?{" "}
