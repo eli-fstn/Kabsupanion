@@ -44,7 +44,7 @@ function ActivityTracker() {
             padding="px-5 py-1"
             shadow="shadow-md border border-gray-200"
             margin="mr-4"
-            animation="active:scale-95 transition-transform duration-100"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
           />
         ))}
       </div>

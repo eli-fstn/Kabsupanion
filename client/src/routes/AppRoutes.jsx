@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import StudentRoutes from "./StudentRoutes";
-
 import Error404 from "../pages/errors/Error404";
 import Error503 from "../pages/errors/Error503";
 

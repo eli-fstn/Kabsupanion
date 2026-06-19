@@ -48,7 +48,7 @@ function ClassSched() {
             padding="px-6 py-2"
             margin="mt-4"
             dimensions="rounded-md"
-            animation="active:scale-95 transition-transform duration-100"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
           />
         )}
 

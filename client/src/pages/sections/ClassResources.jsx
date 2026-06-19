@@ -179,7 +179,7 @@ export default function ClassResources() {
                 typography="text-white font-bold"
                 padding="px-10 py-2.5"
                 dimensions="w-full rounded-md"
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
               />
             </div>
           </form>
