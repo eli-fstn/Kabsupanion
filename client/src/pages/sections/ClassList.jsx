@@ -24,7 +24,14 @@ function ClassList() {
     fetchMasterlist();
   }, []);
 
-  const filteredStudents = masterList.filter((t) => t.acadStatus === academicStatus).sort((a, b) => a.name.localeCompare(b.name));
+  // .filter((t) => t.acadStatus ==== academicStatus) --- IGNORE --- (there's currently no acadStatus in the database but this is for future implementation)
+
+  const filteredStudents = masterList.sort((a, b) => {
+    const surnameA = a.fullName.split(" ").at(-1);
+    const surnameB = b.fullName.split(" ").at(-1);
+    return surnameA.localeCompare(surnameB);
+  });
+
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -80,7 +87,7 @@ function ClassList() {
               {paginatedStudents.map((t, i) => (
                 <tr key={i} className="grid grid-cols-[.2fr_3fr_2fr_1fr] gap-5 border-b border-gray-100 p-3 items-center font-medium">
                   <td className="text-[#4a4a4a88]">{(currentPage - 1) * itemsPerPage + i + 1}</td>
-                  <td>{t.name}</td>
+                  <td>{t.fullName.split(" ").at(-1)}, {t.fullName.split(" ").slice(0, -1).join(" ")}</td>
                   <td>{t.studentNumber}</td>
                   {t.studentStatus === "Active" ? (
                     <td className="text-green-500">{t.studentStatus}</td>

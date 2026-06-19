@@ -83,8 +83,8 @@ function TaskList({ studentName="Juan" }) {
             <tbody>
               {filteredTasks.map((t, i) => (
                 <tr key={i} className="grid grid-cols-[2fr_1fr_1fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
-                  <td>{t.task}</td>
-                  <td>{t.subject}</td>
+                  <td>{t.title}</td>
+                  <td>{t.subject?.code}</td>
                   <td>{t.dueDate}</td>
                 </tr>
               ))}

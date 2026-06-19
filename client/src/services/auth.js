@@ -21,20 +21,20 @@ export async function verifyLogin(email, password) {
 
 // Tasklist - Getting the current tasks list 
 export async function getTasks() {
-  const response = await api.get("/");
+  const response = await api.get("/tasks");
   return response.data;
 }
 
 // Resources
 // Check if there's already an existing resources.
 export async function getResources() {
-  const response = await api.get("/");
+  const response = await api.get("/notes");
   return response.data;
 }
 
 // Student can upload their own resources to share with anyone.
 export async function uploadResource(title, subject, uploadedBy, fileURL) {
-  const response = await api.post("/", { title, subject, uploadedBy, fileURL });
+  const response = await api.post("/notes", { title, subject, uploadedBy, fileURL });
   return response.data;
 }
 
@@ -46,7 +46,7 @@ export async function getActivity() {
 
 // Masterlist - Gets the official masterlist of the section
 export async function getMasterlist() {
-  const response = await api.get("/");
+  const response = await api.get("/admin/masterlist");
   return response.data
 }
 

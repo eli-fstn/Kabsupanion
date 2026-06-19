@@ -49,10 +49,10 @@ function LogIn() {
       const data = await verifyLogin(email, password);
       localStorage.setItem("token", data.token);
       const user = await getMe();
-			navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
-       handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
-       setLoading(false)
+      handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      setLoading(false)
     } 
   };
 
