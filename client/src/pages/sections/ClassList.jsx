@@ -24,7 +24,14 @@ function ClassList() {
     fetchMasterlist();
   }, []);
 
-  const filteredStudents = masterList.filter((t) => t.acadStatus === academicStatus).sort((a, b) => a.name.localeCompare(b.name));
+  // .filter((t) => t.acadStatus ==== academicStatus) --- IGNORE --- (there's currently no acadStatus in the database but this is for future implementation)
+
+  const filteredStudents = masterList.sort((a, b) => {
+    const surnameA = a.fullName.split(" ").at(-1);
+    const surnameB = b.fullName.split(" ").at(-1);
+    return surnameA.localeCompare(surnameB);
+  });
+
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -43,11 +50,18 @@ function ClassList() {
       <div className="mt-5 flex flex-row justify-between items-center">
         <div className="">
           {acadStatus.map((status) => (
-            <Button key={status} onClick={() => handleStatusChange(status)}>
-              <span className={`active:scale-95 transition-transform duration-100 ${academicStatus === status ? "bg-[#1B651B] text-sm font-bold text-white" : "bg-white text-sm font-bold text-gray-700"} px-5 py-1 shadow-md border border-gray-200 mr-4 rounded-md`}>
-                {status}
-              </span>
-            </Button>
+            <Button
+              key={status}
+              text={status}
+              onClick={() => handleStatusChange(status)}
+              bgColor={academicStatus === status ? "bg-[#1B651B]" : "bg-white"}
+              typography={academicStatus === status ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+              dimensions="rounded-md"
+              padding="px-5 py-1"
+              shadow="shadow-md border border-gray-200"
+              margin="mr-4"
+              animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+            />
           ))}
         </div>
         <div className="">
@@ -73,7 +87,7 @@ function ClassList() {
               {paginatedStudents.map((t, i) => (
                 <tr key={i} className="grid grid-cols-[.2fr_3fr_2fr_1fr] gap-5 border-b border-gray-100 p-3 items-center font-medium">
                   <td className="text-[#4a4a4a88]">{(currentPage - 1) * itemsPerPage + i + 1}</td>
-                  <td>{t.name}</td>
+                  <td>{t.fullName.split(" ").at(-1)}, {t.fullName.split(" ").slice(0, -1).join(" ")}</td>
                   <td>{t.studentNumber}</td>
                   {t.studentStatus === "Active" ? (
                     <td className="text-green-500">{t.studentStatus}</td>
@@ -94,17 +108,29 @@ function ClassList() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-3 p-4 border-t border-gray-200">
-            <Button onClick={() => setCurrentPage((prev) => prev - 1)} disabled={currentPage === 1}>
-              <span className={`active:scale-95 transition-transform duration-100 ${currentPage === 1 ? "bg-gray-100 text-sm text-gray-400" : "bg-white text-sm text-[#003A02]"} px-3 py-1 shadow-md border border-gray-200 rounded-md`}>
-                Previous
-              </span>
-            </Button>
+            <Button
+              text="Previous"
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              disabled={currentPage === 1}
+              bgColor={currentPage === 1 ? "bg-gray-100" : "bg-white"}
+              typography={currentPage === 1 ? "text-sm text-gray-400" : "text-sm text-[#003A02]"}
+              dimensions="rounded-md"
+              padding="px-3 py-1"
+              shadow="shadow-md border border-gray-200"
+              animation="active:scale-95 transition-transform duration-100"
+            />
             <span className="text-sm text-gray-500">Page {currentPage} of {totalPages}</span>
-            <Button onClick={() => setCurrentPage((prev) => prev + 1)} disabled={currentPage === totalPages}>
-              <span className={`active:scale-95 transition-transform duration-100 ${currentPage === totalPages ? "bg-gray-100 text-sm text-gray-400" : "bg-white text-sm text-[#003A02]"} px-3 py-1 shadow-md border border-gray-200 rounded-md`}>
-                Next
-              </span>
-            </Button>
+            <Button
+              text="Next"
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={currentPage === totalPages}
+              bgColor={currentPage === totalPages ? "bg-gray-100" : "bg-white"}
+              typography={currentPage === totalPages ? "text-sm text-gray-400" : "text-sm text-[#003A02]"}
+              dimensions="rounded-md"
+              padding="px-3 py-1"
+              shadow="shadow-md border border-gray-200"
+              animation="active:scale-95 transition-transform duration-100"
+            />
           </div>
         )}
       </div>

@@ -1,7 +1,24 @@
-function Button({ children, onClick, disabled }) {
+function Button({
+  text,
+  bgColor = "",
+  typography = "",
+  dimensions = "",
+  padding = "",
+  shadow = "",
+  margin = "",
+  animation = "",
+  onClick,
+  disabled,
+  type = "button",
+}) {
   return (
-    <button onClick={onClick} disabled={disabled}>
-      {children}
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${bgColor} ${typography} ${dimensions} ${padding} ${shadow} ${margin} ${animation}`.trim()}
+    >
+      {text}
     </button>
   );
 }

@@ -40,11 +40,16 @@ function ClassSched() {
         )}
 
         {imageSrc && (
-          <Button onClick={() => downloadAsPDF()}>
-            <span className="active:scale-95 transition-transform duration-100 bg-[#1B651B] text-white font-bold text-[1rem] px-6 py-2 mt-4 rounded-md inline-block">
-              Download
-            </span>
-          </Button>
+          <Button
+            text="Download"
+            onClick={() => downloadAsPDF()}
+            bgColor="bg-[#1B651B]"
+            typography="text-white font-bold text-[1rem]"
+            padding="px-6 py-2"
+            margin="mt-4"
+            dimensions="rounded-md"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+          />
         )}
 
       </div>

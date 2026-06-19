@@ -34,11 +34,18 @@ function ActivityTracker() {
       {/* FILTER BUTTONS */}
       <div className="mt-5">
         {subjects.map((subject) => (
-          <Button key={subject} onClick={() => setActiveSubject(subject)}>
-            <span className={`active:scale-95 transition-transform duration-100 ${activeSubject === subject ? "bg-[#1B651B] text-sm font-bold text-white" : "bg-white text-sm font-bold text-gray-700"} px-5 py-1 shadow-md border border-gray-200 mr-4 rounded-md`}>
-              {subject}
-            </span>
-          </Button>
+          <Button
+            key={subject}
+            text={subject}
+            onClick={() => setActiveSubject(subject)}
+            bgColor={activeSubject === subject ? "bg-[#1B651B]" : "bg-white"}
+            typography={activeSubject === subject ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+            dimensions="rounded-md"
+            padding="px-5 py-1"
+            shadow="shadow-md border border-gray-200"
+            margin="mr-4"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+          />
         ))}
       </div>
 
