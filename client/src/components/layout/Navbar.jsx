@@ -1,14 +1,14 @@
 import { Icon } from "@iconify/react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMe } from "../../services/auth";
+import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const [student, setStudent] = useState(null);
+  const { student } = useUser();
 
   const userSignOut = () => {
     setDropdownOpen(false);
@@ -31,18 +31,6 @@ function Navbar() {
 
   }, []);
 
-  useEffect(() => {
-  const fetchMe = async () => {
-    try {
-      const data = await getMe();
-      setStudent(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  fetchMe();
-}, []);
 
   return (
     <nav className="flex items-center border border-gray-200 justify-between bg-white p-3 px-7">
@@ -61,8 +49,8 @@ function Navbar() {
           </div>
           <div className="flex flex-col text-[#3a3a3a88] font-bold leading-4">
             <div>
-              <p className="uppercase">{student?.user.name}</p>
-              <p className="text-[.7rem]">{student?.user.studentNumber}</p>
+              <p className="uppercase">{student?.user?.name}</p>
+              <p className="text-[.7rem]">{student?.user?.studentNumber}</p>
             </div>
           </div>
         </div>

@@ -1,18 +1,20 @@
 import { useState , useEffect } from "react";
+import { Icon } from "@iconify/react";
 import ResourceCard from "../../components/ui/ResourceCard";
-import { getResources, uploadResource, getMe } from "../../services/auth";
+import { getResources, uploadResource } from "../../services/auth";
 import { handleApiError } from "../../services/errorHandler";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
+import { useUser } from "../../context/userContext";
 
 
 export default function ClassResources() {
   const [resources, setResources] = useState([]);
-  const [student, setStudent] = useState(null);
+  const { student } = useUser();
   const [modalOpen, setModalOpen] = useState(false);
-  const [title, setTitle] = useState(null);
-  const [subject, setSubject] = useState(null);
-  const [file, setFile] = useState(null);
+  const [title, setTitle] = useState("");
+  const [subject, setSubject] = useState("");
+  const [file, setFile] = useState("");
   const [error, setError] = useState({
     title: "",
     subject: "",
@@ -21,27 +23,17 @@ export default function ClassResources() {
   });
 
   useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        const data = await getResources();
-        setResources(data);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
-
-    const fetchMe = async () => {
-      try {
-        const data = await getMe();
-        setStudent(data);
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
     fetchResources();
-    fetchMe();
   }, []);
+
+  const fetchResources = async () => {
+    try {
+      const data = await getResources();
+      setResources(data);
+    } catch (error) {
+      console.log(error);
+    } 
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,11 +65,12 @@ export default function ClassResources() {
     }
 
     try {
-      await uploadResource(title, subject, uploadedBy, fileURL);
+      await uploadResource(title, subject, student?.user?.name, file);
       setModalOpen(false);
       fetchResources();
     } catch (error) {
       handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      console.log(error);
     }
   };
 
@@ -108,9 +101,9 @@ export default function ClassResources() {
                 <ResourceCard
                   key={resource.id}
                   title={resource.title}
-                  subject={resource.subject}
+                  subject={resource.subjectID}
                   uploadedBy={resource.uploadedBy}
-                  fileUrl={resource.fileUrl}
+                  fileUrl={resource.file}
                 />
               ))}
             </div>
@@ -134,22 +127,25 @@ export default function ClassResources() {
 
         {/* FORM */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-96 p-6">
-            <p className="font-bold text-[1.5rem] text-center text-[#1B651B] uppercase mb-6 font-['Montserrat']">Resources Form</p>
+          <form onSubmit={handleSubmit} className="flex flex-col w-96 p-5">
+            <p className="font-bold text-[1.3rem] text-[#1B651B] uppercase font-['Montserrat'] tracking-wide">Upload Resources</p>
+            <p className="text-gray-400 text-sm">Share learning materials with your classmates</p>
 
             {/* Title of the resources*/}
-            <label className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Title</label>
+            <label className="text-xs font-bold mb-1 mt-7">Title</label>
             <input value={title} onChange={(e) => {setTitle(e.target.value); setError((prev) => ({ ...prev, title: "" }));}} type="text" placeholder="Enter resource title" className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.title ? "border-red-500" : "border-gray-300"}`} />
             {error.title && (
               <p className="text-red-500 text-xs">{error.title}</p>
             )}
 
             {/* Subject */}
-            <label className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1 mt-3">Subject</label>
+            <label className="text-xs font-bold mb-1 mt-3">Subject</label>
             <select value={subject} onChange={(e) => {setSubject(e.target.value); setError((prev) => ({ ...prev, subject: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.subject ? "border-red-500" : "border-gray-300"}`} >
               <option value="">Select a subject</option>
                 {subjects.map((subject) => (
-                  <option key={subject} value={subject}>{subject}</option>
+                  <option key={subject} value={subject}>
+                    {subject}
+                  </option>
                 ))}
             </select>
             {error.subject && (
@@ -157,18 +153,22 @@ export default function ClassResources() {
             )}
 
             {/* File to be uploaded | only accepts .PDF*/}
-            <label className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1 mt-3">File</label>
-            <input onChange={(e) => {setFile(e.target.value); setError((prev) => ({ ...prev, file: "" }));}} type="file" accept=".pdf" className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 ${error.file ? "border-red-500" : "border-gray-200"}`} />
+            <label className="text-xs font-bold mb-1 mt-3">File</label>
+            <input onChange={(e) => {setFile(e.target.value[0]); setError((prev) => ({ ...prev, file: "" }));}} type="file" accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx" className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 ${error.file ? "border-red-500" : "border-gray-200"}`} />
             {error.file && (
               <p className="text-red-500 text-xs">{error.file}</p>
             )}
 
             {/* Uploaded by (current user)*/}
-            <label className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1 mt-3">Uploaded by</label>
-            <p className="text-sm font-bold text-[#3a3a3a] border border-gray-200 rounded-lg p-2.5 mb-6 bg-gray-50">{student?.user.name}</p>
+            <label className="text-xs font-bold mb-1 mt-3">Uploaded by</label>
+            <div className="flex flex-row ">
+              <Icon icon="mdi:account-circle" width="20" className="text-gray-400" />
+              <p className="ml-2 text-sm font-bold text-gray-500 mb-8">{student?.user?.name}</p>
+            </div>
+            
 
             {error.general && (
-              <p className="text-red-500 text-[.8rem] leading-4 font-bold mt-3 text-center">{error.general}</p>
+              <p className="text-red-500 text-[.8rem] leading-4 font-bold mb-3 text-center">{error.general}</p>
             )}
 
             <div className="flex justify-center items-center">

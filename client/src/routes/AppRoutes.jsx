@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import LogIn from "../pages/student/LogIn";
-import Register from "../pages/student/Register";
+import LogIn from "../pages/auth/LogIn";
+import Register from "../pages/auth/Register";
 import StudentRoutes from "./StudentRoutes";
 import AdminRoutes from "./AdminRoutes";
 import Error404 from "../pages/errors/Error404";

@@ -1,12 +1,13 @@
 import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
-import { getMe, getTasks } from "../../services/auth";
+import { useUser } from "../../context/userContext";
+import { getTasks } from "../../services/auth";
 
 function TaskList({ studentName="Juan" }) {
   const [activeSubject, setActiveSubject] = useState("All");
   const [task, setTask] = useState([]);
-  const [student, setStudent] = useState(null);
+  const { student } = useUser();
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -18,17 +19,7 @@ function TaskList({ studentName="Juan" }) {
       }
     }
 
-    const fetchMe = async () => {
-      try {
-        const data = await getMe();
-        setStudent(data);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
-
     fetchTask();
-    fetchMe();
   }, []);
 
   const subjects = ["All", "GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];

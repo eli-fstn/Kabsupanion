@@ -9,6 +9,15 @@ This changelog tracks UI/UX changes, component updates, routing changes, and sta
 
 ## [Unreleased]
 
+### [0.0.2](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.1...v0.0.2) (2026-06-19)
+
+### Features
+
+* **footer:** footer section in dashboard ([40285df](https://github.com/eli-fstn/Kabsupanion/commit/40285dfdf7383096d5bc97eda348954dd552a78d))
+* **sidebar:** sidebar for admin's dashboard ([fb08fd9](https://github.com/eli-fstn/Kabsupanion/commit/fb08fd9dcf007957a1b4cbb183d34fe11b1e7db8))
+
+---
+
 ### Added
 
 - Activity tracker ([11a1c6f](https://github.com/eli-fstn/Kabsupanion/commit/11a1c6f345acd8ce3813ce2f7a011efe12104abf))

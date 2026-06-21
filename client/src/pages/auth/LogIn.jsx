@@ -1,9 +1,10 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { verifyLogin, getMe } from "../../services/auth";
-import Button from "../../components/ui/Button";
+import { verifyLogin } from "../../services/auth.js";
+import { useUser } from "../../context/userContext";
+import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
-import { handleApiError } from "../../services/errorHandler";
+import { handleApiError } from "../../services/errorHandler.js";
 
 function LogIn() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ function LogIn() {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { refetchUser } = useUser();
 
   const handleLogIn = async (e) => {
     e.preventDefault();
@@ -48,8 +50,8 @@ function LogIn() {
     try {
       const data = await verifyLogin(email, password);
       localStorage.setItem("token", data.token);
-      const response = await getMe();
-      const user = response.user;
+      await refetchUser();
+      const user = data.user;
 
       if (user?.role === "admin") {
         navigate("/admin/dashboard");
