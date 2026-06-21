@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { registerAccount, getMe } from "../../services/auth";
+import { registerAccount } from "../../services/auth";
+import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
@@ -23,6 +24,7 @@ function Register(){
 	const [loading, setLoading] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { student, setStudent } = useUser();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -77,7 +79,7 @@ function Register(){
 		try {
       const data = await registerAccount(email, studentNumber, password);
       localStorage.setItem('token', data.token);
-			const user = getMe();
+      setStudent(data.user);
 			setModalOpen(true);
 			const timer = setTimeout(() => navigate("/student/dashboard"), 4000);
 		} catch (error) {

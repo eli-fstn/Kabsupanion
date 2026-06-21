@@ -1,15 +1,16 @@
 import { useState , useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ResourceCard from "../../components/ui/ResourceCard";
-import { getResources, uploadResource, getMe } from "../../services/auth";
+import { getResources, uploadResource } from "../../services/auth";
 import { handleApiError } from "../../services/errorHandler";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
+import { useUser } from "../../context/userContext";
 
 
 export default function ClassResources() {
   const [resources, setResources] = useState([]);
-  const [student, setStudent] = useState(null);
+  const { student } = useUser();
   const [modalOpen, setModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -22,26 +23,7 @@ export default function ClassResources() {
   });
 
   useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        const data = await getResources();
-        setResources(data);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
-
-    const fetchMe = async () => {
-      try {
-        const data = await getMe();
-        setStudent(data);
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
     fetchResources();
-    fetchMe();
   }, []);
 
   const fetchResources = async () => {
@@ -83,7 +65,7 @@ export default function ClassResources() {
     }
 
     try {
-      await uploadResource(title, subject, student?.user.name, file);
+      await uploadResource(title, subject, student?.user?.name, file);
       setModalOpen(false);
       fetchResources();
     } catch (error) {
@@ -181,7 +163,7 @@ export default function ClassResources() {
             <label className="text-xs font-bold mb-1 mt-3">Uploaded by</label>
             <div className="flex flex-row ">
               <Icon icon="mdi:account-circle" width="20" className="text-gray-400" />
-              <p className="ml-2 text-sm font-bold text-gray-500 mb-8">{student?.user.name}</p>
+              <p className="ml-2 text-sm font-bold text-gray-500 mb-8">{student?.user?.name}</p>
             </div>
             
 
