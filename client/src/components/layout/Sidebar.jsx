@@ -8,7 +8,7 @@ function Sidebar() {
   const navigate = useNavigate();
 
   const userSignOut = () => {
-    localStorage.clear("token");
+    localStorage.removeItem("token");
     navigate("/", { replace: true });
   }
 

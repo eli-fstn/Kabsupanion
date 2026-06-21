@@ -1,6 +1,10 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to the Kabsupanion (front-end) are documented here.
+
+This project follows the Keep a Changelog format and adheres to Semantic Versioning.
+
+This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
 
 ### [0.0.3](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.2...v0.0.3) (2026-06-21)
 
