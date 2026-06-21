@@ -1,6 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Sidebar from "../../components/layout/Sidebar";
-import { getTasks, getMasterlist, getResources } from "../../services/auth";
+import { getTasks, getMasterlist, getResources, getSubjects } from "../../services/auth";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react";
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);
   const [task, setTask] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [resources, setResources] = useState([]);
   const { student } = useUser();
 
@@ -39,18 +40,22 @@ function AdminDashboard() {
       }
     }
 
+    const fetchSubjects = async () => {
+      try {
+        const data = await getSubjects();
+        setSubjects(data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     fetchMasterlist();
     fetchResources();
     fetchTask();
+    fetchSubjects();
   }, []);
 
-  const subjects = ["All", "GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];
   const TASK_COLORS = ["#1B651B", "#185FA5", "#BA7517", "#0F6E56", "#A32D2D", "#533AB7", "#3a3a3a", "#D4537E"];
-
-  const registrationData = [
-    { name: "Registered", value: masterlist.filter(s => s.claimed).length },
-    { name: "Not Registered", value: masterlist.filter(s => !s.claimed).length },
-  ];
 
   const subjectData = subjects.map((subject) => ({
     name: subject,
@@ -58,8 +63,8 @@ function AdminDashboard() {
   }));
 
   const taskData = subjects.map((subject) => ({
-    name: subject,
-    value: task.filter(t => t.subject === subject).length,
+    name: subject.code,
+    value: task.filter(t => t.subject.code === subject.code).length,
   })).filter(s => s.value > 0);
 
   return (

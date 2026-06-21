@@ -2,10 +2,11 @@ import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
-import { getTasks } from "../../services/auth";
+import { getTasks, getSubjects } from "../../services/auth";
 
 function TaskList({ studentName="Juan" }) {
   const [activeSubject, setActiveSubject] = useState("All");
+  const [subject, setSubject] = useState([]);
   const [task, setTask] = useState([]);
   const { student } = useUser();
 
@@ -13,18 +14,34 @@ function TaskList({ studentName="Juan" }) {
     const fetchTask = async () => {
       try {
         const data = await getTasks();
-        setTask(data);
+        setTask(Array.isArray(data) ? [...data].reverse() : []);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const fetchSubjects = async () => {
+      try {
+        const data = await getSubjects();
+        setSubject(data);
+        console.log(data);
       } catch (error) {
         console.log(error);
       }
     }
 
     fetchTask();
+    fetchSubjects();
   }, []);
 
-  const subjects = ["All", "GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];
+  const formatDate = (date) => new Date(date).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
 
-  const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject === activeSubject);
+  const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject.code === activeSubject);
 
   return (
     <section className="min-h-screen p-10" id="task-list">
@@ -42,13 +59,24 @@ function TaskList({ studentName="Juan" }) {
 
       {/* FILTER BUTTONS */}
       <div className="mt-5">
-        {subjects.map((subject) => (
+        <Button
+            text="All"
+            onClick={() => setActiveSubject("All")}
+            bgColor={activeSubject === "All" ? "bg-[#1B651B]" : "bg-white"}
+            typography={activeSubject === "All" ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+            dimensions="rounded-md"
+            padding="px-5 py-1"
+            shadow="shadow-md border border-gray-200"
+            margin="mr-4"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+          />
+        {subject.map((subject) => (
           <Button
-            key={subject}
-            text={subject}
-            onClick={() => setActiveSubject(subject)}
-            bgColor={activeSubject === subject ? "bg-[#1B651B]" : "bg-white"}
-            typography={activeSubject === subject ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+            key={subject.id}
+            text={subject.code}
+            onClick={() => setActiveSubject(subject.code)}
+            bgColor={activeSubject === subject.code ? "bg-[#1B651B]" : "bg-white"}
+            typography={activeSubject === subject.code ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
             dimensions="rounded-md"
             padding="px-5 py-1"
             shadow="shadow-md border border-gray-200"
@@ -73,21 +101,27 @@ function TaskList({ studentName="Juan" }) {
           <table className="w-full h-full">
             <tbody>
               {filteredTasks.map((t, i) => (
-                <tr key={i} className="grid grid-cols-[2fr_1fr_1fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
+                <tr key={i} className="grid grid-cols-[3fr_1fr_1fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
                   <td>{t.title}</td>
                   <td>{t.subject?.code}</td>
-                  <td>{t.dueDate}</td>
+                  <td>{formatDate(t.dueDate)}</td>
                 </tr>
               ))}
-              {activeSubject == "All" && filteredTasks.length === 0 ? (
+              {activeSubject === "All" && filteredTasks.length === 0 && (
                 <tr className="flex justify-center items-center flex-1 h-full">
-                  <td colSpan={3} className="text-center text-gray-400 p-5">No tasks for today. Great job!</td>
+                  <td colSpan={3} className="text-center text-gray-400 p-5">
+                    No tasks for today. Great job!
+                  </td>
                 </tr>
-              ) : (
+              )}
+
+              {filteredTasks.length === 0 && (
                 <tr className="flex justify-center items-center flex-1 h-full">
-                  <td colSpan={3} className="text-center text-gray-400 p-5">No tasks for this subject. Keep up the good work!</td>
+                  <td colSpan={3} className="text-center text-gray-400 p-5">
+                    No tasks for this subject. Keep up the good work!
+                  </td>
                 </tr>
-              ) }
+              )}
             </tbody>
           </table>
         </div>
