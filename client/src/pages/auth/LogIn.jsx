@@ -1,9 +1,9 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { verifyLogin, getMe } from "../../services/auth";
-import Button from "../../components/ui/Button";
+import { verifyLogin, getMe } from "../../services/auth.js";
+import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
-import { handleApiError } from "../../services/errorHandler";
+import { handleApiError } from "../../services/errorHandler.js";
 
 function LogIn() {
   const [email, setEmail] = useState("");

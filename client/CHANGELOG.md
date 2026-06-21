@@ -1,18 +1,5 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
-### [0.0.2](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.1...v0.0.2) (2026-06-19)
-
-
-### Features
-
-* **footer:** footer section in dashboard ([3a46548](https://github.com/eli-fstn/Kabsupanion/commit/3a46548039bb18e9f1744310da297f563079dad0))
-* **footer:** footer section in dashboard ([40285df](https://github.com/eli-fstn/Kabsupanion/commit/40285dfdf7383096d5bc97eda348954dd552a78d))
-* **sidebar:** sidebar for admin's dashboard ([fb08fd9](https://github.com/eli-fstn/Kabsupanion/commit/fb08fd9dcf007957a1b4cbb183d34fe11b1e7db8))
-
-# Changelog
-
 All notable changes to the **Kabsupanion** (front-end) are documented here.
 
 This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format
@@ -21,6 +8,15 @@ and adheres to [Semantic Versioning](https://semver.org/).
 This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
 
 ## [Unreleased]
+
+### [0.0.2](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.1...v0.0.2) (2026-06-19)
+
+### Features
+
+* **footer:** footer section in dashboard ([40285df](https://github.com/eli-fstn/Kabsupanion/commit/40285dfdf7383096d5bc97eda348954dd552a78d))
+* **sidebar:** sidebar for admin's dashboard ([fb08fd9](https://github.com/eli-fstn/Kabsupanion/commit/fb08fd9dcf007957a1b4cbb183d34fe11b1e7db8))
+
+---
 
 ### Added
 
