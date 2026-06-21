@@ -15,7 +15,6 @@ function AdminDashboard() {
     const fetchMasterlist = async () => {
       try {
         const data = await getMasterlist();
-        console.log(data);
         setMasterlist(data);
       } catch (error) {
         console.log(error);
@@ -62,6 +61,7 @@ function AdminDashboard() {
     name: subject,
     value: task.filter(t => t.subject === subject).length,
   })).filter(s => s.value > 0);
+
   return (
     <div className="bg-[#F4F4F4] min-h-screen flex">
       <Sidebar />

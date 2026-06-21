@@ -1,21 +1,35 @@
 import { useEffect, useRef } from "react";
 
+function getScrollbarWidth() {
+  return window.innerWidth - document.documentElement.clientWidth;
+}
+
 function Modal({ isOpen, onClose, children }) {
 
   const modalRef = useRef(null);
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    const originalPointerEvents = document.body.style.pointerEvents;
+
     if (isOpen) {
+      const scrollbarWidth = getScrollbarWidth();
       document.body.style.overflow = "hidden";
-      document.body.style.pointerEvents = "none"; 
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+      document.body.style.pointerEvents = "none";
     } else {
-      document.body.style.overflow = "";
-      document.body.style.pointerEvents = "";
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+      document.body.style.pointerEvents = originalPointerEvents;
     }
 
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.pointerEvents = "";
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+      document.body.style.pointerEvents = originalPointerEvents;
     };
   }, [isOpen]);
 

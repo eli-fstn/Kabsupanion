@@ -23,17 +23,17 @@ export default function ClassResources() {
   });
 
   useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const data = await getResources();
+        setResources(data);
+      } catch (error) {
+        console.log(error);
+      } 
+    }
+
     fetchResources();
   }, []);
-
-  const fetchResources = async () => {
-    try {
-      const data = await getResources();
-      setResources(data);
-    } catch (error) {
-      console.log(error);
-    } 
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
