@@ -31,6 +31,7 @@ function AdminMasterlist() {
     try {
       const data = await getMasterlist();
       setList(data);
+      console.log(data);
     } catch (err) {
       console.log(err);
     } finally {
@@ -152,7 +153,7 @@ function AdminMasterlist() {
               <table className="w-full">
                 <tbody>
                   {filteredStudents.map((s, i) => (
-                    <tr key={s.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center text-sm font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
+                    <tr key={i.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center text-sm font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
                       <td className="text-[#4a4a4a88]">{i + 1}</td>
                       <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
                       <td>{s.studentNumber}</td>
@@ -180,7 +181,7 @@ function AdminMasterlist() {
         {/* Add Modal */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
           <form onSubmit={handleSubmit} className="flex flex-col w-80 p-5">
-            <p className="font-bold text-[1.3rem] text-[#1B651B] uppercase font-['Montserrat'] tracking-wide">Add Masterlist Entry</p>
+            <p className="font-bold text-[1.2rem] text-[#1B651B] uppercase font-['Montserrat'] tracking-wide">Add Masterlist Entry</p>
             <p className="text-gray-400 text-sm mb-5">Add a new student to the masterlist.</p>
 
             <label className="text-xs font-bold mb-1 mt-3">Full Name <span className="text-red-400">*</span></label>
@@ -188,7 +189,7 @@ function AdminMasterlist() {
             {error.name && <p className="text-red-500 text-xs">{error.name}</p>}
 
             <label className="text-xs font-bold mb-1 mt-4">Student Number <span className="text-red-400">*</span></label>
-            <input type="text" value={studentNumber} placeholder="9-digit student number" onChange={(e) => { setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.studentNumber ? "border-red-500" : "border-gray-300"}`} />
+            <input type="text" value={studentNumber} placeholder="9-digit student number" onChange={(e) => { setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.studentNumber ? "border-red-500" : "border-gray-300"}`} maxLength={9} />
             {error.studentNumber && <p className="text-red-500 text-xs">{error.studentNumber}</p>}
 
             {error.general && (<p className="text-red-500 text-xs font-bold text-center mt-2">{error.general}</p>)}
