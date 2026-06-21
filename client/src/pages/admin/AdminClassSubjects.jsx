@@ -26,7 +26,7 @@ function AdminSubjects() {
   const fetchSubjects = async () => {
     try {
       const data = await getSubjects();
-      setSubjects(data);
+      setSubjects(Array.isArray(data) ? [...data].reverse() : []);
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +36,6 @@ function AdminSubjects() {
     fetchSubjects();
   }, []);
 
-  // Add
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
@@ -66,7 +65,6 @@ function AdminSubjects() {
     setModalOpen(false);
   };
 
-  // Edit
   const handleEditOpen = (subject) => {
     setSelectedSubject(subject);
     setEditCode(subject.code);
@@ -92,7 +90,6 @@ function AdminSubjects() {
     }
   };
 
-  // Delete
   const handleDeleteOpen = (subject) => {
     setSelectedSubject(subject);
     setDeleteModalOpen(true);
@@ -121,7 +118,7 @@ function AdminSubjects() {
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="grid grid-cols-[.2fr_.5fr_2fr_3fr_.6fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+              <tr className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
                 <th className="flex items-center">No.</th>
                 <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="22" height="22" />Code</th>
                 <th className="flex items-center"><Icon className="mr-2" icon="mdi:text-box-outline" width="22" height="22" />Name</th>
@@ -136,7 +133,7 @@ function AdminSubjects() {
               <table className="w-full">
                 <tbody>
                   {subjects.map((t, i) => (
-                    <tr key={t.id} className="grid grid-cols-[.2fr_.5fr_2fr_3fr_.6fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
+                    <tr key={t.id} className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-2 items-center text-sm font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
                       <td className="text-[#4a4a4a88]">{i + 1}</td>
                       <td>{t.code}</td>
                       <td>{t.name}</td>

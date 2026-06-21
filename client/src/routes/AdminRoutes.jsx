@@ -5,7 +5,7 @@ import AdminList from "../pages/admin/AdminTaskList.jsx";
 import AdminSched from "../pages/admin/AdminSched.jsx";
 import AdminResources from "../pages/admin/AdminResources.jsx";
 import AdminSubjects from "../pages/admin/AdminClassSubjects.jsx";
-import AdminMasterlist from "../pages/admin/AdminClassList.jsx";
+import AdminMasterlist from "../pages/admin/AdminMasterlist.jsx";
 
 function AdminRoutes() {
   return(
