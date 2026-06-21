@@ -7,16 +7,13 @@ function Sidebar() {
   const { student } = useUser();
   const navigate = useNavigate();
 
-  // paste this in your browser console
-  console.log(localStorage.getItem("token"));
-
   const userSignOut = () => {
     localStorage.clear("token");
     navigate("/", { replace: true });
   }
 
   return (
-  <div className="w-64 bg-white border border-gray-200 min-h-screen p-3 flex flex-col">
+  <div className="w-64 sticky top-0 h-screen bg-white border border-gray-200 min-h-screen p-3 flex flex-col">
 
     {/* TOP SECTION */}
     <div>
