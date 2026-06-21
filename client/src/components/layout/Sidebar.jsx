@@ -47,10 +47,11 @@ function Sidebar() {
       <ul className="mt-10 px-2">
         {[
           ["Dashboard", "material-symbols:dashboard-outline", "/admin/dashboard"],
-          ["Task List", "ix:tasks-all", "/admin/"],
-          ["Class Schedule", "akar-icons:schedule", "/admin/"],
-          ["Class Resources", "grommet-icons:resources", "/admin/"],
-          ["Masterlist", "solar:list-bold", "/admin/"],
+          ["Task List", "ix:tasks-all", "/admin/tasklist"],
+          ["Class Schedule", "akar-icons:schedule", "/admin/schedule"],
+          ["Class Resources", "grommet-icons:resources", "/admin/resources"],
+          ["Class Subjects", "material-symbols:book-outline", "/admin/subjects"],
+          ["Masterlist", "solar:list-bold", "/admin/masterlist"],
         ].map(([label, icon, route]) => (
           <Link key={label} to={route}>
             <li key={label} className="mb-2 flex items-center p-2 rounded-md transition-all duration-200 active:scale-95 hover:border-l-4 hover:border-l-[#1B651B] hover:text-[#1B651B] hover:bg-[#f4f4f4] text-[#828282]">
