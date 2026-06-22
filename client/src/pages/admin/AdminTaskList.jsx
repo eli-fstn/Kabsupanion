@@ -3,7 +3,7 @@ import { getTasks, uploadTask, editTask, deleteTask } from "../../services/taskL
 import { getSubjects } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { handleApiError } from "../../services/errorHandler";
+import { handleApiError } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { formatDate } from "../../../utils/FormattedDate";

@@ -22,7 +22,7 @@ function AppRoutes() {
       <Route path="/error/404" element={<Error404 />} />
       <Route path="/error/503" element={<Error503 />} />
 
-      <Route path="*" element={<Error404 />} />
+      <Route path="/*" element={<Error404 />} />
     </Routes>
   );
 }
