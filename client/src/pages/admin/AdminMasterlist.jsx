@@ -181,7 +181,6 @@ function AdminMasterlist() {
                           padding="p-1.5"
                           animation="transition-all duration-200 active:scale-95"
                         />
-
                         <Button
                           text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
                           onClick={() => handleDeleteOpen(s)}
@@ -208,7 +207,7 @@ function AdminMasterlist() {
               text="+ Add Student" 
               onClick={() => setModalOpen(true)} 
               bgColor="bg-[#1B651B]" 
-              typography="text-white font-bold text-sm" 
+              typography="text-white font-bold text-xs" 
               padding="px-5 py-2" 
               dimensions="w-fit rounded-md" 
               animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
@@ -242,14 +241,14 @@ function AdminMasterlist() {
               onChange={(e) => { 
                 setStudentNumber(e.target.value); 
                 setError((prev) => ({ ...prev, studentNumber: "" })); }} 
-              className={`border rounded-md mt-1 mb-5 p-2 w-full outline-none text-xs focus:border-green-700 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
                 ${error.studentNumber ? "border-red-500" : "border-gray-300"}`} 
               maxLength={9} />
             {error.studentNumber && <p className="text-red-500 text-xs">{error.studentNumber}</p>}
 
             {error.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-2">
+            <div className="flex flex-row justify-end gap-3 mt-5">
               <Button 
                 type="button" 
                 onClick={handleClose} 
@@ -292,13 +291,13 @@ function AdminMasterlist() {
               type="text" 
               value={editStudentNumber} 
               onChange={(e) => { setEditStudentNumber(e.target.value); setEditError((prev) => ({ ...prev, studentNumber: "" })); }} 
-              className={`border rounded-md mt-1 mb-5 p-2 w-full outline-none text-xs focus:border-green-700 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
                 ${editError.studentNumber ? "border-red-500" : "border-gray-300"}`} />
             {editError.studentNumber && <p className="text-red-500 text-xs">{editError.studentNumber}</p>}
 
-            {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-2">{editError.general}</p>)}
+            {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-2">
+            <div className="flex flex-row justify-end gap-3 mt-5">
               <Button 
                 type="button" 
                 onClick={() => setEditModalOpen(false)} 

@@ -46,7 +46,7 @@ function Modal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
 
   return (
-  <div className="fixed inset-0 z-1000 bg-black/40 flex justify-center items-center" style={{ pointerEvents: "all" }} >
+  <div className="fixed inset-0 z-1000 bg-black/70 flex justify-center items-center" style={{ pointerEvents: "all" }} >
     <div ref={modalRef} className="bg-white rounded-xl p-3" style={{ pointerEvents: "all" }}>
       {children}
     </div>
