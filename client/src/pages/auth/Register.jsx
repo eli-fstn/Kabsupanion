@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { registerAccount } from "../../services/auth";
+import { registerAccount } from "../../services/auth.ts";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";

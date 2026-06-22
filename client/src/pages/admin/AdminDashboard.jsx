@@ -1,6 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Sidebar from "../../components/layout/Sidebar";
-import { getTasks, getMasterlist, getResources, getSubjects } from "../../services/auth";
+import { getTasks } from "../../services/taskList";
+import { getMasterlist } from "../../services/masterlist";
+import { getResources } from "../../services/resources";
+import { getSubjects } from "../../services/subjects";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";

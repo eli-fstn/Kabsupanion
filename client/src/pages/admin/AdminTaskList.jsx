@@ -1,5 +1,6 @@
 import Sidebar from "../../components/layout/Sidebar";
-import { getTasks, getSubjects, uploadTask, editTask, deleteTask } from "../../services/auth";
+import { getTasks, uploadTask, editTask, deleteTask } from "../../services/taskList";
+import { getSubjects } from "../../services/subjects";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler";

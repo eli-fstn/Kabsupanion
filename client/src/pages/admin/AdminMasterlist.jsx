@@ -1,5 +1,5 @@
 import Sidebar from "../../components/layout/Sidebar";
-import { getMasterlist, addToMasterlist, editMasterlist, deleteMasterlist } from "../../services/auth";
+import { getMasterlist, addToMasterlist, editMasterlist, deleteMasterlist } from "../../services/masterlist";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler";

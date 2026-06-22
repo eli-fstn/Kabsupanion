@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { getMasterlist } from "../../services/auth";
+import { getMasterlist } from "../../services/masterlist";
 import Button from "../../components/ui/Button";
 
 function ClassList() {

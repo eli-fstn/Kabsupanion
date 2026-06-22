@@ -1,7 +1,7 @@
 import { useState , useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ResourceCard from "../../components/ui/ResourceCard";
-import { getResources, uploadResource } from "../../services/auth";
+import { getResources, uploadResource } from "../../services/resources";
 import { handleApiError } from "../../services/errorHandler";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
