@@ -7,6 +7,7 @@ import { getSubjects } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
+import Pagination from "../../components/ui/Pagination.jsx";
 
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);
@@ -14,6 +15,7 @@ function AdminDashboard() {
   const [subjects, setSubjects] = useState([]);
   const [resources, setResources] = useState([]);
   const { student } = useUser();
+  const [resourcePage, setResourcePage] = useState(1);
 
   const fetchMasterlist = async () => {
     try {
@@ -58,11 +60,18 @@ function AdminDashboard() {
     fetchSubjects();
   }, []);
 
+  const resourcesPerPage = 5;
+  const totalResourcePages = Math.ceil(resources.length / resourcesPerPage);
+  const paginatedResources = resources.slice(
+    (resourcePage - 1) * resourcesPerPage,
+    resourcePage * resourcesPerPage
+  );
+
   const TASK_COLORS = ["#1B651B", "#185FA5", "#BA7517", "#0F6E56", "#A32D2D", "#533AB7", "#3a3a3a", "#D4537E"];
 
   const subjectData = subjects.map((subject) => ({
-    name: subject,
-    resources: resources.filter(r => r.subject === subject).length,
+    name: subject.code,
+    resources: resources.filter(r => r.subject.code === subject.code).length,
   }));
 
   const taskData = subjects.map((subject) => ({
@@ -113,25 +122,36 @@ function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5 mt-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mt-5 flex flex-col">
           <p className="font-bold text-[1rem] mb-4">Recent Resources</p>
-          {resources.slice(0, 5).map((r) => (
-            <div key={r.id} className="flex items-center gap-3 py-3 border-b border-gray-100">
-              <div className="bg-[#faeeda] rounded-lg p-2">
-                <Icon icon="mdi:file-document-outline" width="20" className="text-[#BA7517]" />
+
+          {/* Recent Resources */}
+          <div className="h-[285px] flex flex-col justify-start">
+            {paginatedResources.length > 0 ? (
+              paginatedResources.map((r) => (
+                <div key={r.id} className="flex items-center gap-3 py-3 border-b border-gray-100">
+                  <div className="bg-[#faeeda] rounded-lg p-2">
+                    <Icon icon="mdi:file-document-outline" width="20" className="text-[#BA7517]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-sm">{r.title}</p>
+                    <p className="text-gray-400 text-xs">{r.subject.code} · {r.uploadedBy.name}</p>
+                  </div>
+                  <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
+                </div>
+              ))
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <p className="text-gray-400">No resources uploaded yet.</p>
               </div>
-              <div className="flex-1">
-                <p className="font-bold text-sm">{r.title}</p>
-                <p className="text-gray-400 text-xs">{r.subject} · {r.uploadedBy}</p>
-              </div>
-              <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
-            </div>
-          ))}
-          {resources.length === 0 && (
-            <div className="flex justify-center items-center flex-1 h-full">
-              <p colSpan={4} className="text-center text-gray-400 p-5">No resources uploaded yet.</p>
-            </div>
-          )}
+            )}
+          </div>
+
+          <Pagination
+            currentPage={resourcePage}
+            totalPages={totalResourcePages}
+            onPageChange={setResourcePage}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-5">
@@ -145,7 +165,11 @@ function AdminDashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 9 }} />
                 <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="resources" fill="#BA7517" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="resources" radius={[4, 4, 0, 0]}>
+                  {subjectData.map((entry, index) => (
+                    <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
