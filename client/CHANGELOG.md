@@ -1,13 +1,25 @@
 # Changelog
 
-All notable changes to the **Kabsupanion** (front-end) are documented here.
+All notable changes to the Kabsupanion (front-end) are documented here.
 
-This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format
-and adheres to [Semantic Versioning](https://semver.org/).
+This project follows the Keep a Changelog format and adheres to Semantic Versioning.
 
 This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
 
-## [Unreleased]
+### [0.0.3](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.2...v0.0.3) (2026-06-21)
+
+
+### Features
+
+* can now CRUD subjects in admin :O <3 ([31543c5](https://github.com/eli-fstn/Kabsupanion/commit/31543c59fbdd3e89aa45bcad148e6c1d37a0eb62))
+* created statistic cards for dashboard page in admin ([a9b9778](https://github.com/eli-fstn/Kabsupanion/commit/a9b9778fa0f24bd13082b9f4038e2365d8509b62))
+* CRUD operations in admin task list and masterlist ([5f7cc2c](https://github.com/eli-fstn/Kabsupanion/commit/5f7cc2c603bb24ccc0d5b2b42333526819092356))
+* user context for pages that needed the user ([25fef8b](https://github.com/eli-fstn/Kabsupanion/commit/25fef8befe06e23d300d6ada704110404897e504))
+
+
+### Bug Fixes
+
+* pie chart in admin dashboard ([0bde094](https://github.com/eli-fstn/Kabsupanion/commit/0bde0949c929614be7ddfb56f6e6603d9b3d467e))
 
 ### [0.0.2](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.1...v0.0.2) (2026-06-19)
 

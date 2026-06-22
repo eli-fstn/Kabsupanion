@@ -1,6 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Sidebar from "../../components/layout/Sidebar";
-import { getTasks, getMasterlist, getResources, getSubjects } from "../../services/auth";
+import { getTasks } from "../../services/taskList";
+import { getMasterlist } from "../../services/masterlist";
+import { getResources } from "../../services/resources";
+import { getSubjects } from "../../services/subjects";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
@@ -12,43 +15,43 @@ function AdminDashboard() {
   const [resources, setResources] = useState([]);
   const { student } = useUser();
 
+  const fetchMasterlist = async () => {
+    try {
+      const data = await getMasterlist();
+      setMasterlist(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetchTask = async () => {
+    try {
+      const data = await getTasks();
+      setTask(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetchResources = async () => {
+    try {
+      const data = await getResources();
+      setResources(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetchSubjects = async () => {
+    try {
+      const data = await getSubjects();
+      setSubjects(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
-    const fetchMasterlist = async () => {
-      try {
-        const data = await getMasterlist();
-        setMasterlist(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    const fetchTask = async () => {
-      try {
-        const data = await getTasks();
-        setTask(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    const fetchResources = async () => {
-      try {
-        const data = await getResources();
-        setResources(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    const fetchSubjects = async () => {
-      try {
-        const data = await getSubjects();
-        setSubjects(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     fetchMasterlist();
     fetchResources();
     fetchTask();
@@ -71,19 +74,14 @@ function AdminDashboard() {
     <div className="bg-[#F4F4F4] min-h-screen flex">
       <Sidebar />
 
-      {/* Main Content */}
       <div className="flex-1 p-8">
 
-        {/* Header */}
         <div className="mb-6">
           <p className="font-bold text-[1.7rem] font-[montserrat]">Dashboard</p>
           <p className="text-gray-400 text-sm">Welcome back,<span className="font-[montserrat] font-bold pl-1 text-[1.3rem] text-[#003A02]">{student?.user?.name.split(" ").at(0)}!</span> Here's what's happening in your section.</p>
         </div>
 
-        {/* Stat Cards */}
         <div className="grid grid-cols-3 gap-4">
-
-          {/* Total Students */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
             <div className="bg-[#eaf3de] rounded-lg p-3">
               <Icon icon="akar-icons:people-group" width="26" className="text-[#1B651B]" />
@@ -94,7 +92,6 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Uploaded Tasks */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
             <div className="bg-[#e6f1fb] rounded-lg p-3">
               <Icon icon="ix:tasks-all" width="26" className="text-[#185FA5]" />
@@ -105,7 +102,6 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Uploaded Resources */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
             <div className="bg-[#faeeda] rounded-lg p-3">
               <Icon icon="grommet-icons:resources" width="26" className="text-[#BA7517]" />
@@ -117,7 +113,6 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent uploaded resources */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 mt-5">
           <p className="font-bold text-[1rem] mb-4">Recent Resources</p>
           {resources.slice(0, 5).map((r) => (

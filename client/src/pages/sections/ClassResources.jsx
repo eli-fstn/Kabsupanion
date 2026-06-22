@@ -1,11 +1,12 @@
 import { useState , useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ResourceCard from "../../components/ui/ResourceCard";
-import { getResources, uploadResource } from "../../services/auth";
+import { getResources, uploadResource } from "../../services/resources";
 import { handleApiError } from "../../services/errorHandler";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { useUser } from "../../context/userContext";
+import UserIcon from "../../components/common/UserIcon";
 
 
 export default function ClassResources() {
@@ -22,16 +23,16 @@ export default function ClassResources() {
     general: ""
   });
 
-  useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        const data = await getResources();
-        setResources(data);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
+  const fetchResources = async () => {
+    try {
+      const data = await getResources();
+      setResources(data);
+    } catch (error) {
+      console.log(error);
+    } 
+  }
 
+  useEffect(() => {
     fetchResources();
   }, []);
 
@@ -161,12 +162,11 @@ export default function ClassResources() {
 
             {/* Uploaded by (current user)*/}
             <label className="text-xs font-bold mb-1 mt-3">Uploaded by</label>
-            <div className="flex flex-row ">
-              <Icon icon="mdi:account-circle" width="20" className="text-gray-400" />
-              <p className="ml-2 text-sm font-bold text-gray-500 mb-8">{student?.user?.name}</p>
+            <div className="flex flex-row items-center">
+              <UserIcon typography="text-gray-400" dimensions="w-6" />
+              <span className="ml-2 text-sm font-bold text-gray-500 mb-8">{student?.user?.name}</span>
             </div>
             
-
             {error.general && (
               <p className="text-red-500 text-[.8rem] leading-4 font-bold mb-3 text-center">{error.general}</p>
             )}

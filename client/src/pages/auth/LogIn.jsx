@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { verifyLogin } from "../../services/auth.js";
+import { verifyLogin } from "../../services/auth.ts";
 import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"

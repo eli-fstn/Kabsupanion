@@ -1,5 +1,5 @@
 import Sidebar from "../../components/layout/Sidebar";
-import { getSubjects, uploadSubject, editSubject, deleteSubject } from "../../services/auth";
+import { getSubjects, uploadSubject, editSubject, deleteSubject } from "../../services/subjects";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler";
@@ -136,19 +136,27 @@ function AdminSubjects() {
                     <tr key={i.id} className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-2 items-center text-sm font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
                       <td className="text-[#4a4a4a88]">{i + 1}</td>
                       <td>{t.code}</td>
-                      <td>{t.name}</td>
+                      <td className="text-[#828282]">{t.name}</td>
                       <td>{t.description ?? "—"}</td>
                       <td className="flex gap-4">
-                        <button
+                        <Button
+                          text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
                           onClick={() => handleEditOpen(t)}
-                          className="p-1.5 rounded-md bg-[#e6f1fb] hover:bg-[#185FA5] text-[#185FA5] hover:text-white transition-colors duration-200">
-                          <Icon icon="mdi:pencil-outline" width="16" height="16" />
-                        </button>
-                        <button
+                          bgColor="hover:bg-gray-100"
+                          typography="text-gray-700 hover:text-black"
+                          dimensions="rounded-md"
+                          padding="p-1.5"
+                          animation="transition-all duration-200 active:scale-95"
+                        />
+                        <Button
+                          text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
                           onClick={() => handleDeleteOpen(t)}
-                          className="p-1.5 rounded-md bg-[#fcebeb] hover:bg-[#A32D2D] text-[#A32D2D] hover:text-white transition-colors duration-200">
-                          <Icon icon="mdi:trash-can-outline" width="16" height="16" />
-                        </button>
+                          bgColor="hover:bg-red-100"
+                          typography="text-red-500 hover:text-red-700"
+                          dimensions="rounded-md"
+                          padding="p-1.5"
+                          animation="transition-all duration-200 active:scale-95"
+                        />
                       </td>
                     </tr>
                   ))}
@@ -162,13 +170,13 @@ function AdminSubjects() {
           </div>
 
           <div className="flex justify-center items-center mb-5 mt-4">
-            <Button
-              text="Add Subject"
-              onClick={() => setModalOpen(true)}
-              bgColor="bg-[#1B651B]"
-              typography="text-white font-bold"
-              padding="px-6 py-2"
-              dimensions="w-fit rounded-md"
+            <Button 
+              text="+ Add Subject" 
+              onClick={() => setModalOpen(true)} 
+              bgColor="bg-[#1B651B]" 
+              typography="text-white font-bold text-xs" 
+              padding="px-5 py-2" 
+              dimensions="w-fit rounded-md" 
               animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
             />
           </div>
@@ -176,17 +184,17 @@ function AdminSubjects() {
 
         {/* Add Modal */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-5">
-            <p className="font-bold text-[1.3rem] text-[#1B651B] uppercase font-['Montserrat'] tracking-wide">Add Subject</p>
-            <p className="text-gray-400 text-sm mb-5">Add a new subject for your section.</p>
+          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
+            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Add Subject</p>
+            <p className="text-gray-400 text-xs mb-5">Add a new subject for your section.</p>
 
-            <label className="text-xs font-bold mb-1 mt-3">Subject Code <span className="text-red-400">*</span></label>
+            <label className="text-xs font-bold mb-1 mt-2">Subject Code <span className="text-red-400">*</span></label>
             <input
               type="text"
               value={code}
               placeholder="e.g. DCIT 25A"
               onChange={(e) => { setCode(e.target.value); setError((prev) => ({ ...prev, code: "" })); }}
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.code ? "border-red-500" : "border-gray-300"}`}
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${error.code ? "border-red-500" : "border-gray-300"}`}
             />
             {error.code && <p className="text-red-500 text-xs">{error.code}</p>}
 
@@ -196,7 +204,7 @@ function AdminSubjects() {
               value={name}
               placeholder="e.g. Data Structures and Algorithms"
               onChange={(e) => { setName(e.target.value); setError((prev) => ({ ...prev, name: "" })); }}
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.name ? "border-red-500" : "border-gray-300"}`}
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${error.name ? "border-red-500" : "border-gray-300"}`}
             />
             {error.name && <p className="text-red-500 text-xs">{error.name}</p>}
 
@@ -206,30 +214,30 @@ function AdminSubjects() {
               placeholder="Enter subject description"
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="border border-gray-300 rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 resize-none"
+              className="border border-gray-300 rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 resize-none"
             />
 
             {error.general && (
-              <p className="text-red-500 text-xs font-bold text-center mt-2">{error.general}</p>
+              <p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>
             )}
 
-            <div className="flex gap-3 mt-5">
-              <Button
-                type="button"
-                onClick={handleClose}
-                text="Cancel"
-                bgColor="bg-gray-100 hover:bg-gray-200"
-                typography="text-gray-600 font-bold text-sm"
-                padding="px-4 py-2"
-                dimensions="w-full rounded-md"
+            <div className="flex flex-row justify-end gap-3 mt-5">
+              <Button 
+                type="button" 
+                onClick={handleClose} 
+                text="Cancel" 
+                bgColor="bg-gray-100 hover:bg-gray-200" 
+                typography="text-gray-600 font-bold text-xs" 
+                padding="px-4 py-2" 
+                dimensions="w-fit rounded-md"
               />
-              <Button
-                type="submit"
-                text="Submit"
-                bgColor="bg-[#1B651B]"
-                typography="text-white font-bold text-sm"
-                padding="px-4 py-2"
-                dimensions="w-full rounded-md"
+              <Button 
+                type="submit" 
+                text="Submit" 
+                bgColor="bg-[#1B651B]" 
+                typography="text-white font-bold text-xs" 
+                padding="px-4 py-2" 
+                dimensions="w-fit rounded-md" 
                 animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
               />
             </div>
@@ -238,16 +246,16 @@ function AdminSubjects() {
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-5">
-            <p className="font-bold text-[1.3rem] text-[#1B651B] uppercase font-['Montserrat'] tracking-wide">Edit Subject</p>
-            <p className="text-gray-400 text-sm mb-5">Update the subject details.</p>
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
+            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Subject</p>
+            <p className="text-gray-400 text-xs mb-5">Update the subject details.</p>
 
-            <label className="text-xs font-bold mb-1 mt-3">Subject Code <span className="text-red-400">*</span></label>
+            <label className="text-xs font-bold mb-1 mt-2">Subject Code <span className="text-red-400">*</span></label>
             <input
               type="text"
               value={editCode}
               onChange={(e) => { setEditCode(e.target.value); setEditError((prev) => ({ ...prev, code: "" })); }}
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-blue-500 ${editError.code ? "border-red-500" : "border-gray-300"}`}
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${editError.code ? "border-red-500" : "border-gray-300"}`}
             />
             {editError.code && <p className="text-red-500 text-xs">{editError.code}</p>}
 
@@ -256,7 +264,7 @@ function AdminSubjects() {
               type="text"
               value={editName}
               onChange={(e) => { setEditName(e.target.value); setEditError((prev) => ({ ...prev, name: "" })); }}
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-blue-500 ${editError.name ? "border-red-500" : "border-gray-300"}`}
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${editError.name ? "border-red-500" : "border-gray-300"}`}
             />
             {editError.name && <p className="text-red-500 text-xs">{editError.name}</p>}
 
@@ -265,30 +273,30 @@ function AdminSubjects() {
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               rows={3}
-              className="border border-gray-300 rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-blue-500 resize-none"
+              className="border border-gray-300 rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 resize-none"
             />
 
             {editError.general && (
-              <p className="text-red-500 text-xs font-bold text-center mt-2">{editError.general}</p>
+              <p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>
             )}
 
-            <div className="flex gap-3 mt-5">
+            <div className="flex flex-row justify-end gap-3 mt-5">
               <Button
                 type="button"
                 onClick={() => setEditModalOpen(false)}
                 text="Cancel"
                 bgColor="bg-gray-100 hover:bg-gray-200"
-                typography="text-gray-600 font-bold text-sm"
+                typography="text-gray-600 font-bold text-xs"
                 padding="px-4 py-2"
-                dimensions="w-full rounded-md"
+                dimensions="w-fit rounded-md"
               />
               <Button
                 type="submit"
                 text="Save Changes"
                 bgColor="bg-[#1B651B]"
-                typography="text-white font-bold text-sm"
+                typography="text-white font-bold text-xs"
                 padding="px-4 py-2"
-                dimensions="w-full rounded-md"
+                dimensions="w-fit rounded-md"
                 animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
               />
             </div>
@@ -297,38 +305,37 @@ function AdminSubjects() {
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-5">
+          <div className="flex flex-col items-center w-72 p-3">
             <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
               <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
             </div>
-            <p className="font-bold text-[1.1rem] text-center">Delete Subject?</p>
+            <p className="font-bold text-[1rem] text-center text-[#A32D2D]">Delete Subject?</p>
             <p className="text-gray-400 text-sm text-center mt-2 mb-6">
-              Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedSubject?.code}</span>? This action cannot be undone.
+              Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedSubject?.code}?</span> This action cannot be undone.
             </p>
-            <div className="flex gap-3 w-full">
+            <div className="flex justify-center items-center gap-3 w-full">
               <Button
                 type="button"
                 onClick={() => setDeleteModalOpen(false)}
                 text="Cancel"
                 bgColor="bg-gray-100 hover:bg-gray-200"
-                typography="text-gray-600 font-bold text-sm"
+                typography="text-gray-600 font-bold text-xs"
                 padding="px-4 py-2"
-                dimensions="w-full rounded-md"
+                dimensions="w-fit rounded-md"
               />
               <Button
                 type="button"
                 onClick={handleDeleteConfirm}
                 text="Delete"
                 bgColor="bg-[#A32D2D] hover:bg-red-800"
-                typography="text-white font-bold text-sm"
+                typography="text-white font-bold text-xs"
                 padding="px-4 py-2"
-                dimensions="w-full rounded-md"
+                dimensions="w-fit rounded-md"
                 animation="active:scale-95 transition-all duration-100"
               />
             </div>
           </div>
         </Modal>
-
       </div>
     </div>
   );
