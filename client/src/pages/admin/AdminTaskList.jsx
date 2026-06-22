@@ -258,7 +258,7 @@ function AdminList() {
 
             {error.general && (<p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-2">
+            <div className="flex flex-row justify-end gap-3 mt-5">
               <Button 
                 type="button" 
                 onClick={handleClose} 
@@ -283,16 +283,29 @@ function AdminList() {
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-5">
-            <p className="font-bold text-[1.3rem] text-[#1B651B] uppercase font-['Montserrat'] tracking-wide">Edit Task</p>
-            <p className="text-gray-400 text-sm mb-5">Update the task details.</p>
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
+            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Task</p>
+            <p className="text-gray-400 text-xs mb-5">Update the task details.</p>
 
-            <label className="text-xs font-bold mb-1 mt-3">Task Title <span className="text-red-400">*</span></label>
-            <input type="text" value={editTitle} onChange={(e) => { setEditTitle(e.target.value); setEditError((prev) => ({ ...prev, title: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-blue-500 ${editError.title ? "border-red-500" : "border-gray-300"}`} />
+            <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
+            <input 
+              type="text" 
+              value={editTitle} 
+              onChange={(e) => {
+                setEditTitle(e.target.value);
+                setEditError((prev) => ({ ...prev, title: "" })); }} 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                ${editError.title ? "border-red-500" : "border-gray-300"}`} />
             {editError.title && <p className="text-red-500 text-xs">{editError.title}</p>}
 
             <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
-            <select value={editSubjectID} onChange={(e) => { setEditSubjectID(e.target.value); setEditError((prev) => ({ ...prev, subject: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-blue-500 bg-white ${editError.subject ? "border-red-500" : "border-gray-300"}`}>
+            <select 
+              value={editSubjectID} 
+              onChange={(e) => {
+                setEditSubjectID(e.target.value); 
+                setEditError((prev) => ({ ...prev, subject: "" })); }} 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
+                ${editError.subject ? "border-red-500" : "border-gray-300"}`}>
               <option value="">Select a subject</option>
               {subjects.map((subject) => (
                 <option key={subject.id} value={subject.id}>{subject.code}</option>
@@ -301,29 +314,68 @@ function AdminList() {
             {editError.subject && <p className="text-red-500 text-xs">{editError.subject}</p>}
 
             <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
-            <input type="date" value={editDueDate} onChange={(e) => { setEditDueDate(e.target.value); setEditError((prev) => ({ ...prev, dueDate: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-blue-500 ${editError.dueDate ? "border-red-500" : "border-gray-300"}`} />
+            <input 
+              type="date" 
+              value={editDueDate} 
+              onChange={(e) => {
+                setEditDueDate(e.target.value);
+                setEditError((prev) => ({ ...prev, dueDate: "" })); }} 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                ${editError.dueDate ? "border-red-500" : "border-gray-300"}`} />
             {editError.dueDate && <p className="text-red-500 text-xs">{editError.dueDate}</p>}
 
-            {editError.general && (<p className="text-red-500 text-xs font-bold text-center mt-2">{editError.general}</p>)}
+            {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
 
-            <div className="flex gap-3 mt-5">
-              <Button type="button" onClick={() => setEditModalOpen(false)} text="Cancel" bgColor="bg-gray-100 hover:bg-gray-200" typography="text-gray-600 font-bold text-sm" padding="px-4 py-2" dimensions="w-full rounded-md" />
-              <Button type="submit" text="Save Changes" bgColor="bg-[#1B651B]" typography="text-white font-bold text-sm" padding="px-4 py-2" dimensions="w-full rounded-md" animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]" />
+            <div className="flex flex-row justify-end gap-3 mt-5">
+              <Button 
+                type="button" 
+                onClick={() => setEditModalOpen(false)} 
+                text="Cancel"
+                bgColor="bg-gray-100 hover:bg-gray-200" 
+                typography="text-gray-600 font-bold text-xs" 
+                padding="px-4 py-2" 
+                dimensions="w-fit rounded-md"
+              />
+              <Button 
+                type="submit" 
+                text="Save Changes" 
+                bgColor="bg-[#1B651B]" 
+                typography="text-white font-bold text-xs" 
+                padding="px-4 py-2" 
+                dimensions="w-fit rounded-md" 
+                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]" />
             </div>
           </form>
         </Modal>
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-5">
+          <div className="flex flex-col items-center w-72 p-3">
             <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
               <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
             </div>
-            <p className="font-bold text-[1.1rem] text-center">Delete Task?</p>
-            <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedTask?.title}</span>? This action cannot be undone.</p>
-            <div className="flex gap-3 w-full">
-              <Button type="button" onClick={() => setDeleteModalOpen(false)} text="Cancel" bgColor="bg-gray-100 hover:bg-gray-200" typography="text-gray-600 font-bold text-sm" padding="px-4 py-2" dimensions="w-full rounded-md" />
-              <Button type="button" onClick={handleDeleteConfirm} text="Delete" bgColor="bg-[#A32D2D] hover:bg-red-800" typography="text-white font-bold text-sm" padding="px-4 py-2" dimensions="w-full rounded-md" animation="active:scale-95 transition-all duration-100" />
+            <p className="font-bold text-[1.1rem] text-center text-[#A32D2D]">Delete Task?</p>
+            <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedTask?.title}?</span> This action cannot be undone.</p>
+            <div className="flex justify-center items-center gap-3 w-full">
+              <Button 
+                type="button" 
+                onClick={() => setDeleteModalOpen(false)} 
+                text="Cancel" 
+                bgColor="bg-gray-100 hover:bg-gray-200" 
+                typography="text-gray-600 font-bold text-xs" 
+                padding="px-4 py-2" 
+                dimensions="w-fit rounded-md"
+              />
+              <Button 
+                type="button" 
+                onClick={handleDeleteConfirm}
+                text="Delete"
+                bgColor="bg-[#A32D2D] hover:bg-red-800" 
+                typography="text-white font-bold text-xs"
+                padding="px-4 py-2" 
+                dimensions="w-fit rounded-md" 
+                animation="active:scale-95 transition-all duration-100"
+              />
             </div>
           </div>
         </Modal>

@@ -255,7 +255,7 @@ function AdminSubjects() {
               type="text"
               value={editCode}
               onChange={(e) => { setEditCode(e.target.value); setEditError((prev) => ({ ...prev, code: "" })); }}
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-blue-500 ${editError.code ? "border-red-500" : "border-gray-300"}`}
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${editError.code ? "border-red-500" : "border-gray-300"}`}
             />
             {editError.code && <p className="text-red-500 text-xs">{editError.code}</p>}
 
@@ -264,7 +264,7 @@ function AdminSubjects() {
               type="text"
               value={editName}
               onChange={(e) => { setEditName(e.target.value); setEditError((prev) => ({ ...prev, name: "" })); }}
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-blue-500 ${editError.name ? "border-red-500" : "border-gray-300"}`}
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${editError.name ? "border-red-500" : "border-gray-300"}`}
             />
             {editError.name && <p className="text-red-500 text-xs">{editError.name}</p>}
 
@@ -273,7 +273,7 @@ function AdminSubjects() {
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               rows={3}
-              className="border border-gray-300 rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-blue-500 resize-none"
+              className="border border-gray-300 rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 resize-none"
             />
 
             {editError.general && (
