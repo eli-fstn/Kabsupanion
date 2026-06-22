@@ -1,5 +1,5 @@
 import Sidebar from "../../components/layout/Sidebar";
-import { getSubjects, uploadSubject, editSubject, deleteSubject } from "../../services/subjects";
+import { getSubjects, uploadSubject, editSubject, deleteSubject } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler";

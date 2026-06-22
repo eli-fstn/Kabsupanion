@@ -1,7 +1,8 @@
 import { useState , useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ResourceCard from "../../components/ui/ResourceCard";
-import { getResources, uploadResource } from "../../services/resources";
+import { getResources, uploadResource } from "../../services/resources.ts";
+import { getSubjects } from "../../services/subjects.ts";
 import { handleApiError } from "../../services/errorHandler";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
@@ -11,11 +12,12 @@ import UserIcon from "../../components/common/UserIcon";
 
 export default function ClassResources() {
   const [resources, setResources] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const { student } = useUser();
   const [modalOpen, setModalOpen] = useState(false);
   const [title, setTitle] = useState("");
-  const [subject, setSubject] = useState("");
-  const [file, setFile] = useState("");
+  const [subjectID, setSubjectID] = useState("");
+  const [file, setFile] = useState(null);
   const [error, setError] = useState({
     title: "",
     subject: "",
@@ -31,9 +33,18 @@ export default function ClassResources() {
       console.log(error);
     } 
   }
+  const fetchSubjects = async () => {
+    try {
+      const data = await getSubjects();
+      setSubjects(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     fetchResources();
+    fetchSubjects();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -51,7 +62,7 @@ export default function ClassResources() {
       newError.title = "Title is required.";
       hasError = true;
     }
-    if (!subject) {
+    if (!subjectID) {
       newError.subject = "Subject is required.";
       hasError = true;
     }
@@ -66,7 +77,7 @@ export default function ClassResources() {
     }
 
     try {
-      await uploadResource(title, subject, student?.user?.name, file);
+      await uploadResource(title, subjectID, student?.user?.name, file);
       setModalOpen(false);
       fetchResources();
     } catch (error) {
@@ -77,7 +88,7 @@ export default function ClassResources() {
 
   const resetForm = () => {
     setTitle("");
-    setSubject("");
+    setSubjectID("");
     setFile("");
   }
 
@@ -85,8 +96,6 @@ export default function ClassResources() {
     resetForm();
     setModalOpen(false);
   }
-
-  const subjects = ["GNED 04", "MATH 1A", "COSC 55A", "COSC 60B", "DCIT 50A", "DCIT 24A", "INSY 50", "FITT 3"];
 
   return (
     <section className="min-h-screen p-10" id="class-resources">
@@ -102,9 +111,9 @@ export default function ClassResources() {
                 <ResourceCard
                   key={resource.id}
                   title={resource.title}
-                  subject={resource.subjectID}
-                  uploadedBy={resource.uploadedBy}
-                  fileUrl={resource.file}
+                  subject={resource.subject.code}
+                  uploadedBy={resource.uploadedBy.name}
+                  fileUrl={resource.fileUrl}
                 />
               ))}
             </div>
@@ -141,11 +150,17 @@ export default function ClassResources() {
 
             {/* Subject */}
             <label className="text-xs font-bold mb-1 mt-3">Subject</label>
-            <select value={subject} onChange={(e) => {setSubject(e.target.value); setError((prev) => ({ ...prev, subject: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.subject ? "border-red-500" : "border-gray-300"}`} >
+            <select 
+              value={subjectID} 
+              onChange={(e) => {
+                setSubjectID(e.target.value); 
+                setError((prev) => ({ ...prev, subject: "" }));}} 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 
+                ${error.subject ? "border-red-500" : "border-gray-300"}`} >
               <option value="">Select a subject</option>
                 {subjects.map((subject) => (
-                  <option key={subject} value={subject}>
-                    {subject}
+                  <option key={subject.id} value={subject.id}>
+                    {subject.code}
                   </option>
                 ))}
             </select>
@@ -155,7 +170,7 @@ export default function ClassResources() {
 
             {/* File to be uploaded | only accepts .PDF*/}
             <label className="text-xs font-bold mb-1 mt-3">File</label>
-            <input onChange={(e) => {setFile(e.target.value[0]); setError((prev) => ({ ...prev, file: "" }));}} type="file" accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx" className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 ${error.file ? "border-red-500" : "border-gray-200"}`} />
+            <input onChange={(e) => {setFile(e.target.files[0]); setError((prev) => ({ ...prev, file: "" }));}} type="file" accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx" className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 ${error.file ? "border-red-500" : "border-gray-200"}`} />
             {error.file && (
               <p className="text-red-500 text-xs">{error.file}</p>
             )}

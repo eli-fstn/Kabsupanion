@@ -5,3 +5,31 @@ export interface User {
   name: string;
   role: "student" | "admin";
 }
+
+export interface Masterlist {
+  studentNumber: number;
+  fullName: string;
+  role: "student" | "admin";
+}
+
+export interface Tasks {
+  id: number;
+  subjectID: string;
+  title: string;
+  description: string;
+  dueDate: string;
+}
+
+export interface Subjects {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+}
+
+export interface Resources {
+  subjectID: string;
+  title: string;
+  description: string;
+  file: File | null;
+}

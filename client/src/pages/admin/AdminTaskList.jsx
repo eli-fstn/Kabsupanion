@@ -1,6 +1,6 @@
 import Sidebar from "../../components/layout/Sidebar";
-import { getTasks, uploadTask, editTask, deleteTask } from "../../services/taskList";
-import { getSubjects } from "../../services/subjects";
+import { getTasks, uploadTask, editTask, deleteTask } from "../../services/taskList.ts";
+import { getSubjects } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler";
@@ -233,9 +233,11 @@ function AdminList() {
                 setError((prev) => ({ ...prev, subject: "" }));}} 
               className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
                 ${error.subject ? "border-red-500" : "border-gray-300"}`}>
-              <option className="rounded-md">Select a subject</option>
+              <option value="">Select a subject</option>
               {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id} className="rounded-md">{subject.code}</option>
+                <option key={subject.id} value={subject.id}>
+                  {subject.code}
+                </option>
               ))}
             </select>
             {error.subject && (<p className="text-red-500 text-xs">{error.subject}</p>)}

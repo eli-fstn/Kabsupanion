@@ -2,8 +2,8 @@ import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
-import { getTasks } from "../../services/taskList";
-import { getSubjects } from "../../services/subjects";
+import { getTasks } from "../../services/taskList.ts";
+import { getSubjects } from "../../services/subjects.ts";
 import { formatDate } from "../../../utils/FormattedDate";
 
 function TaskList({ studentName="Juan" }) {
