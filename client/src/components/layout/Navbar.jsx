@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button";
+import UserIcon from "../common/UserIcon";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -44,8 +45,8 @@ function Navbar() {
       {/* PROFILE */}
       <div className="relative" ref={dropdownRef}>
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setDropdownOpen((prev) => !prev)}>
-          <div className="bg-gray-200 hover:bg-[#5adb00] rounded-full p-1.5 transition-colors duration-200">
-            <Icon className="text-gray-400 hover:text-[#1B651B] transition-colors duration-200" icon="akar-icons:person" width="25" height="25" />
+          <div className="bg-gray-200 rounded-full p-1.5">
+            <UserIcon typography="text-gray-400" dimensions="w-6 h-6" />
           </div>
           <div className="flex flex-col text-[#3a3a3a88] font-bold leading-4">
             <div>

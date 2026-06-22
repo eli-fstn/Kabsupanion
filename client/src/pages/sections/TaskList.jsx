@@ -3,6 +3,7 @@ import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { getTasks, getSubjects } from "../../services/auth";
+import { formatDate } from "../../../utils/FormattedDate";
 
 function TaskList({ studentName="Juan" }) {
   const [activeSubject, setActiveSubject] = useState("All");
@@ -10,36 +11,28 @@ function TaskList({ studentName="Juan" }) {
   const [task, setTask] = useState([]);
   const { student } = useUser();
 
+  const fetchTask = async () => {
+    try {
+      const data = await getTasks();
+      setTask(Array.isArray(data) ? [...data].reverse() : []);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetchSubjects = async () => {
+    try {
+      const data = await getSubjects();
+      setSubject(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const data = await getTasks();
-        setTask(Array.isArray(data) ? [...data].reverse() : []);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    const fetchSubjects = async () => {
-      try {
-        const data = await getSubjects();
-        setSubject(data);
-        console.log(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     fetchTask();
     fetchSubjects();
   }, []);
-
-  const formatDate = (date) => new Date(date).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  });
 
   const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject.code === activeSubject);
 

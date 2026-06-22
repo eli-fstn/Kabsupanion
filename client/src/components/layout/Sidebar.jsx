@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react";
 import { useUser } from "../../context/userContext";
 import Button from "../ui/Button";
 import { useNavigate, Link } from "react-router-dom";
+import UserIcon from "../common/UserIcon";
 
 function Sidebar() {
   const { student } = useUser();
@@ -27,7 +28,7 @@ function Sidebar() {
       {/* User Card */}
       <div className="bg-[#1B651B] px-3 py-2 rounded-md flex flex-row items-center mt-5 hover:shadow-lg transition-all duration-200">
         <div className="bg-white/10 rounded-full p-1.5">
-          <Icon className="text-white/70" icon="akar-icons:person" width="25" height="25" />
+          <UserIcon typography="text-white/70" dimensions="w-6 h-6"/>
         </div>
 
         <div className="ml-2 flex flex-col">

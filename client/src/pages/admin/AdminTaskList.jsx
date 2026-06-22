@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
+import { formatDate } from "../../../utils/FormattedDate";
 
 function AdminList() {
   const [tasks, setTasks] = useState([]);
@@ -127,13 +128,6 @@ function AdminList() {
       console.log(err);
     }
   };
-
-  const formatDate = (date) => new Date(date).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  });
 
   return (
     <div className="bg-[#F4F4F4] min-h-screen flex">
