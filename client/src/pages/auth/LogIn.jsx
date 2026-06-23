@@ -4,7 +4,7 @@ import { verifyLogin } from "../../services/auth.ts";
 import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
-import { handleApiError } from "../../services/errorHandler.js";
+import { handleApiError } from "../../services/errorHandler.ts";
 
 function LogIn() {
   const [email, setEmail] = useState("");

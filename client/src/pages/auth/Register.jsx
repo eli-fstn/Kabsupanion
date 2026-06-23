@@ -5,7 +5,7 @@ import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
-import { handleApiError } from "../../services/errorHandler";
+import { handleApiError } from "../../services/errorHandler.ts";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 
 function Register(){

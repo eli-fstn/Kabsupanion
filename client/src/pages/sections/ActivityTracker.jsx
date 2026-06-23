@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
-import { getActivity } from "../../services/activityTracker";
+import { getActivity } from "../../services/activityTracker.ts";
 
 function ActivityTracker() {
   const [activeSubject, setActiveSubject] = useState("All");

@@ -6,6 +6,7 @@ import AdminSched from "../pages/admin/AdminSched.jsx";
 import AdminResources from "../pages/admin/AdminResources.jsx";
 import AdminSubjects from "../pages/admin/AdminClassSubjects.jsx";
 import AdminMasterlist from "../pages/admin/AdminMasterlist.jsx";
+import Error404 from "../pages/errors/Error404.jsx";
 
 function AdminRoutes() {
   return(
@@ -17,6 +18,9 @@ function AdminRoutes() {
         <Route path="/resources" element={<AdminResources />} />
         <Route path="/subjects" element={<AdminSubjects />} />
         <Route path="/masterlist" element={<AdminMasterlist />} />
+      
+        {/* Shows error 404 if the page doesn't exists. */}
+        <Route path="*" element={<Error404 />} /> 
       </Route>
     </Routes>
   );
