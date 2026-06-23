@@ -1,10 +1,15 @@
 # Changelog
 
-All notable changes to the Kabsupanion (front-end) are documented here.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-This project follows the Keep a Changelog format and adheres to Semantic Versioning.
+### [0.0.4](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.3...v0.0.4) (2026-06-23)
 
-This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
+
+### Features
+
+* active row in sidebar ([274e50c](https://github.com/eli-fstn/Kabsupanion/commit/274e50cf86edec4d28db6ce97c015ad1968a8c44))
+* added a formatDate utils ([5fd4aec](https://github.com/eli-fstn/Kabsupanion/commit/5fd4aeca27bc6bee5c7362eebb193bebcce06f73))
+* student can now add resources ([9dd1553](https://github.com/eli-fstn/Kabsupanion/commit/9dd15530e87758c35e569243b521058e87c8dbfd))
 
 ### [0.0.3](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.2...v0.0.3) (2026-06-21)
 
