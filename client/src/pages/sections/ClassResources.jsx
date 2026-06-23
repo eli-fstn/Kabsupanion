@@ -15,6 +15,8 @@ export default function ClassResources() {
   const [subjects, setSubjects] = useState([]);
   const { student } = useUser();
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Add 
   const [title, setTitle] = useState("");
   const [subjectID, setSubjectID] = useState("");
   const [file, setFile] = useState(null);
@@ -58,19 +60,9 @@ export default function ClassResources() {
       genral: ""
     };
 
-    if (!title) {
-      newError.title = "Title is required.";
-      hasError = true;
-    }
-    if (!subjectID) {
-      newError.subject = "Subject is required.";
-      hasError = true;
-    }
-    if (!file) {
-      newError.file = "File is required.";
-      hasError = true;
-    }
-
+    if (!title) {newError.title = "Title is required."; hasError = true;}
+    if (!subjectID) {newError.subject = "Subject is required."; hasError = true;}
+    if (!file) {newError.file = "File is required."; hasError = true;}
     if (hasError) {
       setError(newError);
       return; 

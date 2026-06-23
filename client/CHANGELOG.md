@@ -1,37 +1,25 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [0.0.4](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.3...v0.0.4) (2026-06-23)
+All notable changes to the Kabsupanion (front-end) are documented here.
 
+This project follows the Keep a Changelog format and adheres to Semantic Versioning.
 
-### Features
+This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
 
-* active row in sidebar ([274e50c](https://github.com/eli-fstn/Kabsupanion/commit/274e50cf86edec4d28db6ce97c015ad1968a8c44))
-* added a formatDate utils ([5fd4aec](https://github.com/eli-fstn/Kabsupanion/commit/5fd4aeca27bc6bee5c7362eebb193bebcce06f73))
-* student can now add resources ([9dd1553](https://github.com/eli-fstn/Kabsupanion/commit/9dd15530e87758c35e569243b521058e87c8dbfd))
-
-### [0.0.3](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.2...v0.0.3) (2026-06-21)
-
-
-### Features
-
-* can now CRUD subjects in admin :O <3 ([31543c5](https://github.com/eli-fstn/Kabsupanion/commit/31543c59fbdd3e89aa45bcad148e6c1d37a0eb62))
-* created statistic cards for dashboard page in admin ([a9b9778](https://github.com/eli-fstn/Kabsupanion/commit/a9b9778fa0f24bd13082b9f4038e2365d8509b62))
-* CRUD operations in admin task list and masterlist ([5f7cc2c](https://github.com/eli-fstn/Kabsupanion/commit/5f7cc2c603bb24ccc0d5b2b42333526819092356))
-* user context for pages that needed the user ([25fef8b](https://github.com/eli-fstn/Kabsupanion/commit/25fef8befe06e23d300d6ada704110404897e504))
-
-
-### Bug Fixes
-
-* pie chart in admin dashboard ([0bde094](https://github.com/eli-fstn/Kabsupanion/commit/0bde0949c929614be7ddfb56f6e6603d9b3d467e))
-
-### [0.0.2](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.1...v0.0.2) (2026-06-19)
+## [Unreleased]
 
 ### Features
 
 * **footer:** footer section in dashboard ([40285df](https://github.com/eli-fstn/Kabsupanion/commit/40285dfdf7383096d5bc97eda348954dd552a78d))
 * **sidebar:** sidebar for admin's dashboard ([fb08fd9](https://github.com/eli-fstn/Kabsupanion/commit/fb08fd9dcf007957a1b4cbb183d34fe11b1e7db8))
+* can now CRUD subjects in admin ([31543c5](https://github.com/eli-fstn/Kabsupanion/commit/31543c59fbdd3e89aa45bcad148e6c1d37a0eb62))
+* created statistic cards for dashboard page in admin ([a9b9778](https://github.com/eli-fstn/Kabsupanion/commit/a9b9778fa0f24bd13082b9f4038e2365d8509b62))
+* CRUD operations in admin task list and masterlist ([5f7cc2c](https://github.com/eli-fstn/Kabsupanion/commit/5f7cc2c603bb24ccc0d5b2b42333526819092356))
+* user context for pages that needed the user ([25fef8b](https://github.com/eli-fstn/Kabsupanion/commit/25fef8befe06e23d300d6ada704110404897e504))
+* active row in sidebar ([274e50c](https://github.com/eli-fstn/Kabsupanion/commit/274e50cf86edec4d28db6ce97c015ad1968a8c44))
+* added a formatDate utils ([5fd4aec](https://github.com/eli-fstn/Kabsupanion/commit/5fd4aeca27bc6bee5c7362eebb193bebcce06f73))
+* student can now add resources ([9dd1553](https://github.com/eli-fstn/Kabsupanion/commit/9dd15530e87758c35e569243b521058e87c8dbfd))
 
 ---
 
@@ -70,6 +58,7 @@ All notable changes to this project will be documented in this file. See [standa
 - Login error handling improvements ([7f40120](https://github.com/eli-fstn/Kabsupanion/commit/7f40120ca4d83273598aaef89762373035d34bbc))
 - Server folder fixes ([f0e7180](https://github.com/eli-fstn/Kabsupanion/commit/f0e718053eeb0a42793bfea7a19fe690e0faff4e))
 - Server folder corrections ([42fb1df](https://github.com/eli-fstn/Kabsupanion/commit/42fb1df0aebdfac966d1f1eaa9309a673559e286))
+* pie chart in admin dashboard ([0bde094](https://github.com/eli-fstn/Kabsupanion/commit/0bde0949c929614be7ddfb56f6e6603d9b3d467e))
 
 ---
 

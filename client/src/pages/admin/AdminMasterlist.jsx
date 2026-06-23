@@ -77,7 +77,6 @@ function AdminMasterlist() {
       resetForm();
       fetchList();
     } catch (err) {
-      console.log("API not yet available");
       handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
     }
   };
@@ -106,7 +105,6 @@ function AdminMasterlist() {
       setEditModalOpen(false);
       fetchList();
     } catch (err) {
-      console.log("API not yet available");
       handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
     }
   };
@@ -123,7 +121,6 @@ function AdminMasterlist() {
       setDeleteModalOpen(false);
       fetchList();
     } catch (err) {
-      console.log("API not yet available");
       console.log(err);
     }
   };
@@ -151,12 +148,12 @@ function AdminMasterlist() {
             </thead>
           </table>
 
-          <div className="h-125 overflow-y-auto flex flex-col">
+          <div className="h-95 overflow-y-auto flex flex-col">
             {filteredStudents.length > 0 ? (
               <table className="w-full">
                 <tbody>
                   {filteredStudents.map((s, i) => (
-                    <tr key={i.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center text-sm font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
+                    <tr key={i.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
                       <td className="text-[#828282]">{i + 1}</td>
                       <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
                       <td className="text-[#828282]">{s.studentNumber}</td>
