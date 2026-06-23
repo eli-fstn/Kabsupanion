@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
 import Pagination from "../../components/ui/Pagination.jsx";
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);
@@ -16,6 +17,7 @@ function AdminDashboard() {
   const [resources, setResources] = useState([]);
   const { student } = useUser();
   const [resourcePage, setResourcePage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const fetchMasterlist = async () => {
     try {
@@ -24,7 +26,7 @@ function AdminDashboard() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const fetchTask = async () => {
     try {
@@ -33,16 +35,19 @@ function AdminDashboard() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const fetchResources = async () => {
+    setLoading(true);
     try {
       const data = await getResources();
       setResources(data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const fetchSubjects = async () => {
     try {
@@ -51,7 +56,7 @@ function AdminDashboard() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchMasterlist();
@@ -79,19 +84,30 @@ function AdminDashboard() {
     value: task.filter(t => t.subject.code === subject.code).length,
   })).filter(s => s.value > 0);
 
+  // PARTIAL
+  // const getGreeting = () => {
+  //   const time = new Date();
+  //   let t = time.getHours();
+  //   if (t >= 21 || t <= 4){
+  //     console.log("midnight");
+  //   }
+  // }
+  
+  // getGreeting();
+
   return (
-    <div className="bg-[#F4F4F4] min-h-screen flex">
+    <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
 
-        <div className="mb-6">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">Dashboard</p>
-          <p className="text-gray-400 text-sm">Welcome back,<span className="font-[montserrat] font-bold pl-1 text-[1.3rem] text-[#003A02]">{student?.user?.name.split(" ").at(0)}!</span> Here's what's happening in your section.</p>
+        <div className="mb-7 leading-12">
+          <p className="font-bold text-[2rem] font-[montserrat]">Hello love, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
+          <p className="text-gray-400 text-sm">Here's what's happening in your section.</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+        <div className="grid grid-cols-3 gap-10">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700 flex items-center gap-4">
             <div className="bg-[#eaf3de] rounded-lg p-3">
               <Icon icon="akar-icons:people-group" width="26" className="text-[#1B651B]" />
             </div>
@@ -101,7 +117,7 @@ function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700  flex items-center gap-4">
             <div className="bg-[#e6f1fb] rounded-lg p-3">
               <Icon icon="ix:tasks-all" width="26" className="text-[#185FA5]" />
             </div>
@@ -111,7 +127,7 @@ function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700  flex items-center gap-4">
             <div className="bg-[#faeeda] rounded-lg p-3">
               <Icon icon="grommet-icons:resources" width="26" className="text-[#BA7517]" />
             </div>
@@ -127,24 +143,30 @@ function AdminDashboard() {
 
           {/* Recent Resources */}
           <div className="h-[285px] flex flex-col justify-start">
-            {paginatedResources.length > 0 ? (
-              paginatedResources.map((r) => (
-                <div key={r.id} className="flex items-center gap-3 py-3 border-b border-gray-100">
-                  <div className="bg-[#faeeda] rounded-lg p-2">
-                    <Icon icon="mdi:file-document-outline" width="20" className="text-[#BA7517]" />
+            {loading ? (
+              <div className="flex justify-center items-center flex-1">
+                <LoadingIcon dimensions="w-10 h-10" />
+              </div>
+            ) : (
+              paginatedResources.length > 0 ? (
+                paginatedResources.map((r) => (
+                  <div key={r.id} className="flex items-center gap-3 px-3 py-2 rounded-md border-b border-gray-100 transition-all duration-100 hover:bg-gray-100">
+                    <div className="bg-[#faeeda] rounded-lg p-2">
+                      <Icon icon="mdi:file-document-outline" width="20" className="text-[#BA7517]" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-sm">{r.title}</p>
+                      <p className="text-gray-400 text-xs">{r.subject.code} · {r.uploadedBy.name}</p>
+                    </div>
+                    <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-sm">{r.title}</p>
-                    <p className="text-gray-400 text-xs">{r.subject.code} · {r.uploadedBy.name}</p>
-                  </div>
-                  <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
-                </div>
-              ))
+                ))
             ) : (
               <div className="flex justify-center items-center h-full">
                 <p className="text-gray-400">No resources uploaded yet.</p>
               </div>
-            )}
+            ))
+          }
           </div>
 
           <Pagination

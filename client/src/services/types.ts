@@ -28,6 +28,7 @@ export interface Subjects {
 }
 
 export interface Resources {
+  id: number;
   subjectID: string;
   title: string;
   description: string;
