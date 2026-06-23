@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function AdminMasterlist() {
   const [list, setList] = useState([]);
@@ -13,6 +14,7 @@ function AdminMasterlist() {
   // Add form
   const [name, setName] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
+  // const []
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState({ name: "", studentNumber: "", general: "" });
 
@@ -126,7 +128,7 @@ function AdminMasterlist() {
   };
 
   return (
-    <div className="bg-[#F4F4F4] min-h-screen flex">
+    <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
@@ -149,54 +151,60 @@ function AdminMasterlist() {
           </table>
 
           <div className="h-95 overflow-y-auto flex flex-col">
-            {filteredStudents.length > 0 ? (
-              <table className="w-full">
-                <tbody>
-                  {filteredStudents.map((s, i) => (
-                    <tr key={i.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
-                      <td className="text-[#828282]">{i + 1}</td>
-                      <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
-                      <td className="text-[#828282]">{s.studentNumber}</td>
-                      <td>
-                        <span
-                          className={`px-3 py-1 text-xs font-semibold rounded-full border ${
-                            s.registrationStatus === "Regular"
-                              ? "bg-green-100 text-green-700 border-green-300"
-                              : "bg-orange-100 text-orange-700 border-orange-300"
-                          }`}
-                        >
-                          {s.registrationStatus}
-                        </span>
-                      </td>
-                      <td className="flex gap-2">
-                        <Button
-                          text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
-                          onClick={() => handleEditOpen(s)}
-                          bgColor="hover:bg-gray-100"
-                          typography="text-gray-700 hover:text-black"
-                          dimensions="rounded-md"
-                          padding="p-1.5"
-                          animation="transition-all duration-200 active:scale-95"
-                        />
-                        <Button
-                          text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
-                          onClick={() => handleDeleteOpen(s)}
-                          bgColor="hover:bg-red-100"
-                          typography="text-red-500 hover:text-red-700"
-                          dimensions="rounded-md"
-                          padding="p-1.5"
-                          animation="transition-all duration-200 active:scale-95"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
+            {loading ? (
               <div className="flex justify-center items-center flex-1">
-                <p className="text-gray-400">No masterlist entries yet.</p>
+                <LoadingIcon dimensions="w-10 h-10" />
               </div>
-            )}
+            ) : (
+              filteredStudents.length > 0 ? (
+                <table className="w-full">
+                  <tbody>
+                    {filteredStudents.map((s, i) => (
+                      <tr key={i.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                        <td className="text-[#828282]">{i + 1}</td>
+                        <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
+                        <td>{s.studentNumber}</td>
+                        <td>
+                          <span
+                            className={`px-3 py-1 text-xs font-semibold rounded-full border ${
+                              s.registrationStatus === "Regular"
+                                ? "bg-green-100 text-green-700 border-green-300"
+                                : "bg-orange-100 text-orange-700 border-orange-300"
+                            }`}
+                          >
+                            {s.registrationStatus}
+                          </span>
+                        </td>
+                        <td className="flex gap-2">
+                          <Button
+                            text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
+                            onClick={() => handleEditOpen(t)}
+                            bgColor="hover:bg-gray-200"
+                            typography="text-gray-700 hover:text-gray-500"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                          <Button
+                            text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
+                            onClick={() => handleDeleteOpen(s)}
+                            bgColor="hover:bg-red-100"
+                            typography="text-red-500 hover:text-red-700"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex justify-center items-center flex-1">
+                  <p className="text-gray-400">No masterlist entries yet.</p>
+                </div>
+              ))
+            }
           </div>
 
           <div className="flex justify-center items-center mb-5 mt-4">

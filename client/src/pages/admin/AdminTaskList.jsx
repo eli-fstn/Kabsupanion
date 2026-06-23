@@ -7,10 +7,12 @@ import { handleApiError } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { formatDate } from "../../../utils/FormattedDate";
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function AdminList() {
   const [tasks, setTasks] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Add form
   const [title, setTitle] = useState("");
@@ -32,11 +34,14 @@ function AdminList() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const fetchTasks = async () => {
+    setLoading(true);
     try {
       const data = await getTasks();
       setTasks(Array.isArray(data) ? [...data].reverse() : []);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,7 +136,7 @@ function AdminList() {
   };
 
   return (
-    <div className="bg-[#F4F4F4] min-h-screen flex">
+    <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
@@ -154,44 +159,50 @@ function AdminList() {
           </table>
 
           <div className="h-95 overflow-y-auto flex flex-col">
-            {tasks.length > 0 ? (
-              <table className="w-full">
-                <tbody>
-                  {tasks.map((t, i) => (
-                    <tr key={i.id} className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
-                      <td className="text-[#4a4a4a88]">{i + 1}</td>
-                      <td>{t.title}</td>
-                      <td>{t.subject?.code}</td>
-                      <td>{formatDate(t.dueDate)}</td>
-                      <td className="flex gap-2">
-                        <Button
-                          text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
-                          onClick={() => handleEditOpen(t)}
-                          bgColor="hover:bg-gray-100"
-                          typography="text-gray-700 hover:text-black"
-                          dimensions="rounded-md"
-                          padding="p-1.5"
-                          animation="transition-all duration-200 active:scale-95"
-                        />
-                        <Button
-                          text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
-                          onClick={() => handleDeleteOpen(t)}
-                          bgColor="hover:bg-red-100"
-                          typography="text-red-500 hover:text-red-700"
-                          dimensions="rounded-md"
-                          padding="p-1.5"
-                          animation="transition-all duration-200 active:scale-95"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
+            {loading ? (
               <div className="flex justify-center items-center flex-1">
-                <p className="text-gray-400">No tasks added yet.</p>
+                <LoadingIcon dimensions="w-10 h-10" />
               </div>
-            )}
+            ) : (
+              tasks.length > 0 ? (
+                <table className="w-full">
+                  <tbody>
+                    {tasks.map((t, i) => (
+                      <tr key={i.id} className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                        <td className="text-[#4a4a4a88]">{i + 1}</td>
+                        <td>{t.title}</td>
+                        <td>{t.subject?.code}</td>
+                        <td>{formatDate(t.dueDate)}</td>
+                        <td className="flex gap-2">
+                          <Button
+                            text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
+                            onClick={() => handleEditOpen(t)}
+                            bgColor="hover:bg-gray-200"
+                            typography="text-gray-700 hover:text-gray-500"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                          <Button
+                            text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
+                            onClick={() => handleDeleteOpen(t)}
+                            bgColor="hover:bg-red-100"
+                            typography="text-red-500 hover:text-red-700"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex justify-center items-center flex-1">
+                  <p className="text-gray-400">No tasks added yet.</p>
+                </div>
+              ))
+            }
           </div>
 
           <div className="flex justify-center items-center mb-5 mt-4">

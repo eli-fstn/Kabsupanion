@@ -1,12 +1,15 @@
 import Sidebar from "../../components/layout/Sidebar";
 import { getSubjects, uploadSubject, editSubject, deleteSubject } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
-import { Icon } from "@iconify/react";
+import { Icon, loadIcon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function AdminSubjects() {
+  const [loading, setLoading] = useState(false);
+  // Add
   const [subjects, setSubjects] = useState([]);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
@@ -14,21 +17,27 @@ function AdminSubjects() {
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState({ code: "", name: "", general: "" });
 
+  // Edit
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editCode, setEditCode] = useState("");
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editError, setEditError] = useState({ code: "", name: "", general: "" });
 
+  // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   const fetchSubjects = async () => {
+    setLoading(true);
     try {
       const data = await getSubjects();
       setSubjects(Array.isArray(data) ? [...data].reverse() : []);
     } catch (error) {
       console.log(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,7 +115,7 @@ function AdminSubjects() {
   };
 
   return (
-    <div className="bg-[#F4F4F4] min-h-screen flex">
+    <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
@@ -129,44 +138,50 @@ function AdminSubjects() {
           </table>
 
           <div className="h-95 overflow-y-auto flex flex-col">
-            {subjects.length > 0 ? (
-              <table className="w-full">
-                <tbody>
-                  {subjects.map((t, i) => (
-                    <tr key={i.id} className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-[#e1e1e188]">
-                      <td className="text-[#4a4a4a88]">{i + 1}</td>
-                      <td>{t.code}</td>
-                      <td className="text-[#828282]">{t.name}</td>
-                      <td>{t.description ?? "—"}</td>
-                      <td className="flex gap-4">
-                        <Button
-                          text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
-                          onClick={() => handleEditOpen(t)}
-                          bgColor="hover:bg-gray-100"
-                          typography="text-gray-700 hover:text-black"
-                          dimensions="rounded-md"
-                          padding="p-1.5"
-                          animation="transition-all duration-200 active:scale-95"
-                        />
-                        <Button
-                          text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
-                          onClick={() => handleDeleteOpen(t)}
-                          bgColor="hover:bg-red-100"
-                          typography="text-red-500 hover:text-red-700"
-                          dimensions="rounded-md"
-                          padding="p-1.5"
-                          animation="transition-all duration-200 active:scale-95"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
+            {loading ? (
               <div className="flex justify-center items-center flex-1">
-                <p className="text-gray-400">No subjects added yet.</p>
+                <LoadingIcon dimensions="w-10 h-10" />
               </div>
-            )}
+            ) : (
+              subjects.length > 0 ? (
+                <table className="w-full">
+                  <tbody>
+                    {subjects.map((t, i) => (
+                      <tr key={i.id} className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                        <td className="text-[#4a4a4a88]">{i + 1}</td>
+                        <td>{t.code}</td>
+                        <td>{t.name}</td>
+                        <td>{t.description ?? "—"}</td>
+                        <td className="flex gap-4">
+                          <Button
+                            text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
+                            onClick={() => handleEditOpen(t)}
+                            bgColor="hover:bg-gray-200"
+                            typography="text-gray-700 hover:text-gray-500"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                          <Button
+                            text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
+                            onClick={() => handleDeleteOpen(t)}
+                            bgColor="hover:bg-red-100"
+                            typography="text-red-500 hover:text-red-700"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex justify-center items-center flex-1">
+                  <p className="text-gray-400">No subjects added yet.</p>
+                </div>
+              ))
+            }
           </div>
 
           <div className="flex justify-center items-center mb-5 mt-4">

@@ -23,3 +23,11 @@ export async function uploadResource(
   const response = await api.post<Resources>("/notes", formData);
   return response.data;
 }
+
+// Admins can delete a resources
+export async function deleteResources(
+  id: number
+) : Promise<Resources>{
+  const response = await api.delete<Resources>(`/notes/${id}`)
+  return response.data;
+}
