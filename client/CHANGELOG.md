@@ -1,9 +1,7 @@
 # Changelog
 
 All notable changes to the Kabsupanion (front-end) are documented here.
-
 This project follows the Keep a Changelog format and adheres to Semantic Versioning.
-
 This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
 
 ## [Unreleased]
