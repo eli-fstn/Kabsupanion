@@ -8,13 +8,14 @@ import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { useUser } from "../../context/userContext";
 import UserIcon from "../../components/common/UserIcon";
-
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 export default function ClassResources() {
   const [resources, setResources] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const { student } = useUser();
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Add 
   const [title, setTitle] = useState("");
@@ -28,12 +29,15 @@ export default function ClassResources() {
   });
 
   const fetchResources = async () => {
+    setLoading(true);
     try {
       const data = await getResources();
       setResources(data);
     } catch (error) {
       console.log(error);
-    } 
+    } finally {
+      setLoading(false);
+    }
   }
   const fetchSubjects = async () => {
     try {
@@ -98,22 +102,28 @@ export default function ClassResources() {
       </div>
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-140 p-4 flex flex-col">
         <div className="h-140 overflow-y-auto flex flex-col">
-          {resources.length > 0 ? (
-            <div className="grid grid-cols-5 gap-4 items-center">
-              {resources.map((resource) => (
-                <ResourceCard
-                  key={resource.id}
-                  title={resource.title}
-                  subject={resource.subject.code}
-                  uploadedBy={resource.uploadedBy.name}
-                  fileUrl={resource.fileUrl}
-                />
-              ))}
+          {loading ? (
+            <div className="flex justify-center items-center flex-1">
+              <LoadingIcon dimensions="w-10 h-10" />
             </div>
           ) : (
+            resources.length > 0 ? (
+              <div className="grid grid-cols-5 gap-4 items-center">
+                {resources.map((resource) => (
+                  <ResourceCard
+                    key={resource.id}
+                    title={resource.title}
+                    subject={resource.subject.code}
+                    uploadedBy={resource.uploadedBy.name}
+                    fileUrl={resource.fileUrl}
+                  />
+                ))}
+              </div>
+            ) : (
             <div className="flex justify-center items-center flex-1">
               <p className="text-gray-400">There's no resources uploaded yet.</p>
             </div>
+            )
           )}
         </div>
         <div className="flex justify-center items-center p-5">

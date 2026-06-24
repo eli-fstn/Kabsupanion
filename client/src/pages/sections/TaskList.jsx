@@ -5,19 +5,24 @@ import { useUser } from "../../context/userContext";
 import { getTasks } from "../../services/taskList.ts";
 import { getSubjects } from "../../services/subjects.ts";
 import { formatDate } from "../../../utils/FormattedDate";
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function TaskList({ studentName="Juan" }) {
   const [activeSubject, setActiveSubject] = useState("All");
   const [subject, setSubject] = useState([]);
   const [task, setTask] = useState([]);
   const { student } = useUser();
+  const [loading, setLoading]= useState(false);
 
   const fetchTask = async () => {
+    setLoading(true);
     try {
       const data = await getTasks();
       setTask(Array.isArray(data) ? [...data].reverse() : []);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -101,21 +106,35 @@ function TaskList({ studentName="Juan" }) {
                   <td>{formatDate(t.dueDate)}</td>
                 </tr>
               ))}
-              {activeSubject === "All" && filteredTasks.length === 0 && (
-                <tr className="flex justify-center items-center flex-1 h-full">
-                  <td colSpan={3} className="text-center text-gray-400 p-5">
-                    No tasks for today. Great job!
-                  </td>
-                </tr>
-              )}
 
-              {filteredTasks.length === 0 && (
-                <tr className="flex justify-center items-center flex-1 h-full">
-                  <td colSpan={3} className="text-center text-gray-400 p-5">
-                    No tasks for this subject. Keep up the good work!
-                  </td>
-                </tr>
-              )}
+              {loading ? (
+                <div className="flex justify-center items-center flex-1 h-full">
+                  <LoadingIcon dimensions="w-10 h-10" />
+                </div>
+              ) : (
+                  activeSubject === "All" && filteredTasks.length === 0 && (
+                    <tr className="flex justify-center items-center flex-1 h-full">
+                      <td colSpan={3} className="text-center text-gray-400 p-5">
+                        No tasks for today. Great job!
+                      </td>
+                    </tr>
+                  )
+                )
+              }
+              {loading ? (
+                <div className="flex justify-center items-center flex-1 h-full">
+                  <LoadingIcon dimensions="w-10 h-10" />
+                </div>
+              ) : (
+                  filteredTasks.length === 0 && (
+                    <tr className="flex justify-center items-center flex-1 h-full">
+                      <td colSpan={3} className="text-center text-gray-400 p-5">
+                        No tasks for this subject. Keep up the good work!
+                      </td>
+                    </tr>
+                  )
+                )
+              }
             </tbody>
           </table>
         </div>

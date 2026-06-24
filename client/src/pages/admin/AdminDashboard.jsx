@@ -19,8 +19,6 @@ function AdminDashboard() {
   const [resourcePage, setResourcePage] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  console.log(student);
-
   const fetchMasterlist = async () => {
     try {
       const data = await getMasterlist();
@@ -144,7 +142,7 @@ function AdminDashboard() {
           <p className="font-bold text-[1rem] mb-4">Recent Resources</p>
 
           {/* Recent Resources */}
-          <div className="h-[285px] flex flex-col justify-start">
+          <div className="h-71.25 flex flex-col justify-start">
             {loading ? (
               <div className="flex justify-center items-center flex-1">
                 <LoadingIcon dimensions="w-10 h-10" />
@@ -163,12 +161,12 @@ function AdminDashboard() {
                     <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
                   </div>
                 ))
-            ) : (
-              <div className="flex justify-center items-center h-full">
-                <p className="text-gray-400">No resources uploaded yet.</p>
-              </div>
-            ))
-          }
+              ) : (
+                <div className="flex justify-center items-center h-full">
+                  <p className="text-gray-400">No resources uploaded yet.</p>
+                </div>
+              )
+            )}
           </div>
 
           <Pagination
