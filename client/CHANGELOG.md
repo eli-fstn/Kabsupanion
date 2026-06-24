@@ -2,19 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [0.0.5](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.4...v0.0.5) (2026-06-24)
-
-
-### Features
-
-* can now have a full preview of the image in resoruces (admin panel) ([5741f1b](https://github.com/eli-fstn/Kabsupanion/commit/5741f1b6b622ef9bd0b664dcb51a6cd51ff111ea))
-* if the user has still a token, it will redirect to the dashboard ([8b2caa2](https://github.com/eli-fstn/Kabsupanion/commit/8b2caa25a8bdc26c2cb3ffcab783734293fef638))
-* loading icon when data is not rendered yet in admin. ([8fe5e3f](https://github.com/eli-fstn/Kabsupanion/commit/8fe5e3f3c753efa19214376cd8b70f14f657c76f))
-* number count-up animation ([f1c7492](https://github.com/eli-fstn/Kabsupanion/commit/f1c749238dca94fb0e75964d749e97dab66884eb))
-* resources appear now in admin but doesn't have the approve function yet. ([bf7ac03](https://github.com/eli-fstn/Kabsupanion/commit/bf7ac03b863585af3698965fc74f8acd7b6435fb))
+### [0.0.6](https://github.com/eli-fstn/Kabsupanion/compare/v0.0.5...v0.0.6) (2026-06-24)
 
 # Changelog
-
 
 All notable changes to the Kabsupanion (front-end) are documented here.
 
