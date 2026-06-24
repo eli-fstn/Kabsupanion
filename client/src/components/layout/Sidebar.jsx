@@ -3,13 +3,17 @@ import { useUser } from "../../context/userContext";
 import Button from "../ui/Button";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import UserIcon from "../common/UserIcon";
+import LoadingScreen from "../ui/LoadingScreen";
+import { useState } from "react";
 
 function Sidebar() {
   const { student } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
   const userSignOut = () => {
+    setLoading(true);
     localStorage.removeItem("token");
     navigate("/", { replace: true });
   };
@@ -22,6 +26,8 @@ function Sidebar() {
     ["Class Subjects", "material-symbols:book-outline", "/admin/subjects"],
     ["Masterlist", "solar:list-bold", "/admin/masterlist"],
   ];
+
+  if (loading) return <LoadingScreen />
 
   return (
     <div className="w-64 sticky top-0 h-screen bg-white border border-gray-200 p-3 flex flex-col">

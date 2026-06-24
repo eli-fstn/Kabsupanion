@@ -92,7 +92,7 @@ function AdminDashboard() {
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
       <div className="flex-1 p-8">
-        <div className="mb-7 leading-8">
+        <div className="mb-7 leading-10">
           <p className="font-bold text-[2rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
           <p className="text-gray-400 text-sm">Here's what's happening in your section.</p>
         </div>
@@ -104,7 +104,7 @@ function AdminDashboard() {
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Total Students</label>
-              <p className="text-[2rem] font-bold text-[#1B651B] leading-8"><CountUp.default start={0} end={masterlist.length} duration={5}/></p>
+              <p className="text-[2rem] font-bold text-[#1B651B] leading-8"><CountUp.default start={0} end={masterlist.length} duration={3}/></p>
             </div>
           </div>
 
@@ -114,7 +114,7 @@ function AdminDashboard() {
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Tasks</label>
-              <p className="text-[2rem] font-bold text-[#185FA5] leading-8"><CountUp.default start={0} end={task.length} duration={5}/></p>
+              <p className="text-[2rem] font-bold text-[#185FA5] leading-8"><CountUp.default start={0} end={task.length} duration={3}/></p>
             </div>
           </div>
 
@@ -124,13 +124,13 @@ function AdminDashboard() {
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Resources</label>
-              <p className="text-[2rem] font-bold text-[#BA7517] leading-8"><CountUp.default start={0} end={resources.length} duration={5}/></p>
+              <p className="text-[2rem] font-bold text-[#BA7517] leading-8"><CountUp.default start={0} end={resources.length} duration={3}/></p>
             </div>
           </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-5 mt-5 flex flex-col">
-          <p className="font-bold text-[1rem] mb-4">Recent Resources</p>
+          <p className="font-bold text-[1rem] mb-4">Recent Uploaded Resources</p>
 
           {/* Recent Resources */}
           <div className="h-71.25 flex flex-col justify-start">
@@ -140,8 +140,8 @@ function AdminDashboard() {
               </div>
             ) : (
               paginatedResources.length > 0 ? (
-                paginatedResources.map((r) => (
-                  <Link to={"/admin/resources"} >
+                paginatedResources.map((r, i) => (
+                  <Link key={i} to={"/admin/resources"} >
                   <div key={r.id} className="flex items-center gap-3 px-3 py-2 rounded-md border-b border-gray-100 transition-all duration-100 hover:bg-gray-100">
                     <div className="bg-[#faeeda] rounded-lg p-2">
                       <Icon icon="mdi:file-document-outline" width="20" className="text-[#BA7517]" />

@@ -13,6 +13,7 @@ function AdminList() {
   const [tasks, setTasks] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
 
   // Add form
   const [title, setTitle] = useState("");
@@ -37,7 +38,6 @@ function AdminList() {
     setLoading(true);
     try {
       const data = await getTasks();
-      console.log(data);
       setTasks(Array.isArray(data) ? [...data].reverse() : []);
     } catch (err) {
       console.log(err);
@@ -80,6 +80,9 @@ function AdminList() {
     if (!subjectID) { newError.subject = "Subject is required."; hasError = true; }
     if (!dueDate) { newError.dueDate = "Due date is required."; hasError = true; }
     if (hasError) { setError(newError); return; }
+
+    setLoadingForm(true);
+
     try {
       await uploadTask(title, subjectID, dueDate);
       setModalOpen(false);
@@ -88,6 +91,8 @@ function AdminList() {
     } catch (err) {
       handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
       console.log(err);
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -114,7 +119,6 @@ function AdminList() {
       setEditModalOpen(false);
       fetchTasks();
     } catch (err) {
-      console.log("API not yet available");
       handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
     }
   };
@@ -125,14 +129,18 @@ function AdminList() {
   };
 
   const handleDeleteConfirm = async () => {
+
+    setLoadingForm(true);
+    
     try {
       if (!selectedTask) return;
       await deleteTask(selectedTask.id);
       setDeleteModalOpen(false);
       fetchTasks();
     } catch (err) {
-      console.log("API not yet available");
       console.log(err);
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -169,7 +177,7 @@ function AdminList() {
                 <table className="w-full">
                   <tbody>
                     {tasks.map((t, i) => (
-                      <tr key={i.id} className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                      <tr key={i} className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
                         <td className="text-[#4a4a4a88]">{i + 1}</td>
                         <td>{t.title}</td>
                         <td>{t.subject?.code}</td>
@@ -222,71 +230,81 @@ function AdminList() {
         {/* Add Modal */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
           <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
-            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Add Task</p>
-            <p className="text-gray-400 text-xs mb-5">Add a new task for your section.</p>
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-80">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5">Submitting...</p>
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Add Task</p>
+                <p className="text-gray-400 text-xs mb-5">Add a new task for your section.</p>
 
-            <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={title} 
-              placeholder="Enter task title" 
-              onChange={(e) => {
-                setTitle(e.target.value);
-                setError((prev) => ({ ...prev, title: "" }));}} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${error.title ? "border-red-500" : "border-gray-300"}`}/>
-            {error.title && (<p className="text-red-500 text-xs">{error.title}</p>)}
+                <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={title} 
+                  placeholder="Enter task title" 
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setError((prev) => ({ ...prev, title: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${error.title ? "border-red-500" : "border-gray-300"}`}/>
+                {error.title && (<p className="text-red-500 text-xs">{error.title}</p>)}
 
-            <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
-            <select 
-              value={subjectID} 
-              onChange={(e) => {
-                setSubjectID(e.target.value); 
-                setError((prev) => ({ ...prev, subject: "" }));}} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
-                ${error.subject ? "border-red-500" : "border-gray-300"}`}>
-              <option value="">Select a subject</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.code}
-                </option>
-              ))}
-            </select>
-            {error.subject && (<p className="text-red-500 text-xs">{error.subject}</p>)}
+                <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
+                <select 
+                  value={subjectID} 
+                  onChange={(e) => {
+                    setSubjectID(e.target.value); 
+                    setError((prev) => ({ ...prev, subject: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
+                    ${error.subject ? "border-red-500" : "border-gray-300"}`}>
+                  <option value="">Select a subject</option>
+                  {subjects.map((subject) => (
+                    <option key={subject.id} value={subject.id}>
+                      {subject.code}
+                    </option>
+                  ))}
+                </select>
+                {error.subject && (<p className="text-red-500 text-xs">{error.subject}</p>)}
 
-            <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
-            <input 
-              type="date" 
-              value={dueDate} 
-              onChange={(e) => {
-                setDueDate(e.target.value); 
-                setError((prev) => ({ ...prev, dueDate: "" }));}} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700
-                ${ error.dueDate ? "border-red-500" : "border-gray-300"}`}/>
-            {error.dueDate && (<p className="text-red-500 text-xs">{error.dueDate}</p>)}
+                <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
+                <input 
+                  type="date" 
+                  value={dueDate} 
+                  onChange={(e) => {
+                    setDueDate(e.target.value); 
+                    setError((prev) => ({ ...prev, dueDate: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700
+                    ${ error.dueDate ? "border-red-500" : "border-gray-300"}`}/>
+                {error.dueDate && (<p className="text-red-500 text-xs">{error.dueDate}</p>)}
 
-            {error.general && (<p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>)}
+                {error.general && (<p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-5">
-              <Button 
-                type="button" 
-                onClick={handleClose} 
-                text="Cancel" 
-                bgColor="bg-gray-100 hover:bg-gray-200" 
-                typography="text-gray-600 font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md"
-              />
-              <Button 
-                type="submit" 
-                text="Submit" 
-                bgColor="bg-[#1B651B]" 
-                typography="text-white font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
-              />
-            </div>
+                <div className="flex flex-row justify-end gap-3 mt-5">
+                  <Button 
+                    type="button" 
+                    onClick={handleClose} 
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="submit" 
+                    text="Submit"
+                    bgColor="bg-[#1B651B]" 
+                    typography="text-white font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                  />
+                </div>
+              </>
+              )
+            }
           </form>
         </Modal>
 
@@ -360,32 +378,42 @@ function AdminList() {
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <div className="flex flex-col items-center w-72 p-3">
-            <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
-              <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
-            </div>
-            <p className="font-bold text-[1.1rem] text-center text-[#A32D2D]">Delete Task?</p>
-            <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedTask?.title}?</span> This action cannot be undone.</p>
-            <div className="flex justify-center items-center gap-3 w-full">
-              <Button 
-                type="button" 
-                onClick={() => setDeleteModalOpen(false)} 
-                text="Cancel" 
-                bgColor="bg-gray-100 hover:bg-gray-200" 
-                typography="text-gray-600 font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md"
-              />
-              <Button 
-                type="button" 
-                onClick={handleDeleteConfirm}
-                text="Delete"
-                bgColor="bg-[#A32D2D] hover:bg-red-800" 
-                typography="text-white font-bold text-xs"
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100"
-              />
-            </div>
+            {loading ? (
+              <div className="flex flex-col justify-center items-center h-50">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5">Deleting...</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
+                  <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
+                </div>
+                <p className="font-bold text-[1.1rem] text-center text-[#A32D2D]">Delete Task?</p>
+                <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedTask?.title}?</span> This action cannot be undone.</p>
+                <div className="flex justify-center items-center gap-3 w-full">
+                  <Button 
+                    type="button" 
+                    onClick={() => setDeleteModalOpen(false)} 
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={handleDeleteConfirm}
+                    text="Delete"
+                    bgColor="bg-[#A32D2D] hover:bg-red-800" 
+                    typography="text-white font-bold text-xs"
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100"
+                  />
+                </div>
+              </>
+              )
+            }
           </div>
         </Modal>
       </div>

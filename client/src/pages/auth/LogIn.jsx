@@ -23,7 +23,6 @@ function LogIn() {
     refetchUser();
 
     if (localStorage.getItem("token")) {
-      console.log("this works");
       if (student.user?.role === "admin") {
         navigate("/admin/dashboard");
       } else {

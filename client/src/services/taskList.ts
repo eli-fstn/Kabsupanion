@@ -29,12 +29,7 @@ export async function editTask(
   subjectId: string, 
   dueDate: string
 ) : Promise<Tasks> {
-  const response = await api.patch<Tasks>(`/tasks/
-    ${id}`, 
-    { title, 
-      subjectId, 
-      dueDate 
-    });
+  const response = await api.patch<Tasks>(`/tasks/${id}`, { title, subjectId, dueDate });
   return response.data;
 }
 
