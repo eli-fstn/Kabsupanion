@@ -37,6 +37,7 @@ function AdminList() {
     setLoading(true);
     try {
       const data = await getTasks();
+      console.log(data);
       setTasks(Array.isArray(data) ? [...data].reverse() : []);
     } catch (err) {
       console.log(err);

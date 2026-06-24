@@ -11,16 +11,16 @@ function ClassList() {
 
   const acadStatus = [ "Regular", "Irregular" ];
 
-  useEffect(() => {
-    const fetchMasterlist = async () => {
-      try {
-        const data = await getMasterlist();
-        setMasterList(data);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
+  const fetchMasterlist = async () => {
+    try {
+      const data = await getMasterlist();
+      setMasterList(data);
+    } catch (error) {
+      console.log(error);
+    } 
+  }
 
+  useEffect(() => {
     fetchMasterlist();
   }, []);
 

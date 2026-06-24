@@ -39,6 +39,7 @@ export default function ClassResources() {
       setLoading(false);
     }
   }
+  
   const fetchSubjects = async () => {
     try {
       const data = await getSubjects();
@@ -100,8 +101,8 @@ export default function ClassResources() {
         <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Class Resources</p>
         <p className="text-[1rem]">Collaborate and exchange notes with your fellow Kabsuhenyos.</p>
       </div>
-      <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-140 p-4 flex flex-col">
-        <div className="h-140 overflow-y-auto flex flex-col">
+      <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-150 p-4 flex flex-col">
+        <div className="h-150 overflow-y-auto flex flex-col">
           {loading ? (
             <div className="flex justify-center items-center flex-1">
               <LoadingIcon dimensions="w-10 h-10" />
@@ -126,7 +127,7 @@ export default function ClassResources() {
             )
           )}
         </div>
-        <div className="flex justify-center items-center p-5">
+        <div className="flex justify-center items-center pt-3">
           <Button
             text="+ Upload Resources"
             onClick={() => setModalOpen(true)}
@@ -179,7 +180,7 @@ export default function ClassResources() {
               <p className="text-red-500 text-xs">{error.subject}</p>
             )}
 
-            {/* File to be uploaded | only accepts .PDF*/}
+            {/* File to be uploaded */}
             <label className="text-xs font-bold mb-1 mt-2">File <span className="text-red-400">*</span></label>
             <input 
               onChange={(e) => {
