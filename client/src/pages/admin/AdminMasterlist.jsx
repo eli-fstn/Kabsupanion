@@ -6,24 +6,26 @@ import { handleApiError } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
+import CountUp from "react-countup";
 
 function AdminMasterlist() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [registrationStatus, setRegristationStatus] = useState("Regular");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState({ name: "", studentNumber: "", registrationStatus: "", general: "" });
 
-  // Add form
+  // Add forms
   const [name, setName] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
-  // const []
-  const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState({ name: "", studentNumber: "", general: "" });
+  const [addRegristationStatus, setAddRegistrationStatus] = useState("");
 
   // Edit
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [editName, setEditName] = useState("");
   const [editStudentNumber, setEditStudentNumber] = useState("");
-  const [editError, setEditError] = useState({ name: "", studentNumber: "", general: "" });
+  const [editError, setEditError] = useState({ name: "", studentNumber: "", registrationStatus: "", general: "" });
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -43,12 +45,20 @@ function AdminMasterlist() {
   useEffect(() => {
     fetchList();
   }, []);
+
+  const regStatus = ["Regular", "Irregular"];
   
+  // filter((t) => t.regStatus === registrationStatus)
+
   const filteredStudents = list.sort((a, b) => {
     const surnameA = a.fullName.split(" ").at(-1);
     const surnameB = b.fullName.split(" ").at(-1);
     return surnameA.localeCompare(surnameB);
   });
+
+  const handleStatusChange = (status) => {
+    setRegristationStatus(status);
+  };
 
   const resetForm = () => {
     setName("");
@@ -66,10 +76,11 @@ function AdminMasterlist() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { name: "", studentNumber: "", general: "" };
+    const newError = { name: "", studentNumber: "", registrationStatus: "", general: "" };
 
     if (!name) { newError.name = "Name is required."; hasError = true; }
     if (!studentNumber) { newError.studentNumber = "Student number is required."; hasError = true; }
+    if (!addRegristationStatus) { newError.registrationStatus = "Registration Status is required."; hasError = true; }
     else if (!validateStudentNumber(studentNumber)) { newError.studentNumber = "Student number must be exactly 9 digits."; hasError = true; }
     if (hasError) { setError(newError); return; }
 
@@ -137,6 +148,28 @@ function AdminMasterlist() {
           <p className="text-gray-400 text-sm">Manage and monitor the official masterlist.</p>
         </div>
 
+        <div className="mt-5 flex flex-row justify-between items-center">
+          <div className="">
+            {regStatus.map((status) => (
+              <Button
+                key={status}
+                text={status}
+                onClick={() => handleStatusChange(status)}
+                bgColor={registrationStatus === status ? "bg-[#1B651B]" : "bg-white"}
+                typography={registrationStatus === status ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+                dimensions="rounded-md"
+                padding="px-5 py-1"
+                shadow="shadow-md border border-gray-200"
+                margin="mr-4"
+                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+              />
+            ))}
+          </div>
+          <div className="">
+            <p className="text-sm font-bold text-[#888888]">Total Students: <span className="text-[#003A02] font-bold text-[1.3rem] ml-1"><CountUp.default start={0} end={filteredStudents.length} duration={3}/></span></p>
+          </div>
+      </div>
+
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
@@ -160,7 +193,7 @@ function AdminMasterlist() {
                 <table className="w-full">
                   <tbody>
                     {filteredStudents.map((s, i) => (
-                      <tr key={i.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                      <tr key={i} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
                         <td className="text-[#828282]">{i + 1}</td>
                         <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
                         <td>{s.studentNumber}</td>
@@ -178,7 +211,7 @@ function AdminMasterlist() {
                         <td className="flex gap-2">
                           <Button
                             text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
-                            onClick={() => handleEditOpen(t)}
+                            onClick={() => handleEditOpen(s)}
                             bgColor="hover:bg-gray-200"
                             typography="text-gray-700 hover:text-gray-500"
                             dimensions="rounded-md"
@@ -250,6 +283,19 @@ function AdminMasterlist() {
                 ${error.studentNumber ? "border-red-500" : "border-gray-300"}`} 
               maxLength={9} />
             {error.studentNumber && <p className="text-red-500 text-xs">{error.studentNumber}</p>}
+
+            <label className="text-xs font-bold mb-1 mt-4">Registration Status <span className="text-red-400">*</span></label>
+            <input 
+              type="text" 
+              value={studentNumber} 
+              placeholder="9-digit student number" 
+              onChange={(e) => { 
+                setStudentNumber(e.target.value); 
+                setError((prev) => ({ ...prev, registrationStatus: "" })); }} 
+              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                ${error.registrationStatus ? "border-red-500" : "border-gray-300"}`} 
+              maxLength={9} />
+            {error.registrationStatus && <p className="text-red-500 text-xs">{error.registrationStatus}</p>}
 
             {error.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>)}
 

@@ -23,9 +23,7 @@ export async function editMasterlist(
   studentNumber: number, 
   fullName: string,
 ) : Promise<Masterlist> {
-  const response = await api.patch<Masterlist>(`/admin/masterlist/
-    ${studentNumber}`, 
-    { fullName });
+  const response = await api.patch<Masterlist>(`/admin/masterlist/${studentNumber}`, { fullName });
   return response.data;
 }
 
@@ -33,7 +31,6 @@ export async function editMasterlist(
 export async function deleteMasterlist(
   studentNumber: number
 ) : Promise<Masterlist> {
-  const response = await api.delete<Masterlist>(`/admin/masterlist/
-    ${studentNumber}`);
+  const response = await api.delete<Masterlist>(`/admin/masterlist/${studentNumber}`);
   return response.data;
 }

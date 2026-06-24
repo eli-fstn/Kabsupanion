@@ -7,16 +7,16 @@ function ActivityTracker() {
   const [activeSubject, setActiveSubject] = useState("All");
   const [activity, setActivity] = useState([]);
 
-  useEffect(() => {
-    const fetchActivity = async () => {
-      try {
-        const data = await getActivity();
-        setActivity(data);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
+  const fetchActivity = async () => {
+    try {
+      const data = await getActivity();
+      setActivity(data);
+    } catch (error) {
+      console.log(error);
+    } 
+  }
 
+  useEffect(() => {
     fetchActivity();
   }, []);
 

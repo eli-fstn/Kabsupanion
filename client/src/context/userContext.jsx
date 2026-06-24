@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getMe } from "../services/auth";
+import LoadingScreen from "../components/ui/LoadingScreen";
 
 const UserContext = createContext(null);
 
@@ -27,6 +28,8 @@ export function UserProvider({ children }) {
   useEffect(() => {
     fetchMe();
   }, []);
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <UserContext.Provider value={{ student, setStudent, loading, refetchUser: fetchMe }}>

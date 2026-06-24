@@ -1,16 +1,18 @@
 # Changelog
 
-
 All notable changes to the Kabsupanion (front-end) are documented here.
-
 This project follows the Keep a Changelog format and adheres to Semantic Versioning.
-
 This changelog tracks UI/UX changes, component updates, routing changes, and state management updates.
 
 ## [Unreleased]
 
 ### Features
 
+* can now have a full preview of the image in resoruces (admin panel) ([5741f1b](https://github.com/eli-fstn/Kabsupanion/commit/5741f1b6b622ef9bd0b664dcb51a6cd51ff111ea))
+* if the user has still a token, it will redirect to the dashboard ([8b2caa2](https://github.com/eli-fstn/Kabsupanion/commit/8b2caa25a8bdc26c2cb3ffcab783734293fef638))
+* loading icon when data is not rendered yet in admin. ([8fe5e3f](https://github.com/eli-fstn/Kabsupanion/commit/8fe5e3f3c753efa19214376cd8b70f14f657c76f))
+* number count-up animation ([f1c7492](https://github.com/eli-fstn/Kabsupanion/commit/f1c749238dca94fb0e75964d749e97dab66884eb))
+* resources appear now in admin but doesn't have the approve function yet. ([bf7ac03](https://github.com/eli-fstn/Kabsupanion/commit/
 * **footer:** footer section in dashboard ([40285df](https://github.com/eli-fstn/Kabsupanion/commit/40285dfdf7383096d5bc97eda348954dd552a78d))
 * **sidebar:** sidebar for admin's dashboard ([fb08fd9](https://github.com/eli-fstn/Kabsupanion/commit/fb08fd9dcf007957a1b4cbb183d34fe11b1e7db8))
 * can now CRUD subjects in admin ([31543c5](https://github.com/eli-fstn/Kabsupanion/commit/31543c59fbdd3e89aa45bcad148e6c1d37a0eb62))

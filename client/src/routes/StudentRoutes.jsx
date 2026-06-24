@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "../pages/student/Dashboard";
-import PrivateRoute from "../../utils/PrivateRoute.jsx";
+import PrivateRoute from "../routes/PrivateRoute.jsx";
 import Error404 from "../pages/errors/Error404.jsx";
 
 function StudentRoutes() {
