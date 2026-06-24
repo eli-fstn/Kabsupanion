@@ -19,6 +19,8 @@ function AdminDashboard() {
   const [resourcePage, setResourcePage] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  console.log(student);
+
   const fetchMasterlist = async () => {
     try {
       const data = await getMasterlist();

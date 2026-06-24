@@ -1,5 +1,5 @@
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { verifyLogin } from "../../services/auth.ts";
 import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button.jsx";
@@ -17,6 +17,22 @@ function LogIn() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { refetchUser } = useUser();
+  const { student } = useUser();
+
+  useEffect(() => {
+    refetchUser();
+
+    if (localStorage.getItem("token")) {
+      console.log("this works");
+      if (student.user?.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
+    } else {
+      navigate("/");
+    }
+  }, []);
 
   const handleLogIn = async (e) => {
     e.preventDefault();
