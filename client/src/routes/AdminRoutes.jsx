@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import PrivateRoute from "../../utils/PrivateRoute.jsx";
+import PrivateRoute from "../routes/PrivateRoute.jsx";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminList from "../pages/admin/AdminTaskList.jsx";
 import AdminSched from "../pages/admin/AdminSched.jsx";

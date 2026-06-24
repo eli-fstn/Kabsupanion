@@ -9,6 +9,7 @@ import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
 import Pagination from "../../components/ui/Pagination.jsx";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
+import { useGreeting } from "../../hooks/useGreeting.ts";
 
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);
@@ -18,6 +19,7 @@ function AdminDashboard() {
   const { student } = useUser();
   const [resourcePage, setResourcePage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const greetings = useGreeting();
 
   const fetchMasterlist = async () => {
     try {
@@ -83,26 +85,15 @@ function AdminDashboard() {
     name: subject.code,
     value: task.filter(t => t.subject.code === subject.code).length,
   })).filter(s => s.value > 0);
-
-  // PARTIAL
-  // const getGreeting = () => {
-  //   const time = new Date();
-  //   let t = time.getHours();
-  //   if (t >= 21 || t <= 4){
-  //     console.log("midnight");
-  //   }
-  // }
   
-  // getGreeting();
-
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
 
-        <div className="mb-7 leading-12">
-          <p className="font-bold text-[2rem] font-[montserrat]">Hello love, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
+        <div className="mb-7 leading-8">
+          <p className="font-bold text-[2rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
           <p className="text-gray-400 text-sm">Here's what's happening in your section.</p>
         </div>
 
