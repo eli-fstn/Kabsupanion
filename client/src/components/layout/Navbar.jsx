@@ -50,8 +50,8 @@ function Navbar() {
           </div>
           <div className="flex flex-col text-[#3a3a3a88] font-bold leading-4">
             <div>
-              <p className="uppercase">{student?.user?.name}</p>
-              <p className="text-[.7rem]">{student?.user?.studentNumber}</p>
+              <p className="uppercase text-sm">{student?.user?.name}</p>
+              <p className="text-xs">{student?.user?.studentNumber}</p>
             </div>
           </div>
         </div>

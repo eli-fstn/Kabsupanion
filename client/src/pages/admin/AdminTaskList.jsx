@@ -21,7 +21,12 @@ function AdminList() {
   const [dueDate, setDueDate] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [error, setError] = useState({ title: "", subject: "", dueDate: "", general: "" });
+  const [error, setError] = useState({ 
+    title: "", 
+    subject: "", 
+    dueDate: "", 
+    general: "" 
+  });
 
   // Edit
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -29,7 +34,12 @@ function AdminList() {
   const [editTitle, setEditTitle] = useState("");
   const [editSubjectID, setEditSubjectID] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
-  const [editError, setEditError] = useState({ title: "", subject: "", dueDate: "", general: "" });
+  const [editError, setEditError] = useState({ 
+    title: "", 
+    subject: "", 
+    dueDate: "", 
+    general: "" 
+  });
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -64,7 +74,12 @@ function AdminList() {
     setTitle("");
     setSubjectID("");
     setDueDate("");
-    setError({ title: "", subject: "", dueDate: "", general: "" });
+    setError({
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    });
   };
 
   const handleClose = () => {
@@ -75,11 +90,28 @@ function AdminList() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { title: "", subject: "", dueDate: "", general: "" };
-    if (!title) { newError.title = "Task title is required."; hasError = true; }
-    if (!subjectID) { newError.subject = "Subject is required."; hasError = true; }
-    if (!dueDate) { newError.dueDate = "Due date is required."; hasError = true; }
-    if (hasError) { setError(newError); return; }
+    const newError = { 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    };
+
+    if (!title) { 
+      newError.title = "Task title is required."; 
+      hasError = true; 
+    }
+    if (!subjectID) { 
+      newError.subject = "Subject is required."; 
+      hasError = true; 
+    }
+    if (!dueDate) { 
+      newError.dueDate = "Due date is required."; 
+      hasError = true; }
+    if (hasError) { 
+      setError(newError); 
+      return; 
+    }
 
     setLoadingForm(true);
 
@@ -101,18 +133,42 @@ function AdminList() {
     setEditTitle(t.title);
     setEditSubjectID(t.subject?.id || "");
     setEditDueDate(t.dueDate ? new Date(t.dueDate).toISOString().slice(0,10) : "");
-    setEditError({ title: "", subject: "", dueDate: "", general: "" });
+    setEditError({ 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    });
     setEditModalOpen(true);
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { title: "", subject: "", dueDate: "", general: "" };
-    if (!editTitle) { newError.title = "Task title is required."; hasError = true; }
-    if (!editSubjectID) { newError.subject = "Subject is required."; hasError = true; }
-    if (!editDueDate) { newError.dueDate = "Due date is required."; hasError = true; }
-    if (hasError) { setEditError(newError); return; }
+    const newError = { 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    };
+
+    if (!editTitle) { 
+      newError.title = "Task title is required."; 
+      hasError = true; 
+    }
+    if (!editSubjectID) { 
+      newError.subject = "Subject is required."; 
+      hasError = true; 
+    }
+    if (!editDueDate) { 
+      newError.dueDate = "Due date is required."; 
+      hasError = true;
+     }
+    if (hasError) { 
+      setEditError(newError); 
+      return; 
+    }
+    setLoadingForm(true);
     try {
       if (!selectedTask) return;
       await editTask(selectedTask.id, editTitle, editSubjectID, editDueDate);
@@ -120,6 +176,8 @@ function AdminList() {
       fetchTasks();
     } catch (err) {
       handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -129,9 +187,7 @@ function AdminList() {
   };
 
   const handleDeleteConfirm = async () => {
-
     setLoadingForm(true);
-    
     try {
       if (!selectedTask) return;
       await deleteTask(selectedTask.id);
@@ -231,7 +287,7 @@ function AdminList() {
         <Modal isOpen={modalOpen} onClose={handleClose}>
           <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
             {loadingForm ? (
-              <div className="flex flex-col justify-center items-center h-80">
+              <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20"/>
                 <p className="text-gray-400 text-sm mt-5">Submitting...</p>
               </div>
@@ -311,74 +367,84 @@ function AdminList() {
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
           <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
-            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Task</p>
-            <p className="text-gray-400 text-xs mb-5">Update the task details.</p>
+            {loadingForm ? (
+               <div className="flex flex-col justify-center items-center h-70">
+                  <LoadingIcon dimensions="w-20 h-20"/>
+                  <p className="text-gray-400 text-sm mt-5">Saving Changes...</p>
+                </div>
+            ) : (
+              <>
+              <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Task</p>
+              <p className="text-gray-400 text-xs mb-5">Update the task details.</p>
 
-            <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={editTitle} 
-              onChange={(e) => {
-                setEditTitle(e.target.value);
-                setEditError((prev) => ({ ...prev, title: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${editError.title ? "border-red-500" : "border-gray-300"}`} />
-            {editError.title && <p className="text-red-500 text-xs">{editError.title}</p>}
+              <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
+              <input 
+                type="text" 
+                value={editTitle} 
+                onChange={(e) => {
+                  setEditTitle(e.target.value);
+                  setEditError((prev) => ({ ...prev, title: "" })); }} 
+                className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                  ${editError.title ? "border-red-500" : "border-gray-300"}`} />
+              {editError.title && <p className="text-red-500 text-xs">{editError.title}</p>}
 
-            <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
-            <select 
-              value={editSubjectID} 
-              onChange={(e) => {
-                setEditSubjectID(e.target.value); 
-                setEditError((prev) => ({ ...prev, subject: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
-                ${editError.subject ? "border-red-500" : "border-gray-300"}`}>
-              <option value="">Select a subject</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>{subject.code}</option>
-              ))}
-            </select>
-            {editError.subject && <p className="text-red-500 text-xs">{editError.subject}</p>}
+              <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
+              <select 
+                value={editSubjectID} 
+                onChange={(e) => {
+                  setEditSubjectID(e.target.value); 
+                  setEditError((prev) => ({ ...prev, subject: "" })); }} 
+                className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
+                  ${editError.subject ? "border-red-500" : "border-gray-300"}`}>
+                <option value="">Select a subject</option>
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.id}>{subject.code}</option>
+                ))}
+              </select>
+              {editError.subject && <p className="text-red-500 text-xs">{editError.subject}</p>}
 
-            <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
-            <input 
-              type="date" 
-              value={editDueDate} 
-              onChange={(e) => {
-                setEditDueDate(e.target.value);
-                setEditError((prev) => ({ ...prev, dueDate: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${editError.dueDate ? "border-red-500" : "border-gray-300"}`} />
-            {editError.dueDate && <p className="text-red-500 text-xs">{editError.dueDate}</p>}
+              <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
+              <input 
+                type="date" 
+                value={editDueDate} 
+                onChange={(e) => {
+                  setEditDueDate(e.target.value);
+                  setEditError((prev) => ({ ...prev, dueDate: "" })); }} 
+                className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                  ${editError.dueDate ? "border-red-500" : "border-gray-300"}`} />
+              {editError.dueDate && <p className="text-red-500 text-xs">{editError.dueDate}</p>}
 
-            {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
+              {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-5">
-              <Button 
-                type="button" 
-                onClick={() => setEditModalOpen(false)} 
-                text="Cancel"
-                bgColor="bg-gray-100 hover:bg-gray-200" 
-                typography="text-gray-600 font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md"
-              />
-              <Button 
-                type="submit" 
-                text="Save Changes" 
-                bgColor="bg-[#1B651B]" 
-                typography="text-white font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]" />
-            </div>
+              <div className="flex flex-row justify-end gap-3 mt-5">
+                <Button 
+                  type="button" 
+                  onClick={() => setEditModalOpen(false)} 
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200" 
+                  typography="text-gray-600 font-bold text-xs" 
+                  padding="px-4 py-2" 
+                  dimensions="w-fit rounded-md"
+                />
+                <Button 
+                  type="submit" 
+                  text="Save Changes" 
+                  bgColor="bg-[#1B651B]" 
+                  typography="text-white font-bold text-xs" 
+                  padding="px-4 py-2" 
+                  dimensions="w-fit rounded-md" 
+                  animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]" />
+              </div>
+                </>
+              )
+            }
           </form>
         </Modal>
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <div className="flex flex-col items-center w-72 p-3">
-            {loading ? (
+            {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20"/>
                 <p className="text-gray-400 text-sm mt-5">Deleting...</p>

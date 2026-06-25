@@ -11,9 +11,15 @@ import CountUp from "react-countup";
 function AdminMasterlist() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
   const [registrationStatus, setRegristationStatus] = useState("Regular");
   const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState({ name: "", studentNumber: "", registrationStatus: "", general: "" });
+  const [error, setError] = useState({ 
+    name: "", 
+    studentNumber: "", 
+    registrationStatus: "", 
+    general: "" 
+  });
 
   // Add forms
   const [name, setName] = useState("");
@@ -25,7 +31,12 @@ function AdminMasterlist() {
   const [selected, setSelected] = useState(null);
   const [editName, setEditName] = useState("");
   const [editStudentNumber, setEditStudentNumber] = useState("");
-  const [editError, setEditError] = useState({ name: "", studentNumber: "", registrationStatus: "", general: "" });
+  const [editError, setEditError] = useState({ 
+    name: "", 
+    studentNumber: "", 
+    registrationStatus: "", 
+    general: "" 
+  });
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -63,7 +74,11 @@ function AdminMasterlist() {
   const resetForm = () => {
     setName("");
     setStudentNumber("");
-    setError({ name: "", studentNumber: "", general: "" });
+    setError({ 
+      name: "", 
+      studentNumber: "", 
+      general: "" 
+    });
   };
 
   const handleClose = () => {
@@ -76,14 +91,34 @@ function AdminMasterlist() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { name: "", studentNumber: "", registrationStatus: "", general: "" };
+    const newError = { 
+      name: "",
+      studentNumber: "", 
+      registrationStatus: "", 
+      general: "" 
+    };
 
-    if (!name) { newError.name = "Name is required."; hasError = true; }
-    if (!studentNumber) { newError.studentNumber = "Student number is required."; hasError = true; }
-    if (!addRegristationStatus) { newError.registrationStatus = "Registration Status is required."; hasError = true; }
-    else if (!validateStudentNumber(studentNumber)) { newError.studentNumber = "Student number must be exactly 9 digits."; hasError = true; }
-    if (hasError) { setError(newError); return; }
-
+    if (!name) { 
+      newError.name = "Name is required."; 
+      hasError = true; 
+    }
+    if (!studentNumber) { 
+      newError.studentNumber = "Student number is required."; 
+      hasError = true; 
+    }
+    // if (!addRegristationStatus) { 
+    // newError.registrationStatus = "Registration Status is required."; 
+    // hasError = true; 
+    // }
+    else if (!validateStudentNumber(studentNumber)) { 
+      newError.studentNumber = "Student number must be exactly 9 digits."; 
+      hasError = true; 
+    }
+    if (hasError) { 
+      setError(newError); 
+      return; 
+    }
+    setLoadingForm(true);
     try {
       await addToMasterlist(name, studentNumber);
       setModalOpen(false);
@@ -91,6 +126,8 @@ function AdminMasterlist() {
       fetchList();
     } catch (err) {
       handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -98,20 +135,40 @@ function AdminMasterlist() {
     setSelected(s);
     setEditName(s.fullName);
     setEditStudentNumber(s.studentNumber);
-    setEditError({ name: "", studentNumber: "", general: "" });
+    setEditError({ 
+      name: "", 
+      studentNumber: "",
+      general: "" 
+    });
     setEditModalOpen(true);
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { name: "", studentNumber: "", general: "" };
+    const newError = { 
+      name: "", 
+      studentNumber: "", 
+      general: "" 
+    };
 
-    if (!editName) { newError.name = "Name is required."; hasError = true; }
-    if (!editStudentNumber) { newError.studentNumber = "Student number is required."; hasError = true; }
-    else if (!validateStudentNumber(editStudentNumber)) { newError.studentNumber = "Student number must be exactly 9 digits."; hasError = true; }
-    if (hasError) { setEditError(newError); return; }
-    
+    if (!editName) { 
+      newError.name = "Name is required."; 
+      hasError = true; 
+    }
+    if (!editStudentNumber) { 
+      newError.studentNumber = "Student number is required."; 
+      hasError = true; 
+    }
+    else if (!validateStudentNumber(editStudentNumber)) { 
+      newError.studentNumber = "Student number must be exactly 9 digits.";
+       hasError = true;
+       }
+    if (hasError) { 
+      setEditError(newError); 
+      return;
+    }
+    setLoadingForm(true);
     try {
       if (!selected) return;
       await editMasterlist(selected.studentNumber, editName);
@@ -119,6 +176,8 @@ function AdminMasterlist() {
       fetchList();
     } catch (err) {
       handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -128,6 +187,7 @@ function AdminMasterlist() {
   };
 
   const handleDeleteConfirm = async () => {
+    setLoadingForm(true);
     try {
       if (!selected) return;
       await deleteMasterlist(selected.studentNumber);
@@ -135,6 +195,8 @@ function AdminMasterlist() {
       fetchList();
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -256,150 +318,180 @@ function AdminMasterlist() {
         {/* Add Modal */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
           <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
-            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Add Masterlist Entry</p>
-            <p className="text-gray-400 text-xs mb-5">Add a new student to the masterlist.</p>
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-70">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5">Submitting...</p>
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Add Masterlist Entry</p>
+                <p className="text-gray-400 text-xs mb-5">Add a new student to the masterlist.</p>
 
-            <label className="text-xs font-bold mb-1 mt-2">Full Name <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={name} 
-              placeholder="Enter full name" 
-              onChange={(e) => { 
-                setName(e.target.value); 
-                setError((prev) => ({ ...prev, name: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-              ${error.name ? "border-red-500" : "border-gray-300"}`} />
-            {error.name && <p className="text-red-500 text-xs">{error.name}</p>}
+                <label className="text-xs font-bold mb-1 mt-2">Full Name <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={name} 
+                  placeholder="Enter full name" 
+                  onChange={(e) => { 
+                    setName(e.target.value); 
+                    setError((prev) => ({ ...prev, name: "" })); }} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                  ${error.name ? "border-red-500" : "border-gray-300"}`} />
+                {error.name && <p className="text-red-500 text-xs">{error.name}</p>}
 
-            <label className="text-xs font-bold mb-1 mt-4">Student Number <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={studentNumber} 
-              placeholder="9-digit student number" 
-              onChange={(e) => { 
-                setStudentNumber(e.target.value); 
-                setError((prev) => ({ ...prev, studentNumber: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${error.studentNumber ? "border-red-500" : "border-gray-300"}`} 
-              maxLength={9} />
-            {error.studentNumber && <p className="text-red-500 text-xs">{error.studentNumber}</p>}
+                <label className="text-xs font-bold mb-1 mt-4">Student Number <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={studentNumber} 
+                  placeholder="9-digit student number" 
+                  onChange={(e) => { 
+                    setStudentNumber(e.target.value); 
+                    setError((prev) => ({ ...prev, studentNumber: "" })); }} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${error.studentNumber ? "border-red-500" : "border-gray-300"}`} 
+                  maxLength={9} />
+                {error.studentNumber && <p className="text-red-500 text-xs">{error.studentNumber}</p>}
 
-            <label className="text-xs font-bold mb-1 mt-4">Registration Status <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={studentNumber} 
-              placeholder="9-digit student number" 
-              onChange={(e) => { 
-                setStudentNumber(e.target.value); 
-                setError((prev) => ({ ...prev, registrationStatus: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${error.registrationStatus ? "border-red-500" : "border-gray-300"}`} 
-              maxLength={9} />
-            {error.registrationStatus && <p className="text-red-500 text-xs">{error.registrationStatus}</p>}
+                {/* <label className="text-xs font-bold mb-1 mt-4">Registration Status <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={registrationStatus} 
+                  placeholder="Enter Registration Status" 
+                  onChange={(e) => { 
+                    setRegristationStatus(e.target.value); 
+                    setError((prev) => ({ ...prev, registrationStatus: "" })); }} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${error.registrationStatus ? "border-red-500" : "border-gray-300"}`} 
+                  maxLength={9} />
+                {error.registrationStatus && <p className="text-red-500 text-xs">{error.registrationStatus}</p>} */}
 
-            {error.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>)}
+                {error.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-5">
-              <Button 
-                type="button" 
-                onClick={handleClose} 
-                text="Cancel" 
-                bgColor="bg-gray-100 hover:bg-gray-200" 
-                typography="text-gray-600 font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md"
-              />
-              <Button 
-                type="submit" 
-                text="Submit" 
-                bgColor="bg-[#1B651B]" 
-                typography="text-white font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
-              />
-            </div>
+                <div className="flex flex-row justify-end gap-3 mt-5">
+                  <Button 
+                    type="button" 
+                    onClick={handleClose} 
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="submit" 
+                    text="Submit" 
+                    bgColor="bg-[#1B651B]" 
+                    typography="text-white font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                  />
+                </div>
+              </>
+            )
+          }
           </form>
         </Modal>
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
           <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
-            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Masterlist Entry</p>
-            <p className="text-gray-400 text-xs mb-5">Update student details.</p>
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-70">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5">Saving Changes...</p>
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Masterlist Entry</p>
+                <p className="text-gray-400 text-xs mb-5">Update student details.</p>
 
-            <label className="text-xs font-bold mb-1 mt-2">Full Name <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={editName} 
-              onChange={(e) => { setEditName(e.target.value); setEditError((prev) => ({ ...prev, name: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${editError.name ? "border-red-500" : "border-gray-300"}`} />
-            {editError.name && <p className="text-red-500 text-xs">{editError.name}</p>}
+                <label className="text-xs font-bold mb-1 mt-2">Full Name <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={editName} 
+                  onChange={(e) => { setEditName(e.target.value); setEditError((prev) => ({ ...prev, name: "" })); }} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${editError.name ? "border-red-500" : "border-gray-300"}`} />
+                {editError.name && <p className="text-red-500 text-xs">{editError.name}</p>}
 
-            <label className="text-xs font-bold mb-1 mt-4">Student Number <span className="text-red-400">*</span></label>
-            <input 
-              type="text" 
-              value={editStudentNumber} 
-              onChange={(e) => { setEditStudentNumber(e.target.value); setEditError((prev) => ({ ...prev, studentNumber: "" })); }} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${editError.studentNumber ? "border-red-500" : "border-gray-300"}`} />
-            {editError.studentNumber && <p className="text-red-500 text-xs">{editError.studentNumber}</p>}
+                <label className="text-xs font-bold mb-1 mt-4">Student Number <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={editStudentNumber} 
+                  onChange={(e) => { setEditStudentNumber(e.target.value); setEditError((prev) => ({ ...prev, studentNumber: "" })); }} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${editError.studentNumber ? "border-red-500" : "border-gray-300"}`} />
+                {editError.studentNumber && <p className="text-red-500 text-xs">{editError.studentNumber}</p>}
 
-            {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
+                {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
 
-            <div className="flex flex-row justify-end gap-3 mt-5">
-              <Button 
-                type="button" 
-                onClick={() => setEditModalOpen(false)} 
-                text="Cancel"
-                 bgColor="bg-gray-100 hover:bg-gray-200" 
-                 typography="text-gray-600 font-bold text-xs" 
-                 padding="px-4 py-2" 
-                 dimensions="w-fit rounded-md"
-                />
-              <Button 
-                type="submit" 
-                text="Save Changes" 
-                bgColor="bg-[#1B651B]" 
-                typography="text-white font-bold text-xs"
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
-              />
-            </div>
+                <div className="flex flex-row justify-end gap-3 mt-5">
+                  <Button 
+                    type="button" 
+                    onClick={() => setEditModalOpen(false)} 
+                    text="Cancel"
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                    />
+                  <Button 
+                    type="submit" 
+                    text="Save Changes" 
+                    bgColor="bg-[#1B651B]" 
+                    typography="text-white font-bold text-xs"
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                  />
+                </div>
+              </>
+              )
+            }
           </form>
         </Modal>
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <div className="flex flex-col items-center w-72 p-3">
-            <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
-              <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
-            </div>
-            <p className="font-bold text-[1rem] text-[#A32D2D] text-center">Remove from Masterlist?</p>
-            <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to remove <span className="font-bold text-[#3a3a3a]">{selected?.fullName}</span> from the masterlist? This action cannot be undone.</p>
-            <div className="flex justify-center items-center gap-3 w-full">
-              <Button 
-                type="button" 
-                onClick={() => setDeleteModalOpen(false)} 
-                text="Cancel" 
-                bgColor="bg-gray-100 hover:bg-gray-200" 
-                typography="text-gray-600 font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md"
-              />
-              <Button 
-                type="button" 
-                onClick={handleDeleteConfirm} 
-                text="Delete" 
-                bgColor="bg-[#A32D2D] hover:bg-red-800" 
-                typography="text-white font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100"
-              />
-            </div>
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-50">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5">Deleting...</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
+                  <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
+                </div>
+                <p className="font-bold text-[1rem] text-[#A32D2D] text-center">Remove from Masterlist?</p>
+                <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to remove <span className="font-bold text-[#3a3a3a]">{selected?.fullName}</span> from the masterlist? This action cannot be undone.</p>
+                <div className="flex justify-center items-center gap-3 w-full">
+                  <Button 
+                    type="button" 
+                    onClick={() => setDeleteModalOpen(false)} 
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={handleDeleteConfirm} 
+                    text="Delete" 
+                    bgColor="bg-[#A32D2D] hover:bg-red-800" 
+                    typography="text-white font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100"
+                  />
+                </div>
+              </>
+            )
+          }
           </div>
         </Modal>
       </div>

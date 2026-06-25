@@ -89,7 +89,8 @@ function TaskList({ studentName="Juan" }) {
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="grid grid-cols-[3fr_1fr_1fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+            <tr className="grid grid-cols-[.1fr_3fr_1fr_1fr] bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+              <th></th>
               <th className="flex items-center"><Icon className="mr-2" icon="ix:tasks-all" width="25" height="25" />Task</th>
               <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="25" height="25" />Subject</th>
               <th className="flex items-center"><Icon className="mr-2" icon="mingcute:time-line" width="25" height="25" />Due Date</th>
@@ -100,7 +101,8 @@ function TaskList({ studentName="Juan" }) {
           <table className="w-full h-full">
             <tbody>
               {filteredTasks.map((t, i) => (
-                <tr key={i} className="grid grid-cols-[3fr_1fr_1fr] gap-5 border-b border-gray-100 p-3 items-center text-sm font-medium">
+                <tr key={i} className="grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 p-3 items-center text-sm font-medium">
+                  <input type="checkbox" className="w-fit accent-[#1B651B] rounded pl-3" />
                   <td>{t.title}</td>
                   <td>{t.subject?.code}</td>
                   <td>{formatDate(t.dueDate)}</td>

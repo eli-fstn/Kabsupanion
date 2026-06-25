@@ -16,6 +16,7 @@ function AdminResources() {
   const [loading, setLoading] = useState(false);
   const [pages, setPages] = useState([1]);
   const [openPreview, setOpenPreview] = useState(false); 
+  const [loadingForm, setLoadingForm] = useState(false);
 
   const fetchResources = async () => {
     setLoading(true);
@@ -50,12 +51,15 @@ function AdminResources() {
   };
 
   const handleDeleteConfirm = async () => {
+    setLoadingForm(true);
     try {
       await deleteResources(selectedResource.id);
       setDeleteModalOpen(false);
       fetchResources();
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -257,37 +261,46 @@ function AdminResources() {
           </div>
         </Modal>
 
-        {/* Delete */}
+        {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <div className="flex flex-col items-center w-72 p-3">
-            <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
-              <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
-            </div>
-            <p className="font-bold text-[1rem] text-center text-[#A32D2D]">Delete resources?</p>
-            <p className="text-gray-400 text-sm text-center mt-2 mb-6">
-              Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedResource?.title}?</span> This action cannot be undone.
-            </p>
-            <div className="flex justify-center items-center gap-3 w-full">
-              <Button
-                type="button"
-                onClick={() => setDeleteModalOpen(false)}
-                text="Cancel"
-                bgColor="bg-gray-100 hover:bg-gray-200"
-                typography="text-gray-600 font-bold text-xs"
-                padding="px-4 py-2"
-                dimensions="w-fit rounded-md"
-              />
-              <Button
-                type="button"
-                onClick={handleDeleteConfirm}
-                text="Delete"
-                bgColor="bg-[#A32D2D] hover:bg-red-800"
-                typography="text-white font-bold text-xs"
-                padding="px-4 py-2"
-                dimensions="w-fit rounded-md"
-                animation="active:scale-95 transition-all duration-100"
-              />
-            </div>
+            {loadingForm ? (
+               <div className="flex flex-col justify-center items-center h-50">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5">Deleting...</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
+                  <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
+                </div>
+                <p className="font-bold text-[1rem] text-center text-[#A32D2D]">Delete resources?</p>
+                <p className="text-gray-400 text-sm text-center mt-2 mb-6"> Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedResource?.title}?</span> This action cannot be undone.
+                </p>
+                <div className="flex justify-center items-center gap-3 w-full">
+                  <Button
+                    type="button"
+                    onClick={() => setDeleteModalOpen(false)}
+                    text="Cancel"
+                    bgColor="bg-gray-100 hover:bg-gray-200"
+                    typography="text-gray-600 font-bold text-xs"
+                    padding="px-4 py-2"
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleDeleteConfirm}
+                    text="Delete"
+                    bgColor="bg-[#A32D2D] hover:bg-red-800"
+                    typography="text-white font-bold text-xs"
+                    padding="px-4 py-2"
+                    dimensions="w-fit rounded-md"
+                    animation="active:scale-95 transition-all duration-100"
+                  />
+                </div>
+              </>
+              )
+            }
           </div>
         </Modal>
       </div>
