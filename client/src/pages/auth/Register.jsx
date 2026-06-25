@@ -143,7 +143,7 @@ function Register(){
 							type="submit"
 							text="Submit"
 							bgColor="bg-[#1B651B]"
-							typography="text-white font-bold text-[1rem]"
+							typography="text-white font-medium text-xs"
 							padding="px-6 py-2"
 							dimensions="w-full rounded-md"
 							animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"

@@ -112,7 +112,7 @@ function LogIn() {
               type="submit"
               text="Sign In"
               bgColor="bg-[#1B651B]"
-              typography="text-white font-bold"
+              typography="text-white font-medium text-xs"
               padding="px-6 py-2"
               dimensions="rounded-md w-full"
               animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
