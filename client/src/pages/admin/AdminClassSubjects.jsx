@@ -17,14 +17,22 @@ function AdminSubjects() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState({ code: "", name: "", general: "" });
+  const [error, setError] = useState({ 
+    code: "", 
+    name: "", 
+    general: "" 
+  });
 
   // Edit
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editCode, setEditCode] = useState("");
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [editError, setEditError] = useState({ code: "", name: "", general: "" });
+  const [editError, setEditError] = useState({ 
+    code: "", 
+    name: "", 
+    general: "" 
+  });
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -50,10 +58,23 @@ function AdminSubjects() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { code: "", name: "", general: "" };
-    if (!code) { newError.code = "Subject code is required."; hasError = true; }
-    if (!name) { newError.name = "Subject name is required."; hasError = true; }
-    if (hasError) { setError(newError); return; }
+    const newError = { 
+      code: "", 
+      name: "", 
+      general: ""
+    };
+    if (!code) { 
+      newError.code = "Subject code is required."; 
+      hasError = true; 
+    }
+    if (!name) { 
+      newError.name = "Subject name is required."; 
+      hasError = true; 
+    }
+    if (hasError) { 
+      setError(newError); 
+      return; 
+    }
     setLoadingForm(true);
     try {
       await uploadSubject(code, name, description);
@@ -71,7 +92,11 @@ function AdminSubjects() {
     setCode("");
     setName("");
     setDescription("");
-    setError({ code: "", name: "", general: "" });
+    setError({ 
+      code: "", 
+      name: "", 
+      general: "" 
+    });
   };
 
   const handleClose = () => {
@@ -84,17 +109,34 @@ function AdminSubjects() {
     setEditCode(subject.code);
     setEditName(subject.name);
     setEditDescription(subject.description ?? "");
-    setEditError({ code: "", name: "", general: "" });
+    setEditError({ 
+      code: "", 
+      name: "", 
+      general: "" 
+    });
     setEditModalOpen(true);
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { code: "", name: "", general: "" };
-    if (!editCode) { newError.code = "Subject code is required."; hasError = true; }
-    if (!editName) { newError.name = "Subject name is required."; hasError = true; }
-    if (hasError) { setEditError(newError); return; }
+    const newError = { 
+      code: "", 
+      name: "", 
+      general: "" 
+    };
+    if (!editCode) { 
+      newError.code = "Subject code is required."; 
+      hasError = true; 
+    }
+    if (!editName) { 
+      newError.name = "Subject name is required."; 
+      hasError = true; 
+    }
+    if (hasError) { 
+      setEditError(newError); 
+      return; 
+    }
     setLoadingForm(true);
     try {
       await editSubject(selectedSubject.id, editCode, editName, editDescription);

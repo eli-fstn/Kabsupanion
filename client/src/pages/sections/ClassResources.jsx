@@ -65,9 +65,18 @@ export default function ClassResources() {
       genral: ""
     };
 
-    if (!title) {newError.title = "Title is required."; hasError = true;}
-    if (!subjectID) {newError.subject = "Subject is required."; hasError = true;}
-    if (!file) {newError.file = "File is required."; hasError = true;}
+    if (!title) {
+      newError.title = "Title is required."; 
+      hasError = true;
+    }
+    if (!subjectID) {
+      newError.subject = "Subject is required."; 
+      hasError = true;
+    }
+    if (!file) {
+      newError.file = "File is required."; 
+      hasError = true;
+    }
     if (hasError) {
       setError(newError);
       return; 
@@ -101,7 +110,7 @@ export default function ClassResources() {
         <p className="font-bold text-[1.7rem] font-[montserrat] leading-7">Class Resources</p>
         <p className="text-[1rem]">Collaborate and exchange notes with your fellow Kabsuhenyos.</p>
       </div>
-      <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-150 p-4 flex flex-col">
+      <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl h-160 p-4 flex flex-col">
         <div className="h-150 overflow-y-auto flex flex-col">
           {loading ? (
             <div className="flex justify-center items-center flex-1">

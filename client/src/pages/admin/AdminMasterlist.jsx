@@ -14,7 +14,12 @@ function AdminMasterlist() {
   const [loadingForm, setLoadingForm] = useState(false);
   const [registrationStatus, setRegristationStatus] = useState("Regular");
   const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState({ name: "", studentNumber: "", registrationStatus: "", general: "" });
+  const [error, setError] = useState({ 
+    name: "", 
+    studentNumber: "", 
+    registrationStatus: "", 
+    general: "" 
+  });
 
   // Add forms
   const [name, setName] = useState("");
@@ -26,7 +31,12 @@ function AdminMasterlist() {
   const [selected, setSelected] = useState(null);
   const [editName, setEditName] = useState("");
   const [editStudentNumber, setEditStudentNumber] = useState("");
-  const [editError, setEditError] = useState({ name: "", studentNumber: "", registrationStatus: "", general: "" });
+  const [editError, setEditError] = useState({ 
+    name: "", 
+    studentNumber: "", 
+    registrationStatus: "", 
+    general: "" 
+  });
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -64,7 +74,11 @@ function AdminMasterlist() {
   const resetForm = () => {
     setName("");
     setStudentNumber("");
-    setError({ name: "", studentNumber: "", general: "" });
+    setError({ 
+      name: "", 
+      studentNumber: "", 
+      general: "" 
+    });
   };
 
   const handleClose = () => {
@@ -77,12 +91,33 @@ function AdminMasterlist() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { name: "", studentNumber: "", registrationStatus: "", general: "" };
-    if (!name) { newError.name = "Name is required."; hasError = true; }
-    if (!studentNumber) { newError.studentNumber = "Student number is required."; hasError = true; }
-    // if (!addRegristationStatus) { newError.registrationStatus = "Registration Status is required."; hasError = true; }
-    else if (!validateStudentNumber(studentNumber)) { newError.studentNumber = "Student number must be exactly 9 digits."; hasError = true; }
-    if (hasError) { setError(newError); return; }
+    const newError = { 
+      name: "",
+      studentNumber: "", 
+      registrationStatus: "", 
+      general: "" 
+    };
+
+    if (!name) { 
+      newError.name = "Name is required."; 
+      hasError = true; 
+    }
+    if (!studentNumber) { 
+      newError.studentNumber = "Student number is required."; 
+      hasError = true; 
+    }
+    // if (!addRegristationStatus) { 
+    // newError.registrationStatus = "Registration Status is required."; 
+    // hasError = true; 
+    // }
+    else if (!validateStudentNumber(studentNumber)) { 
+      newError.studentNumber = "Student number must be exactly 9 digits."; 
+      hasError = true; 
+    }
+    if (hasError) { 
+      setError(newError); 
+      return; 
+    }
     setLoadingForm(true);
     try {
       await addToMasterlist(name, studentNumber);
@@ -100,19 +135,39 @@ function AdminMasterlist() {
     setSelected(s);
     setEditName(s.fullName);
     setEditStudentNumber(s.studentNumber);
-    setEditError({ name: "", studentNumber: "", general: "" });
+    setEditError({ 
+      name: "", 
+      studentNumber: "",
+      general: "" 
+    });
     setEditModalOpen(true);
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { name: "", studentNumber: "", general: "" };
+    const newError = { 
+      name: "", 
+      studentNumber: "", 
+      general: "" 
+    };
 
-    if (!editName) { newError.name = "Name is required."; hasError = true; }
-    if (!editStudentNumber) { newError.studentNumber = "Student number is required."; hasError = true; }
-    else if (!validateStudentNumber(editStudentNumber)) { newError.studentNumber = "Student number must be exactly 9 digits."; hasError = true; }
-    if (hasError) { setEditError(newError); return; }
+    if (!editName) { 
+      newError.name = "Name is required."; 
+      hasError = true; 
+    }
+    if (!editStudentNumber) { 
+      newError.studentNumber = "Student number is required."; 
+      hasError = true; 
+    }
+    else if (!validateStudentNumber(editStudentNumber)) { 
+      newError.studentNumber = "Student number must be exactly 9 digits.";
+       hasError = true;
+       }
+    if (hasError) { 
+      setEditError(newError); 
+      return;
+    }
     setLoadingForm(true);
     try {
       if (!selected) return;

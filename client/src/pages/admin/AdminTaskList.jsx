@@ -21,7 +21,12 @@ function AdminList() {
   const [dueDate, setDueDate] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [error, setError] = useState({ title: "", subject: "", dueDate: "", general: "" });
+  const [error, setError] = useState({ 
+    title: "", 
+    subject: "", 
+    dueDate: "", 
+    general: "" 
+  });
 
   // Edit
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -29,7 +34,12 @@ function AdminList() {
   const [editTitle, setEditTitle] = useState("");
   const [editSubjectID, setEditSubjectID] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
-  const [editError, setEditError] = useState({ title: "", subject: "", dueDate: "", general: "" });
+  const [editError, setEditError] = useState({ 
+    title: "", 
+    subject: "", 
+    dueDate: "", 
+    general: "" 
+  });
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -64,7 +74,12 @@ function AdminList() {
     setTitle("");
     setSubjectID("");
     setDueDate("");
-    setError({ title: "", subject: "", dueDate: "", general: "" });
+    setError({
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    });
   };
 
   const handleClose = () => {
@@ -75,11 +90,28 @@ function AdminList() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { title: "", subject: "", dueDate: "", general: "" };
-    if (!title) { newError.title = "Task title is required."; hasError = true; }
-    if (!subjectID) { newError.subject = "Subject is required."; hasError = true; }
-    if (!dueDate) { newError.dueDate = "Due date is required."; hasError = true; }
-    if (hasError) { setError(newError); return; }
+    const newError = { 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    };
+
+    if (!title) { 
+      newError.title = "Task title is required."; 
+      hasError = true; 
+    }
+    if (!subjectID) { 
+      newError.subject = "Subject is required."; 
+      hasError = true; 
+    }
+    if (!dueDate) { 
+      newError.dueDate = "Due date is required."; 
+      hasError = true; }
+    if (hasError) { 
+      setError(newError); 
+      return; 
+    }
 
     setLoadingForm(true);
 
@@ -101,18 +133,41 @@ function AdminList() {
     setEditTitle(t.title);
     setEditSubjectID(t.subject?.id || "");
     setEditDueDate(t.dueDate ? new Date(t.dueDate).toISOString().slice(0,10) : "");
-    setEditError({ title: "", subject: "", dueDate: "", general: "" });
+    setEditError({ 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    });
     setEditModalOpen(true);
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newError = { title: "", subject: "", dueDate: "", general: "" };
-    if (!editTitle) { newError.title = "Task title is required."; hasError = true; }
-    if (!editSubjectID) { newError.subject = "Subject is required."; hasError = true; }
-    if (!editDueDate) { newError.dueDate = "Due date is required."; hasError = true; }
-    if (hasError) { setEditError(newError); return; }
+    const newError = { 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    };
+
+    if (!editTitle) { 
+      newError.title = "Task title is required."; 
+      hasError = true; 
+    }
+    if (!editSubjectID) { 
+      newError.subject = "Subject is required."; 
+      hasError = true; 
+    }
+    if (!editDueDate) { 
+      newError.dueDate = "Due date is required."; 
+      hasError = true;
+     }
+    if (hasError) { 
+      setEditError(newError); 
+      return; 
+    }
     setLoadingForm(true);
     try {
       if (!selectedTask) return;
@@ -132,9 +187,7 @@ function AdminList() {
   };
 
   const handleDeleteConfirm = async () => {
-
     setLoadingForm(true);
-    
     try {
       if (!selectedTask) return;
       await deleteTask(selectedTask.id);
