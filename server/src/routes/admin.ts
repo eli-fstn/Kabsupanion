@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { eq } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
-import { masterlist, users, userRole, type User } from "../db/schema";
+import { masterlist, users, userRole, studentStatus, type User } from "../db/schema";
 import { requireAuth, requireAdmin } from "../middleware/auth";
 
 export const adminRoutes = new Hono<AppEnv>();
@@ -12,6 +12,7 @@ export const adminRoutes = new Hono<AppEnv>();
 adminRoutes.use("*", requireAuth, requireAdmin);
 
 const ROLES = userRole.enumValues; // ["student", "admin"]
+const STATUSES = studentStatus.enumValues; // ["regular", "irregular"]
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,6 +22,10 @@ function isNonEmptyString(value: unknown): value is string {
 
 function isRole(value: unknown): value is (typeof ROLES)[number] {
   return typeof value === "string" && (ROLES as readonly string[]).includes(value);
+}
+
+function isStatus(value: unknown): value is (typeof STATUSES)[number] {
+  return typeof value === "string" && (STATUSES as readonly string[]).includes(value);
 }
 
 // Never leak password hashes.
@@ -103,7 +108,7 @@ adminRoutes.get("/masterlist", async (c) => {
   return c.json(rows);
 });
 
-// POST /admin/masterlist — add a roster entry. Body: { studentNumber, fullName, role? }.
+// POST /admin/masterlist — add a roster entry. Body: { studentNumber, fullName, role?, status? }.
 adminRoutes.post("/masterlist", async (c) => {
   let body: unknown;
   try {
@@ -111,10 +116,11 @@ adminRoutes.post("/masterlist", async (c) => {
   } catch {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
-  const { studentNumber, fullName, role } = (body ?? {}) as {
+  const { studentNumber, fullName, role, status } = (body ?? {}) as {
     studentNumber?: unknown;
     fullName?: unknown;
     role?: unknown;
+    status?: unknown;
   };
 
   if (!isNonEmptyString(studentNumber)) {
@@ -125,6 +131,9 @@ adminRoutes.post("/masterlist", async (c) => {
   }
   if (role !== undefined && !isRole(role)) {
     return c.json({ error: "`role` must be 'student' or 'admin'" }, 400);
+  }
+  if (status !== undefined && !isStatus(status)) {
+    return c.json({ error: "`status` must be 'regular' or 'irregular'" }, 400);
   }
 
   const db = createDb(c.env.DATABASE_URL);
@@ -141,12 +150,17 @@ adminRoutes.post("/masterlist", async (c) => {
 
   const [created] = await db
     .insert(masterlist)
-    .values({ studentNumber: sn, fullName: fullName.trim(), role: role ?? "student" })
+    .values({
+      studentNumber: sn,
+      fullName: fullName.trim(),
+      role: role ?? "student",
+      status: status ?? "regular",
+    })
     .returning();
   return c.json(created, 201);
 });
 
-// PATCH /admin/masterlist/:studentNumber — edit a roster entry's name and/or role.
+// PATCH /admin/masterlist/:studentNumber — edit a roster entry's name, role, and/or status.
 adminRoutes.patch("/masterlist/:studentNumber", async (c) => {
   const studentNumber = c.req.param("studentNumber");
 
@@ -156,12 +170,17 @@ adminRoutes.patch("/masterlist/:studentNumber", async (c) => {
   } catch {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
-  const { fullName, role } = (body ?? {}) as {
+  const { fullName, role, status } = (body ?? {}) as {
     fullName?: unknown;
     role?: unknown;
+    status?: unknown;
   };
 
-  const updates: { fullName?: string; role?: (typeof ROLES)[number] } = {};
+  const updates: {
+    fullName?: string;
+    role?: (typeof ROLES)[number];
+    status?: (typeof STATUSES)[number];
+  } = {};
   if (fullName !== undefined) {
     if (!isNonEmptyString(fullName)) {
       return c.json({ error: "`fullName` must be a non-empty string" }, 400);
@@ -174,8 +193,17 @@ adminRoutes.patch("/masterlist/:studentNumber", async (c) => {
     }
     updates.role = role;
   }
+  if (status !== undefined) {
+    if (!isStatus(status)) {
+      return c.json({ error: "`status` must be 'regular' or 'irregular'" }, 400);
+    }
+    updates.status = status;
+  }
   if (Object.keys(updates).length === 0) {
-    return c.json({ error: "Provide `fullName` and/or `role` to update" }, 400);
+    return c.json(
+      { error: "Provide `fullName`, `role`, and/or `status` to update" },
+      400
+    );
   }
 
   const db = createDb(c.env.DATABASE_URL);
@@ -191,22 +219,11 @@ adminRoutes.patch("/masterlist/:studentNumber", async (c) => {
 });
 
 // DELETE /admin/masterlist/:studentNumber — remove a roster entry.
-// Blocked if a user has already claimed it (the users FK references it).
+// The users FK cascades, so deleting a claimed entry also deletes the linked
+// user account (no longer blocked with 409).
 adminRoutes.delete("/masterlist/:studentNumber", async (c) => {
   const studentNumber = c.req.param("studentNumber");
   const db = createDb(c.env.DATABASE_URL);
-
-  const [claimed] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.studentNumber, studentNumber))
-    .limit(1);
-  if (claimed) {
-    return c.json(
-      { error: "Cannot remove a roster entry that a user has already registered" },
-      409
-    );
-  }
 
   const [deleted] = await db
     .delete(masterlist)

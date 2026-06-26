@@ -45,9 +45,9 @@ through **Drizzle** (Neon HTTP driver).
 | PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
 | DELETE | `/admin/users/:id`      | Bearer + Admin | Delete a user account. Cannot delete yourself. |
 | GET    | `/admin/masterlist`   | Bearer + Admin | List the full section roster |
-| POST   | `/admin/masterlist`   | Bearer + Admin | Add a roster entry: `{ studentNumber, fullName, role? }` |
-| PATCH  | `/admin/masterlist/:studentNumber` | Bearer + Admin | Update a roster entry: `{ fullName?, role? }` |
-| DELETE | `/admin/masterlist/:studentNumber` | Bearer + Admin | Remove a roster entry (blocked if a user has claimed it) |
+| POST   | `/admin/masterlist`   | Bearer + Admin | Add a roster entry: `{ studentNumber, fullName, role?, status? }` (`status` = `regular`/`irregular`, defaults `regular`) |
+| PATCH  | `/admin/masterlist/:studentNumber` | Bearer + Admin | Update a roster entry: `{ fullName?, role?, status? }` |
+| DELETE | `/admin/masterlist/:studentNumber` | Bearer + Admin | Remove a roster entry. **⚠️ Cascades:** if a user has claimed it, their account is deleted too |
 
 Authenticated requests send `Authorization: Bearer <token>` (the `token` returned by
 register/login). Tokens are HS256 JWTs signed with `JWT_SECRET`, valid for 7 days.
@@ -180,7 +180,7 @@ const me = (await api.get("/auth/me")).data.user;
 | Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
-| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0005` applied to Neon; masterlist seeded via `npm run db:seed`. |
+| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0006` applied to Neon; masterlist seeded via `npm run db:seed`. `masterlist.status` (`regular`/`irregular`) + `users→masterlist` FK cascade added in `0006`. |
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
 | Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
 | Notes (`/notes/*`) | ✅ live | Communal note sharing with Cloudinary-backed file storage. Migration `0005` applied. |

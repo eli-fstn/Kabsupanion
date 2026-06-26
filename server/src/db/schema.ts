@@ -23,6 +23,10 @@ export const dayOfWeek = pgEnum("day_of_week", [
 // be self-claimed.
 export const userRole = pgEnum("user_role", ["student", "admin"]);
 
+// A student's enrollment status on the roster: a regular full load vs. an
+// irregular one. Belongs on the masterlist (student identity), not users.
+export const studentStatus = pgEnum("student_status", ["regular", "irregular"]);
+
 // The section roster, pre-loaded from data the school provides (student numbers
 // + names only — no emails). Registration is gated against this table: only a
 // valid, unclaimed student number can create an account.
@@ -30,6 +34,7 @@ export const masterlist = pgTable("masterlist", {
   studentNumber: text("student_number").primaryKey(),
   fullName: text("full_name").notNull(),
   role: userRole("role").notNull().default("student"),
+  status: studentStatus("status").notNull().default("regular"),
 });
 
 export type MasterlistEntry = typeof masterlist.$inferSelect;
@@ -41,7 +46,7 @@ export const users = pgTable("users", {
   studentNumber: text("student_number")
     .notNull()
     .unique()
-    .references(() => masterlist.studentNumber),
+    .references(() => masterlist.studentNumber, { onDelete: "cascade" }),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   name: text("name").notNull(),
