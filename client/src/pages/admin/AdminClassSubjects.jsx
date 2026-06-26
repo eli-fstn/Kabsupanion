@@ -256,7 +256,7 @@ function AdminSubjects() {
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20"/>
-                <p className="text-gray-400 text-sm mt-5">Submitting...</p>
+                <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Submitting...</p>
               </div>
             ) : (
               <>
@@ -328,7 +328,7 @@ function AdminSubjects() {
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20"/>
-                <p className="text-gray-400 text-sm mt-5">Saving Changes...</p>
+                <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Saving Changes...</p>
               </div>
             ) : (
               <>
@@ -397,7 +397,7 @@ function AdminSubjects() {
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20"/>
-                <p className="text-gray-400 text-sm mt-5">Deleting...</p>
+                <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Deleting...</p>
               </div>
             ) : (
               <>

@@ -5,6 +5,7 @@ import StudentRoutes from "./StudentRoutes";
 import AdminRoutes from "./AdminRoutes";
 import Error404 from "../pages/errors/Error404";
 import Error503 from "../pages/errors/Error503";
+import Error403 from "../pages/errors/Error403";
 
 function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ function AppRoutes() {
       {/* Student Route */}
       <Route path="/student/*" element={<StudentRoutes />} />
       
+      <Route path="/error/403" element={<Error403 />} /> 
       <Route path="/error/404" element={<Error404 />} />
       <Route path="/error/503" element={<Error503 />} />
 

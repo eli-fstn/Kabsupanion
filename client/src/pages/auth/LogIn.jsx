@@ -91,13 +91,13 @@ function LogIn() {
             <p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion</p>
           </div>
 
-          <label className="text-gray-500 font-bold text-[.8rem]">CvSU Email</label>
+          <label className="text-[#A9A9A9] font-bold text-[.8rem]">CvSU Email</label>
           <input type="email" value={email} onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.email ? "border-red-500" : "border-gray-300"}`} />
           {error.email && (
             <p className="text-red-500 text-xs">{error.email}</p>
           )}
 
-          <label className="text-gray-500 font-bold text-[.8rem] mt-3">Password</label>
+          <label className="text-[#A9A9A9] font-bold text-[.8rem] mt-3">Password</label>
           <input type="password" minLength={8} value={password} onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-sm focus:border-green-700 ${error.password ? "border-red-500" : "border-gray-300"}`} />
           {error.password && (
             <p className="text-red-500 text-xs">{error.password}</p>
@@ -127,6 +127,10 @@ function LogIn() {
       </div>
       <div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
         <img className="opacity-50 w-72" src="/assets/images/Laya-at-Diwa.png" alt="Laya at Diwa"/>
+      </div>
+
+      <div className="flex justify-center items-center fixed bottom-0 left-0 right-0 py-3">
+        <p className="text-xs">Encountered a problem?<span className="text-[#1B651B] font-semibold ml-1"><a href="https://forms.gle/S7CdziBEMCq6DtEF6">Report here</a></span></p>
       </div>
     </div>
   );
