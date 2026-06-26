@@ -16,6 +16,7 @@ export default function ClassResources() {
   const { student } = useUser();
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
 
   // Add 
   const [title, setTitle] = useState("");
@@ -81,7 +82,7 @@ export default function ClassResources() {
       setError(newError);
       return; 
     }
-
+    setLoadingForm(true);
     try {
       await uploadResource(title, subjectID, student?.user?.name, file);
       setModalOpen(false);
@@ -89,6 +90,8 @@ export default function ClassResources() {
     } catch (error) {
       handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
       console.log(error);
+    } finally{
+      setLoadingForm(false);
     }
   };
 
@@ -151,89 +154,99 @@ export default function ClassResources() {
         {/* FORM */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
           <form onSubmit={handleSubmit} className="flex flex-col w-96 p-3">
-            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Upload Resources</p>
-            <p className="text-gray-400 text-xs mb-5">Share learning materials with your classmates</p>
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-70">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Submitting...</p>
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Upload Resources</p>
+                <p className="text-gray-400 text-xs mb-5">Share learning materials with your classmates</p>
 
-            {/* Title of the resources*/}
-            <label className="text-xs font-bold mb-1 mt-2">Title <span className="text-red-400">*</span></label>
-            <input 
-              value={title} 
-              onChange={(e) => {
-                setTitle(e.target.value); 
-                setError((prev) => ({ ...prev, title: "" }));}} 
-              type="text" 
-              placeholder="Enter resource title" 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${error.title ? "border-red-500" : "border-gray-300"}`} />
-            {error.title && (
-              <p className="text-red-500 text-xs">{error.title}</p>
-            )}
+                {/* Title of the resources*/}
+                <label className="text-xs font-bold mb-1 mt-2">Title <span className="text-red-400">*</span></label>
+                <input 
+                  value={title} 
+                  onChange={(e) => {
+                    setTitle(e.target.value); 
+                    setError((prev) => ({ ...prev, title: "" }));}} 
+                  type="text" 
+                  placeholder="Enter resource title" 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${error.title ? "border-red-500" : "border-gray-300"}`} />
+                {error.title && (
+                  <p className="text-red-500 text-xs">{error.title}</p>
+                )}
 
-            {/* Subject */}
-            <label className="text-xs font-bold mb-1 mt-2">Subject <span className="text-red-400">*</span></label>
-            <select 
-              value={subjectID} 
-              onChange={(e) => {
-                setSubjectID(e.target.value); 
-                setError((prev) => ({ ...prev, subject: "" }));}} 
-              className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                ${error.subject ? "border-red-500" : "border-gray-300"}`} >
-              <option value="">Select a subject</option>
-                {subjects.map((subject) => (
-                  <option key={subject.id} value={subject.id}>
-                    {subject.code}
-                  </option>
-                ))}
-            </select>
-            {error.subject && (
-              <p className="text-red-500 text-xs">{error.subject}</p>
-            )}
+                {/* Subject */}
+                <label className="text-xs font-bold mb-1 mt-2">Subject <span className="text-red-400">*</span></label>
+                <select 
+                  value={subjectID} 
+                  onChange={(e) => {
+                    setSubjectID(e.target.value); 
+                    setError((prev) => ({ ...prev, subject: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${error.subject ? "border-red-500" : "border-gray-300"}`} >
+                  <option value="">Select a subject</option>
+                    {subjects.map((subject) => (
+                      <option key={subject.id} value={subject.id}>
+                        {subject.code}
+                      </option>
+                    ))}
+                </select>
+                {error.subject && (
+                  <p className="text-red-500 text-xs">{error.subject}</p>
+                )}
 
-            {/* File to be uploaded */}
-            <label className="text-xs font-bold mb-1 mt-2">File <span className="text-red-400">*</span></label>
-            <input 
-              onChange={(e) => {
-                setFile(e.target.files[0]); 
-                setError((prev) => ({ ...prev, file: "" }));}} 
-            type="file" 
-            accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx" 
-            className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 
-              ${error.file ? "border-red-500" : "border-gray-200"}`} />
-            {error.file && (
-              <p className="text-red-500 text-xs">{error.file}</p>
-            )}
+                {/* File to be uploaded */}
+                <label className="text-xs font-bold mb-1 mt-2">File <span className="text-red-400">*</span></label>
+                <input 
+                  onChange={(e) => {
+                    setFile(e.target.files[0]); 
+                    setError((prev) => ({ ...prev, file: "" }));}} 
+                type="file" 
+                accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx" 
+                className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 
+                  ${error.file ? "border-red-500" : "border-gray-200"}`} />
+                {error.file && (
+                  <p className="text-red-500 text-xs">{error.file}</p>
+                )}
 
-            {/* Uploaded by (current user)*/}
-            <label className="text-xs font-bold mb-1 mt-3">Uploaded by</label>
-            <div className="flex flex-row mt-2">
-              <UserIcon typography="text-gray-400" dimensions="w-5" />
-              <span className="ml-1 text-xs font-bold text-gray-500 mb-5">{student?.user?.name}</span>
-            </div>
-            
-            {error.general && (
-              <p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>
-            )}
+                {/* Uploaded by (current user)*/}
+                <label className="text-xs font-bold mb-1 mt-3">Uploaded by</label>
+                <div className="flex flex-row mt-2">
+                  <UserIcon typography="text-gray-400" dimensions="w-5" />
+                  <span className="ml-1 text-xs font-bold text-gray-500 mb-5">{student?.user?.name}</span>
+                </div>
+                
+                {error.general && (
+                  <p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>
+                )}
 
-            <div className="flex flex-row justify-end gap-3 mt-5">
-              <Button 
-                type="button" 
-                onClick={handleClose}
-                text="Cancel" 
-                bgColor="bg-gray-100 hover:bg-gray-200" 
-                typography="text-gray-600 font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md"
-              />
-              <Button 
-                type="submit" 
-                text="Submit" 
-                bgColor="bg-[#1B651B]" 
-                typography="text-white font-bold text-xs" 
-                padding="px-4 py-2" 
-                dimensions="w-fit rounded-md" 
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
-              />
-            </div>
+                <div className="flex flex-row justify-end gap-3 mt-5">
+                  <Button 
+                    type="button" 
+                    onClick={handleClose}
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="submit" 
+                    text="Submit" 
+                    bgColor="bg-[#1B651B]" 
+                    typography="text-white font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                  />
+                </div>
+              </>
+              )
+            }
           </form>
         </Modal>
       </div>

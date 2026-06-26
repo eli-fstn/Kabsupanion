@@ -1,8 +1,20 @@
-import { Navigate, Outlet} from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useUser } from "../context/userContext";
+import Error403 from "../pages/errors/Error403";
 
-const PrivateRoute = () => {
-  const auth = { token: localStorage.getItem("token") }  
-  return auth.token ? <Outlet /> : <Navigate to="/" />;
+const PrivateRoute = ({ requiredRole }) => {
+  const token = localStorage.getItem("token");
+  const { student, loading } = useUser();
+
+  if (loading) return null;
+
+  if (!token) return <Navigate to="/" />;
+
+  if (requiredRole && student?.user?.role !== requiredRole) {
+    return <Error403 />
+  } 
+ 
+  return <Outlet />;
 };
 
 export default PrivateRoute;

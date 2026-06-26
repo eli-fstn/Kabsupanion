@@ -11,7 +11,7 @@ import Error404 from "../pages/errors/Error404.jsx";
 function AdminRoutes() {
   return(
     <Routes>
-      <Route element={<PrivateRoute />}>
+      <Route element={<PrivateRoute requiredRole={"admin"} />}>
         <Route path="/dashboard" element={<AdminDashboard />} />
         <Route path="/tasklist" element={<AdminList />} />
         <Route path="/schedule" element={<AdminSched />} />
