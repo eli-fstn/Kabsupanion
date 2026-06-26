@@ -10,6 +10,11 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
 
 ### Added
 
+- **Masterlist enrollment status.** New `student_status` enum (`regular`/`irregular`) and a
+  `masterlist.status` column (NOT NULL, default `regular`). Status lives on the roster
+  (student identity), not on `users`. `POST`/`PATCH /admin/masterlist` accept an optional
+  `status` (validated; `400` on an invalid value); `GET /admin/masterlist` returns it.
+  Migration `drizzle/0006_*.sql`.
 - **Notes** — communal note sharing tied to subjects. New `notes` table (`subjectId` FK →
   subjects cascade, `uploadedBy` FK → users SET NULL, `title`, `description?`, Cloudinary
   fields: `fileUrl`, `publicId`, `resourceType`, `fileName`, `fileSize`, `format`).
@@ -88,6 +93,11 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
 
 ### Changed
 
+- **`users.student_number` FK → `ON DELETE CASCADE`** (was the default RESTRICT). Migration
+  `drizzle/0006_*.sql`. As a result, `DELETE /admin/masterlist/:studentNumber` no longer
+  returns `409` when the entry is claimed — it deletes the roster row and the cascade removes
+  the linked user account. **⚠️ Deleting a roster entry now silently deletes that student's
+  account** (and their task completions).
 - Refactored routes into `src/routes/` (`auth.ts`, `tasks.ts`); `index.ts` now mounts routers.
 - Shared types moved to `src/types.ts` (`Env`, `Role`, `AuthUser`, `AppEnv`).
 - CORS now allows the `Authorization` header.

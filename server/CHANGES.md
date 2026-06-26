@@ -5,6 +5,32 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-06-26 — Masterlist enrollment `status` + cascade-delete claimed users
+
+**Goal:** track whether a student is `regular` or `irregular`, and let admins remove a roster
+entry even after a user has registered against it.
+
+- New **`student_status`** pg enum (`regular`/`irregular`) and a **`masterlist.status`** column
+  (NOT NULL, default `regular`). It lives on `masterlist` (the source of truth for student
+  identity), **not** on `users` (login credentials only). Migration `0006`.
+- **`users.student_number`** FK changed to **`ON DELETE CASCADE`** (was the default RESTRICT).
+- `admin.ts`: `POST /admin/masterlist` and `PATCH /admin/masterlist/:sn` now accept an optional
+  `status`, validated against the enum via a new `isStatus`/`STATUSES` helper (mirrors
+  `isRole`/`ROLES`); `400` on an invalid value, defaults to `regular` on insert. `GET
+  /admin/masterlist` returns the new field.
+- `DELETE /admin/masterlist/:sn` **dropped its `409` claimed-guard** — it now just deletes the
+  roster row (`404` if missing), and the FK cascade removes the linked user account.
+- **⚠️ Gotcha (semantic change):** deleting a roster entry now **silently deletes that student's
+  user account too** (and, transitively, their `task_completions`). Previously this was blocked
+  with `409`. Admin UIs should confirm before calling `DELETE /admin/masterlist/:sn`.
+- **Design:** `status` on the roster (not the account) keeps enrollment status decoupled from
+  whether the student has signed up yet — an unclaimed roster row can already be marked
+  irregular. Cascade over RESTRICT chosen so admins aren't forced to delete the user first.
+- Verified locally against Neon (migration `0006` applied; 37 existing rows backfilled to
+  `regular`): POST default/explicit/invalid `status`, PATCH update + invalid `400`, GET returns
+  the field, cascade delete (linked user gone from `GET /admin/users`), unclaimed delete, and
+  `404` for a missing student number. Test data cleaned up. **Not yet deployed.**
+
 ## 2026-06-18 — Notes feature + Cloudinary service
 
 **Goal:** communal note sharing where any authenticated user can upload study materials tied to a subject.
