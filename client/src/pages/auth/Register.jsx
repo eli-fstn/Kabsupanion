@@ -95,32 +95,39 @@ function Register(){
 
 			{/* Registration Form */}
 			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
-				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] w-80 max-w sm:max-w-sm">
+				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 max-w sm:max-w-sm">
+					<Button 
+						text={<Icon className="mr-2" icon="formkit:arrowleft" width="20" height="20" />}
+						typography="text-gray-500"
+						onClick={() => navigate(-1)}
+						dimensions="w-fit m-0 p-0"
+						animation="active:scale-95 duration-100 transition-all"
+					/>
 					<div className="flex items-center justify-center mb-7 z-10">
 						<img className="w-12" src="/assets/images/Kabsupanion-Logo.png" alt="Logo"/>
 						<p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Registration Form</p>
 					</div>
           
 					<label className="text-[#A9A9A9] font-bold text-[.8rem] my-0" htmlFor="cvsu-email">CvSU email</label>
-					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
+					<input onChange={(e) => {setEmail(e.target.value); setError((prev) => ({ ...prev, email: "" }));}} value={email} className={`border ${error.email ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-2 w-full max-w outline-none focus:border-green-700 text-sm`} type="email" id="cvsu-email"/>
 					{error.email && (
 						<p className="text-red-500 text-xs">{error.email}</p>
 					)}
 
           <label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="studentNumber">Student Number</label>
-					<input onChange={(e) => {setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" }));}} value={studentNumber} className={`border ${error.studentNumber ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="text" maxLength={9} id="studentNumber"/>
+					<input onChange={(e) => {setStudentNumber(e.target.value); setError((prev) => ({ ...prev, studentNumber: "" }));}} value={studentNumber} className={`border ${error.studentNumber ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-2 w-full max-w outline-none focus:border-green-700 text-sm`} type="text" maxLength={9} id="studentNumber"/>
 					{error.studentNumber && (
 						<p className="text-red-500 text-xs">{error.studentNumber}</p>
 					)}
 
 					<label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="password">Password</label>
-					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password"/>
+					<input onChange={(e) => {setPassword(e.target.value); setError((prev) => ({ ...prev, password: "" }));}} value={password} className={`border ${error.password ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-2 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="password"/>
 					{error.password && (
 						<p className="text-red-500 text-xs">{error.password}</p>
 					)}
 
           <label className="text-[#A9A9A9] font-bold text-[.8rem] mt-2" htmlFor="verifyPassword">Confirm Password</label>
-					<input onChange={(e) => {setConfirmPassword(e.target.value); setError((prev) => ({ ...prev, confirmPassword: "" }));}} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-1 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
+					<input onChange={(e) => {setConfirmPassword(e.target.value); setError((prev) => ({ ...prev, confirmPassword: "" }));}} value={confirmPassword} className={`border ${error.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md text-[.9rem] mt-1 mb-1 p-2 w-full max-w outline-none focus:border-green-700 text-sm`} type="password" id="verifyPassword"/>
 					{error.confirmPassword && (
 						<p className="text-red-500 text-xs">{error.confirmPassword}</p>
 					)}
@@ -156,6 +163,10 @@ function Register(){
 			<div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
 				<img className="opacity-50 w-72" src="/assets/images/Laya-at-Diwa.png" alt="Laya at Diwa"/>
 			</div>
+
+			<div className="flex justify-center items-center fixed bottom-0 left-0 right-0 py-3">
+        <p className="text-xs">Encountered a problem?<span className="text-[#1B651B] font-semibold ml-1"><a href="https://forms.gle/S7CdziBEMCq6DtEF6">Report here</a></span></p>
+      </div>
 		</div>
   );
 }

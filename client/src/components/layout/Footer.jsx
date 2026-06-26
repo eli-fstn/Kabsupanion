@@ -1,4 +1,5 @@
 import Button from "../ui/Button";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return(
@@ -24,17 +25,19 @@ function Footer() {
       {/* Middle Half */}
       <div className="flex items-center justify-between px-30 py-4">
         <div>
-          <Button
-            text="Send Feedback"
-            bgColor="bg-white/15"
-            typography="text-white/70 text-sm"
-            dimensions="rounded-2xl border border-white/30"
-            padding="px-4 py-1"
-            animation="active:scale-95 transition-transform duration-200 hover:bg-white/20 hover:text-white"
-          />
+          <a href="https://forms.gle/S7CdziBEMCq6DtEF6">
+            <Button
+              text="Report a Problem"
+              bgColor="bg-white/15"
+              typography="text-white/70 text-xs"
+              dimensions="rounded-2xl border border-white/30"
+              padding="px-4 py-1"
+              animation="active:scale-95 transition-transform duration-200 hover:bg-white/20 hover:text-white"
+            />
+          </a>
         </div>
         <div className="flex flex-col items-end cursor-pointer">
-          <p className="text-xs text-white/50">Developers:</p>
+          <p className="text-xs text-white/50 leading-3">Developers:</p>
           <div className="flex flex-row items-center mt-1">
             <p className="text-xs text-white/50 hover:text-white transition-colors duration-100 px-2">Elijah Festin</p>
             <span className="text-white/50 text-xs">|</span>
