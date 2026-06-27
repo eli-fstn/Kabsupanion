@@ -7,7 +7,7 @@ function Error403() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate((-1), { replace: true });
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [navigate]);

@@ -12,7 +12,7 @@ function AdminMasterlist() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingForm, setLoadingForm] = useState(false);
-  const [registrationStatus, setRegristationStatus] = useState("Regular");
+  const [activeStatus, setActiveStatus] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState({ 
     name: "", 
@@ -24,13 +24,14 @@ function AdminMasterlist() {
   // Add forms
   const [name, setName] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
-  const [addRegristationStatus, setAddRegistrationStatus] = useState("");
+  const [addRegistrationStatus, setAddRegistrationStatus] = useState("");
 
   // Edit
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [editName, setEditName] = useState("");
   const [editStudentNumber, setEditStudentNumber] = useState("");
+  const [editRegistrationStatus, setEditRegistrationStatus] = useState("");
   const [editError, setEditError] = useState({ 
     name: "", 
     studentNumber: "", 
@@ -56,27 +57,27 @@ function AdminMasterlist() {
   useEffect(() => {
     fetchList();
   }, []);
-
-  const regStatus = ["Regular", "Irregular"];
   
-  // filter((t) => t.regStatus === registrationStatus)
+  const regStatus = ["All", "regular", "irregular"];
 
-  const filteredStudents = list.sort((a, b) => {
+  const filteredStudents = (activeStatus === "All" ? list : list.filter((t) => t.status === activeStatus)).sort((a, b) => {
     const surnameA = a.fullName.split(" ").at(-1);
     const surnameB = b.fullName.split(" ").at(-1);
     return surnameA.localeCompare(surnameB);
   });
 
   const handleStatusChange = (status) => {
-    setRegristationStatus(status);
+    setActiveStatus(status);
   };
 
   const resetForm = () => {
     setName("");
     setStudentNumber("");
+    setAddRegistrationStatus("");
     setError({ 
       name: "", 
       studentNumber: "", 
+      registrationStatus: "",
       general: "" 
     });
   };
@@ -106,10 +107,10 @@ function AdminMasterlist() {
       newError.studentNumber = "Student number is required."; 
       hasError = true; 
     }
-    // if (!addRegristationStatus) { 
-    // newError.registrationStatus = "Registration Status is required."; 
-    // hasError = true; 
-    // }
+    if (!addRegistrationStatus) { 
+      newError.registrationStatus = "Registration Status is required."; 
+      hasError = true; 
+    }
     else if (!validateStudentNumber(studentNumber)) { 
       newError.studentNumber = "Student number must be exactly 9 digits."; 
       hasError = true; 
@@ -120,7 +121,7 @@ function AdminMasterlist() {
     }
     setLoadingForm(true);
     try {
-      await addToMasterlist(name, studentNumber);
+      await addToMasterlist(name, studentNumber, addRegistrationStatus);
       setModalOpen(false);
       resetForm();
       fetchList();
@@ -135,9 +136,11 @@ function AdminMasterlist() {
     setSelected(s);
     setEditName(s.fullName);
     setEditStudentNumber(s.studentNumber);
+    setEditRegistrationStatus(s.status);
     setEditError({ 
       name: "", 
       studentNumber: "",
+      registrationStatus: "",
       general: "" 
     });
     setEditModalOpen(true);
@@ -149,6 +152,7 @@ function AdminMasterlist() {
     const newError = { 
       name: "", 
       studentNumber: "", 
+      registrationStatus: "",
       general: "" 
     };
 
@@ -159,6 +163,10 @@ function AdminMasterlist() {
     if (!editStudentNumber) { 
       newError.studentNumber = "Student number is required."; 
       hasError = true; 
+    }
+    if (!editRegistrationStatus) {
+      newError.registrationStatus = "Registration Status is required.";
+      hasError = true;
     }
     else if (!validateStudentNumber(editStudentNumber)) { 
       newError.studentNumber = "Student number must be exactly 9 digits.";
@@ -171,7 +179,7 @@ function AdminMasterlist() {
     setLoadingForm(true);
     try {
       if (!selected) return;
-      await editMasterlist(selected.studentNumber, editName);
+      await editMasterlist(editName, editStudentNumber, editRegistrationStatus);
       setEditModalOpen(false);
       fetchList();
     } catch (err) {
@@ -217,8 +225,8 @@ function AdminMasterlist() {
                 key={status}
                 text={status}
                 onClick={() => handleStatusChange(status)}
-                bgColor={registrationStatus === status ? "bg-[#1B651B]" : "bg-white"}
-                typography={registrationStatus === status ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+                bgColor={activeStatus === status ? "bg-[#1B651B]" : "bg-white"}
+                typography={activeStatus === status ? "text-sm font-bold text-white uppercase" : "text-sm font-bold text-gray-700 uppercase"}
                 dimensions="rounded-md"
                 padding="px-5 py-1"
                 shadow="shadow-md border border-gray-200"
@@ -261,13 +269,13 @@ function AdminMasterlist() {
                         <td>{s.studentNumber}</td>
                         <td>
                           <span
-                            className={`px-3 py-1 text-xs font-semibold rounded-full border ${
-                              s.registrationStatus === "Regular"
-                                ? "bg-green-100 text-green-700 border-green-300"
-                                : "bg-orange-100 text-orange-700 border-orange-300"
+                            className={`px-3 py-0.5 text-xs font-semibold rounded-full border ${
+                              s.status === "regular"
+                                ? "bg-green-100 text-green-700 border-green-300 uppercase"
+                                : "bg-orange-100 text-orange-700 border-orange-300 uppercase"
                             }`}
                           >
-                            {s.registrationStatus}
+                            {s.status}
                           </span>
                         </td>
                         <td className="flex gap-2">
@@ -353,18 +361,21 @@ function AdminMasterlist() {
                   maxLength={9} />
                 {error.studentNumber && <p className="text-red-500 text-xs">{error.studentNumber}</p>}
 
-                {/* <label className="text-xs font-bold mb-1 mt-4">Registration Status <span className="text-red-400">*</span></label>
-                <input 
-                  type="text" 
-                  value={registrationStatus} 
-                  placeholder="Enter Registration Status" 
-                  onChange={(e) => { 
-                    setRegristationStatus(e.target.value); 
-                    setError((prev) => ({ ...prev, registrationStatus: "" })); }} 
-                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                    ${error.registrationStatus ? "border-red-500" : "border-gray-300"}`} 
-                  maxLength={9} />
-                {error.registrationStatus && <p className="text-red-500 text-xs">{error.registrationStatus}</p>} */}
+                <label className="text-xs font-bold mb-1 mt-4">Registration Status <span className="text-red-400">*</span></label>
+                <select
+                  value={addRegistrationStatus}
+                  onChange={(e) => {
+                    setAddRegistrationStatus(e.target.value);
+                    setError((prev) => ({ ...prev, registrationStatus: "" }));
+                  }}
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white
+                    ${error.registrationStatus ? "border-red-500" : "border-gray-300"}`}
+                >
+                  <option value="">Select status</option>
+                  <option value="regular">Regular</option>
+                  <option value="irregular">Irregular</option>
+                </select>
+                {error.registrationStatus && <p className="text-red-500 text-xs">{error.registrationStatus}</p>}
 
                 {error.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>)}
 
@@ -424,6 +435,22 @@ function AdminMasterlist() {
                   className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
                     ${editError.studentNumber ? "border-red-500" : "border-gray-300"}`} />
                 {editError.studentNumber && <p className="text-red-500 text-xs">{editError.studentNumber}</p>}
+
+                <label className="text-xs font-bold mb-1 mt-4">Registration Status <span className="text-red-400">*</span></label>
+                <select
+                  value={editRegistrationStatus}
+                  onChange={(e) => {
+                    setEditRegistrationStatus(e.target.value);
+                    setEditError((prev) => ({ ...prev, registrationStatus: "" }));
+                  }}
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white
+                    ${editError.registrationStatus ? "border-red-500" : "border-gray-300"}`}
+                >
+                  <option value="">Select status</option>
+                  <option value="regular">Regular</option>
+                  <option value="irregular">Irregular</option>
+                </select>
+                {editError.registrationStatus && <p className="text-red-500 text-xs">{editError.registrationStatus}</p>}
 
                 {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
 

@@ -10,6 +10,7 @@ export interface Masterlist {
   studentNumber: number;
   fullName: string;
   role: "student" | "admin";
+  status: string;
 }
 
 export interface Tasks {
