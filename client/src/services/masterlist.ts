@@ -10,20 +10,24 @@ export async function getMasterlist() : Promise<Masterlist> {
 // Post a student in masterlist
 export async function addToMasterlist(
   fullName: string, 
-  studentNumber: number
+  studentNumber: number,
+  status: string
 ) : Promise<Masterlist> {
   const response = await api.post<Masterlist>(`/admin/masterlist`, { 
     studentNumber, 
-    fullName });
+    fullName,
+    status 
+  });
   return response.data;
 }
 
 // Editing of students' data in masterlist
 export async function editMasterlist(
-  studentNumber: number, 
   fullName: string,
+  studentNumber: number, 
+  status: string
 ) : Promise<Masterlist> {
-  const response = await api.patch<Masterlist>(`/admin/masterlist/${studentNumber}`, { fullName });
+  const response = await api.patch<Masterlist>(`/admin/masterlist/${studentNumber}`, { fullName, studentNumber, status });
   return response.data;
 }
 

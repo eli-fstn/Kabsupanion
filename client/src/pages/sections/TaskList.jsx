@@ -8,7 +8,7 @@ import { formatDate } from "../../../utils/FormattedDate";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function TaskList({ studentName="Juan" }) {
-  const [activeSubject, setActiveSubject] = useState("All");
+  const [activeSubject, setActiveSubject] = useState("ALL");
   const [subject, setSubject] = useState([]);
   const [task, setTask] = useState([]);
   const { student } = useUser();
@@ -40,7 +40,7 @@ function TaskList({ studentName="Juan" }) {
     fetchSubjects();
   }, []);
 
-  const filteredTasks = activeSubject === "All" ? task : task.filter((t) => t.subject.code === activeSubject);
+  const filteredTasks = activeSubject === "ALL" ? task : task.filter((t) => t.subject.code === activeSubject);
 
   return (
     <section className="min-h-screen p-10" id="task-list">
@@ -59,10 +59,10 @@ function TaskList({ studentName="Juan" }) {
       {/* FILTER BUTTONS */}
       <div className="mt-5">
         <Button
-            text="All"
-            onClick={() => setActiveSubject("All")}
-            bgColor={activeSubject === "All" ? "bg-[#1B651B]" : "bg-white"}
-            typography={activeSubject === "All" ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
+            text="ALL"
+            onClick={() => setActiveSubject("ALL")}
+            bgColor={activeSubject === "ALL" ? "bg-[#1B651B]" : "bg-white"}
+            typography={activeSubject === "ALL" ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-700"}
             dimensions="rounded-md"
             padding="px-5 py-1"
             shadow="shadow-md border border-gray-200"
