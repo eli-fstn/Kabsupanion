@@ -1,12 +1,13 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "../context/userContext";
 import Error403 from "../pages/errors/Error403";
+import LoadingScreen from "../components/ui/LoadingScreen";
 
 const PrivateRoute = ({ requiredRole }) => {
   const token = localStorage.getItem("token");
   const { student, loading } = useUser();
 
-  if (loading) return null;
+  if (loading) return <LoadingScreen />;
 
   if (!token) return <Navigate to="/" />;
 
