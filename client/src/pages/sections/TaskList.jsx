@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
-import { getTasks } from "../../services/taskList.ts";
+import { getTasks, finishedTask, unfinishTask } from "../../services/taskList.ts";
 import { getSubjects } from "../../services/subjects.ts";
 import { formatDate } from "../../../utils/FormattedDate";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
@@ -24,7 +24,7 @@ function TaskList({ studentName="Juan" }) {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const fetchSubjects = async () => {
     try {
@@ -33,7 +33,22 @@ function TaskList({ studentName="Juan" }) {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
+  const handleFinish = async (task) => {
+    try {
+      if (task.completed) {
+        await unfinishTask(task.id);
+      } else {
+        await finishedTask(task.id);
+      }
+
+      // Refresh tasks so the completed state updates
+      fetchTask();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     fetchTask();
@@ -100,43 +115,49 @@ function TaskList({ studentName="Juan" }) {
         <div className="h-125 overflow-y-auto">
           <table className="w-full h-full">
             <tbody>
-              {filteredTasks.map((t, i) => (
-                <tr key={i} className="grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 p-3 items-center text-sm font-medium">
-                  <input type="checkbox" className="w-fit accent-[#1B651B] rounded pl-3" />
-                  <td>{t.title}</td>
-                  <td>{t.subject?.code}</td>
-                  <td>{formatDate(t.dueDate)}</td>
+              {loading ? (
+                <tr>
+                  <td colSpan={4}>
+                    <div className="flex justify-center items-center h-40">
+                      <LoadingIcon dimensions="w-10 h-10" />
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              ) : filteredTasks.length === 0 ? (
+                <tr>
+                  <td colSpan={4}>
+                    <div className="flex justify-center items-center h-40 text-gray-400">
+                      {activeSubject === "ALL"
+                        ? "No tasks for today. Great job!"
+                        : "No tasks for this subject. Keep up the good work!"}
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredTasks.map((t) => (
+                  <tr
+                    key={t.id}
+                    className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 p-3 items-center text-sm font-medium transition-all duration-300 ${
+                      t.completed ? "opacity-40 line-through" : "opacity-100"
+                    }`}
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={t.completed}
+                        onChange={() => handleFinish(t)}
+                        className="accent-[#1B651B] cursor-pointer"
+                      />
+                    </td>
 
-              {loading ? (
-                <div className="flex justify-center items-center flex-1 h-full">
-                  <LoadingIcon dimensions="w-10 h-10" />
-                </div>
-              ) : (
-                  activeSubject === "All" && filteredTasks.length === 0 && (
-                    <tr className="flex justify-center items-center flex-1 h-full">
-                      <td colSpan={3} className="text-center text-gray-400 p-5">
-                        No tasks for today. Great job!
-                      </td>
-                    </tr>
-                  )
-                )
-              }
-              {loading ? (
-                <div className="flex justify-center items-center flex-1 h-full">
-                  <LoadingIcon dimensions="w-10 h-10" />
-                </div>
-              ) : (
-                  filteredTasks.length === 0 && (
-                    <tr className="flex justify-center items-center flex-1 h-full">
-                      <td colSpan={3} className="text-center text-gray-400 p-5">
-                        No tasks for this subject. Keep up the good work!
-                      </td>
-                    </tr>
-                  )
-                )
-              }
+                    <td>{t.title}</td>
+
+                    <td>{t.subject?.code}</td>
+
+                    <td>{formatDate(t.dueDate)}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
