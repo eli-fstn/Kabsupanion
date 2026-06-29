@@ -26,6 +26,10 @@ export interface Subjects {
   code: string;
   name: string;
   description: string;
+  day: string;
+  startTime: number;
+  endTime: number;
+  room: string;
 }
 
 export interface Resources {
