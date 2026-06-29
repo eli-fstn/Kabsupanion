@@ -33,6 +33,18 @@ export async function editTask(
   return response.data;
 }
 
+// User is finished in the task
+export async function finishedTask( id: number ) : Promise<Tasks> {
+  const response = await api.post<Tasks>(`/tasks/${id}/complete`);
+  return response.data;
+}
+
+// Unfinished task
+export async function unfinishTask(id: number): Promise<Tasks> {
+  const response = await api.delete<Tasks>(`/tasks/${id}/complete`);
+  return response.data;
+}
+
 // Deleting of tasklist
 export async function deleteTask(id: number) : Promise<Tasks> {
   const response = await api.delete<Tasks>(`/tasks/${id}`);
