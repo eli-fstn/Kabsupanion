@@ -22,6 +22,7 @@ function AdminResources() {
     setLoading(true);
     try {
       const data = await getResources();
+      console.log(data);
       setResources(data);
     } catch (error) {
       console.log(error);
@@ -143,8 +144,8 @@ function AdminResources() {
                           <Button
                             text={<Icon icon="material-symbols:pending-actions" width="16" height="16" />}
                             onClick={() => handleConfirmation(t)}
-                            bgColor="hover:bg-blue-100"
-                            typography="text-blue-700 hover:text-black"
+                            bgColor="hover:bg-gray-200"
+                            typography="text-gray-700 hover:text-black"
                             dimensions="rounded-md"
                             padding="p-1.5"
                             animation="transition-all duration-200 active:scale-95"
