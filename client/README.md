@@ -92,4 +92,4 @@ Project updates and release history can be found in [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
-This project was developed for educational purposes as part of an academic software development project.
+This project is intended for academic and personal use only. All rights reserved.
