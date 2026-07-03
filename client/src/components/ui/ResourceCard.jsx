@@ -19,12 +19,25 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     };
   }, [open]);
 
+  const extension = fileUrl?.split(".").pop()?.toLowerCase();
+
+  const isPdf = extension === "pdf";
+  const isImage = ["png", "jpg", "jpeg", "webp"].includes(extension);
+  const isDocx = extension === "docx";
+  const isPptx = extension === "pptx";
+
   const toPageUrl = (url, page) =>
     url
       .replace("/upload/", `/upload/f_jpg,pg_${page}/`)
       .replace(".pdf", ".jpg");
 
-  const previewUrl = fileUrl ? toPageUrl(fileUrl, 1) : null;
+  let previewUrl = null;
+
+  if (isPdf) {
+    previewUrl = toPageUrl(fileUrl, 1);
+  } else if (isImage) {
+    previewUrl = fileUrl;
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -44,10 +57,34 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
         className="bg-white border border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition flex flex-col h-full"
       >
         <div className="h-32 sm:h-36 md:h-40 bg-gray-100 border-b border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-          {previewUrl ? (
-            <img src={previewUrl} alt={title} className="w-full h-full object-cover" />
-          ) : (
-            <p className="text-gray-400 text-xs">No preview</p>
+          {isPdf && (
+            <img
+              src={previewUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          )}
+
+          {isImage && (
+            <img
+              src={fileUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          )}
+
+          {isDocx && (
+            <div className="flex flex-col items-center justify-center">
+              <Icon icon="vscode-icons:file-type-word" className="text-6xl" />
+              <p className="text-xs mt-2">Word Document</p>
+            </div>
+          )}
+
+          {isPptx && (
+            <div className="flex flex-col items-center justify-center">
+              <Icon icon="vscode-icons:file-type-powerpoint" className="text-6xl" />
+              <p className="text-xs mt-2">PowerPoint</p>
+            </div>
           )}
         </div>
         <div className="p-3 sm:p-4 flex flex-col gap-1 min-w-0">
@@ -82,18 +119,35 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
               />
             </div>
             <div className="w-full flex-1 overflow-y-auto flex flex-col items-center bg-gray-100 p-2 sm:p-4 gap-3 sm:gap-4">
-              {pages.map((page) => (
+              {isPdf &&
+                pages.map((page) => (
+                  <img
+                    key={page}
+                    src={toPageUrl(fileUrl, page)}
+                    alt={`Page ${page}`}
+                    className="w-full rounded shadow"
+                    onLoad={() => handlePageLoad(page)}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                ))}
+
+              {isImage && (
                 <img
-                  key={page}
-                  src={toPageUrl(fileUrl, page)}
-                  alt={`Page ${page}`}
-                  className="w-full rounded shadow"
-                  onLoad={() => handlePageLoad(page)}
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
+                  src={fileUrl}
+                  alt={title}
+                  className="max-w-full rounded shadow"
                 />
-              ))}
+              )}
+
+              {(isDocx || isPptx) && (
+                <iframe
+                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
+                  className="w-full h-full"
+                  title={title}
+                />
+              )}
             </div>
           </div>
         </div>

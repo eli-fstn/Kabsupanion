@@ -18,7 +18,7 @@ function TaskList({ studentName = "Juan" }) {
     setLoading(true);
     try {
       const data = await getTasks();
-      setTask(Array.isArray(data) ? [...data].reverse() : []);
+      setTask(data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -55,7 +55,9 @@ function TaskList({ studentName = "Juan" }) {
     fetchSubjects();
   }, []);
 
-  const filteredTasks = activeSubject === "ALL" ? task : task.filter((t) => t.subject.code === activeSubject);
+  const filteredTasks = activeSubject === "ALL"
+  ? [...task].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+  : task.filter((t) => t.subject.code === activeSubject).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
   const getDueDateColor = (daysRemaining) =>
     daysRemaining === 3
@@ -64,7 +66,9 @@ function TaskList({ studentName = "Juan" }) {
       ? "text-orange-500 font-medium"
       : daysRemaining === 1
       ? "text-red-500 font-bold"
-      : daysRemaining <= 0
+      : daysRemaining === 0
+      ? "text-red-700 font-bold"
+      : daysRemaining < 0
       ? "text-purple-900 font-bold"
       : "";
 
@@ -89,7 +93,7 @@ function TaskList({ studentName = "Juan" }) {
       {/* LEGENDS */}
       <div className="mt-3">
         <p className="text-sm font-medium">Remaining days before the deadline:</p>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-8 mt-2">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-2">
           <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-amber-500 rounded-full inline-block mr-1"></span> - 3 days
           </p>
@@ -97,7 +101,10 @@ function TaskList({ studentName = "Juan" }) {
             <span className="w-3 h-3 bg-orange-500 rounded-full inline-block mr-1"></span> - 2 days
           </p>
           <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-1"></span> - 1 day
+            <span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-1"></span> - Due tomorrow
+          </p>
+          <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
+            <span className="w-3 h-3 bg-red-700 rounded-full inline-block mr-1"></span> - Due today
           </p>
           <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-purple-900 rounded-full inline-block mr-1"></span> - Overdue
