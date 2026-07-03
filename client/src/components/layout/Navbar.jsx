@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button";
 import UserIcon from "../common/UserIcon";
+import logo from "/assets/images/Kabsupanion-Logo.png";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -41,7 +42,7 @@ function Navbar() {
         <div className="flex items-center min-w-0 shrink">
           <img
             className="w-8 sm:w-9 md:w-10 shrink-0"
-            src="/assets/images/Kabsupanion-Logo.png"
+            src={logo}
             alt="Logo"
           />
           <p className="font-bold text-base sm:text-xl md:text-[1.5rem] pl-2 text-[#1B651B] font-['Roboto_Condensed'] truncate">

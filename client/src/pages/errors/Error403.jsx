@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, replace } from "react-router-dom";
+import error403 from "/assets/illustrations/error403.svg";
 
 function Error403() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ function Error403() {
     <div className="h-screen flex flex-col items-center justify-center text-center px-6">
       
       {/* IMAGE */}
-      <img src="/assets/illustrations/error403.svg" alt="404 Not Found" className="w-70 mb-6"/>
+      <img src={error403} alt="Error 403" className="w-70 mb-6"/>
 
       {/* STATUS CODE */}
       <h1 className="text-4xl font-bold text-gray-800">ERROR: 403</h1>

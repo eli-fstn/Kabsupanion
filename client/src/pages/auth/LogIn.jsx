@@ -5,6 +5,9 @@ import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler.ts";
+import logo from "/assets/images/Kabsupanion-Logo.png";
+import background from "/assets/images/Laya-at-Diwa.png";
+
 
 function LogIn() {
   const [email, setEmail] = useState("");
@@ -87,7 +90,7 @@ function LogIn() {
       <div className="absolute inset-0 flex items-center justify-center px-4">
         <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 z-10">
           <div className="flex items-center justify-center mb-7">
-            <img className="w-12" src="/assets/images/Kabsupanion-Logo.png" alt="Logo" />
+            <img className="w-12" src={logo} alt="Logo" />
             <p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion</p>
           </div>
 
@@ -126,7 +129,7 @@ function LogIn() {
         </form>
       </div>
       <div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
-        <img className="opacity-50 w-72" src="/assets/images/Laya-at-Diwa.png" alt="Laya at Diwa"/>
+        <img className="opacity-50 w-72" src={background} alt="Laya at Diwa"/>
       </div>
 
       <div className="flex justify-center items-center fixed bottom-0 left-0 right-0 py-3">

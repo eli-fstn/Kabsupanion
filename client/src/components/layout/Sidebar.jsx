@@ -5,6 +5,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import UserIcon from "../common/UserIcon";
 import LoadingScreen from "../ui/LoadingScreen";
 import { useState } from "react";
+import logo from "/assets/images/Kabsupanion-Logo.png";
 
 function Sidebar() {
   const { student } = useUser();
@@ -35,7 +36,7 @@ function Sidebar() {
       {/* TOP */}
       <div>
         <div className="flex items-center justify-center">
-          <img src="/assets/images/Kabsupanion-Logo.png" alt="Logo" className="w-10" />
+          <img src={logo} alt="Logo" className="w-10" />
           <p className="text-[1.4rem] font-bold ml-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion Admin</p>
         </div>
 
