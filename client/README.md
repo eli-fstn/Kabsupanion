@@ -1,6 +1,6 @@
-# MyKabsupanion Frontend
+# Kabsupanion Front-end
 
-The frontend application of **MyKabsupanion**, a web-based student management system developed for **Cavite State University – Bacoor Campus**. The application provides an intuitive interface for students and administrators to manage academic information such as tasks, schedules, subjects, resources, and user records.
+**Kabsupanion Front-end** is the client application for **Kabsupanion**, a section-centric academic web portal developed to support the academic needs of students through a centralized and accessible platform. It provides an intuitive user interface for students and administrators to manage academic tasks, schedules, subjects, resources, and section information through a responsive and user-friendly experience.
 
 > **Note:** This repository contains only the frontend application. It communicates with a separate backend API.
 
@@ -13,12 +13,9 @@ The frontend application of **MyKabsupanion**, a web-based student management sy
 | Feature | Status | Description |
 |---------|:------:|-------------|
 | Student Dashboard (`/dashboard`) | ✅ IMPLEMENTED | Central hub that provides access to all student features. |
-| Overview Section | ✅ IMPLEMENTED | Displays a summary of the student's academic information. |
 | Task List Section | ✅ IMPLEMENTED | View, organize, and complete academic tasks. |
 | Class Schedule Section | ✅ IMPLEMENTED | Displays the student's weekly class schedule. |
-| Subjects Section | ✅ IMPLEMENTED | View enrolled subjects for the current section. |
 | Class Resources Section | ✅ IMPLEMENTED | Browse and upload shared learning materials. |
-| Profile Section | ✅ IMPLEMENTED | View account information and user details. |
 
 ---
 
