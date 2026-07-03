@@ -70,7 +70,7 @@ function Footer() {
         </div>
 
         <div className="flex justify-center py-2">
-          <p className="text-xs text-white/70 text-center break-words">
+          <p className="text-xs text-white/70 text-center wrap-break-word">
             © {new Date().getFullYear()} Kabsupanion. All rights reserved.
           </p>
         </div>

@@ -59,7 +59,7 @@ function Navbar() {
             <div className="bg-gray-200 rounded-full p-1.5 shrink-0">
               <UserIcon typography="text-gray-400" dimensions="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div className="flex flex-col text-[#3a3a3a88] font-bold leading-4 min-w-0 max-w-[6rem] sm:max-w-[10rem] md:max-w-[14rem]">
+            <div className="flex flex-col text-[#3a3a3a88] font-bold leading-4 min-w-0 max-w-24 sm:max-w-40 md:max-w-56">
               <p className="uppercase text-xs sm:text-sm truncate">{student?.user?.name}</p>
               <p className="text-[.65rem] sm:text-xs truncate">{student?.user?.studentNumber}</p>
             </div>
