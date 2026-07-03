@@ -22,7 +22,6 @@ function AdminResources() {
     setLoading(true);
     try {
       const data = await getResources();
-      console.log(data);
       setResources(data);
     } catch (error) {
       console.log(error);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { getSubjects } from "../../services/subjects";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import Button from "../../components/ui/Button";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
@@ -10,7 +10,7 @@ const TIME_SLOTS = [
 ];
 const TIME_LABELS = [
   "7:00 AM", "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-  "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM", "6:00 PM", "7:00 PM",
+  "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM"
 ];
 
 const COLORS = [
@@ -33,14 +33,13 @@ function ClassSched() {
     if (!scheduleRef.current) return;
     setDownloading(true);
     try {
-      const canvas = await html2canvas(scheduleRef.current, {
-        scale: 2,
-        useCORS: true,
+      const dataUrl = await toPng(scheduleRef.current, {
         backgroundColor: "#ffffff",
+        pixelRatio: 2,
       });
       const link = document.createElement("a");
       link.download = "class-schedule.png";
-      link.href = canvas.toDataURL("image/png");
+      link.href = dataUrl;
       link.click();
     } catch (err) {
       console.error("Download failed:", err);
@@ -172,10 +171,10 @@ function ClassSched() {
         </div>
       )}
 
-      {/* {!loading && subjects.length > 0 && (
+      {!loading && subjects.length > 0 && (
         <div className="flex justify-center items-center mt-5">
           <Button
-            text={downloading ? "Downloading..." : "Download PNG"}
+            text={downloading ? "Downloading..." : "Download Schedule"}
             onClick={handleDownload}
             disabled={downloading}
             bgColor="bg-[#1B651B]"
@@ -185,7 +184,7 @@ function ClassSched() {
             animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
           />
         </div>
-      )} */}
+      )}
 
       {!loading && subjects.length === 0 && (
         <div className="flex flex-col justify-center items-center h-60 text-gray-400 text-sm gap-2">
