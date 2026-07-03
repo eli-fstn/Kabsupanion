@@ -55,9 +55,6 @@ function TaskList({ studentName="Juan" }) {
     fetchSubjects();
   }, []);
 
-  const oneDay = 24 * 60 * 60 * 1000;
-  const currentDate = new Date().getTime();
-
   const filteredTasks = activeSubject === "ALL" ? task : task.filter((t) => t.subject.code === activeSubject);
 
   return (
@@ -77,10 +74,11 @@ function TaskList({ studentName="Juan" }) {
       {/*  LEGENDS  */}
       <div className="mt-2">
         <p className="text-md font-medium">Remaining days before the deadline.</p>
-        <div className="flex items-center gap-10 mt-2">
+        <div className="flex items-center gap-8 mt-2">
           <p className="text-xs font-medium text-gray-500 flex items-center"><span className="w-3 h-3 bg-amber-500 rounded-full inline-block mr-1"></span> - 3 days</p>
           <p className="text-xs font-medium text-gray-500 flex items-center"><span className="w-3 h-3 bg-orange-500 rounded-full inline-block mr-1"></span> - 2 days</p>
           <p className="text-xs font-medium text-gray-500 flex items-center"><span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-1"></span> - 1 day</p>
+          <p className="text-xs font-medium text-gray-500 flex items-center"><span className="w-3 h-3 bg-purple-900 rounded-full inline-block mr-1"></span> - Overdue</p>
         </div>
       </div>
 
@@ -148,6 +146,8 @@ function TaskList({ studentName="Juan" }) {
                 </tr>
               ) : (
                 filteredTasks.map((t) => {
+                  const oneDay = 24 * 60 * 60 * 1000;
+                  const currentDate = new Date().getTime();
                   const dueDate = new Date(t.dueDate);
                   const daysRemaining = Math.ceil(
                     (dueDate - currentDate) / oneDay
@@ -170,17 +170,31 @@ function TaskList({ studentName="Juan" }) {
                       </td>
                       <td>{t.title}</td>
                       <td>{t.subject?.code}</td>
-                      <td className={
-                        daysRemaining === 3
-                          ? "text-amber-500"
-                          : daysRemaining === 2
-                          ? "text-orange-500 font-medium"
-                          : daysRemaining === 1
-                          ? "text-red-500 font-bold"
-                          : ""
-                      }>
-                        {formatDate(t.dueDate)}
-                        </td> 
+                      <td
+                        className={
+                          daysRemaining === 3
+                            ? "text-amber-500"
+                            : daysRemaining === 2
+                            ? "text-orange-500 font-medium"
+                            : daysRemaining === 1
+                            ? "text-red-500 font-bold"
+                            : daysRemaining <= 0
+                            ? "text-purple-900 font-bold"
+                            : ""
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          {formatDate(t.dueDate)}
+
+                          {daysRemaining === 1 && (
+                            <Icon
+                              icon="mdi:alert-circle"
+                              width="16"
+                              className="text-red-500"
+                            />
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   )
                 })
