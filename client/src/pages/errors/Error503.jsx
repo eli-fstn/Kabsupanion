@@ -9,7 +9,7 @@ function Error503() {
       <h1 className="text-4xl font-bold text-gray-800">ERROR: 503</h1>
 
       {/* DESCRIPTION */}
-      <p className="text-gray-500 mt-4 text-lg">The system is currently under maintenance. Please check back soon.</p>
+      <p className="text-gray-500 mt-4 sm:text-md text-lg">The system is currently under maintenance. Please check back soon.</p>
     </div>
   );
 }

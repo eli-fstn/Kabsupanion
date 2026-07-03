@@ -22,7 +22,7 @@ function Error403() {
       <h1 className="text-4xl font-bold text-gray-800">ERROR: 403</h1>
 
       {/* DESCRIPTION */}
-      <p className="text-gray-500 mt-4 text-lg">You don't have the permission to perform this action.</p>
+      <p className="text-gray-500 mt-4 sm:text-md text-lg">You don't have the permission to perform this action.</p>
       <p className="text-gray-500 text-md mt-3 animate-[pulse_1s_ease-in-out_infinite]">Redirecting to dashboard...</p>
 
     </div>

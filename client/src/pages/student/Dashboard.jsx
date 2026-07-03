@@ -12,14 +12,16 @@ function Dashboard() {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar />
       </div>
-      <div className="pt-16 px-30">
+
+      <main className="pt-16 md:pt-20 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 max-w-[1600px] mx-auto flex flex-col gap-8 sm:gap-10 md:gap-14">
         <TaskList />
         <ClassSched />
         <ClassResources />
-      </div>
+      </main>
+
       <Footer />
     </div>
   );
 }
 
-export default Dashboard
+export default Dashboard;
