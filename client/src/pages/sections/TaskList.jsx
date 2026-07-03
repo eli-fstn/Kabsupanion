@@ -73,7 +73,7 @@ function TaskList({ studentName = "Juan" }) {
       <header>
         <h1 className="text-3xl md:text-4xl lg:text-[2.8rem] font-bold font-[amaranth] text-[#003A02] flex flex-wrap items-baseline gap-x-2">
           Hello there,
-          <span className="font-[parisienne] font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[3.3rem]">
+          <span className="font-[parisienne] font-bold text-4xl md:text-5xl lg:text-[3.3rem]">
             {student?.user?.name?.split(" ").slice(-1)[0]}!
           </span>
         </h1>
@@ -88,7 +88,7 @@ function TaskList({ studentName = "Juan" }) {
 
       {/* LEGENDS */}
       <div className="mt-3">
-        <p className="text-sm font-medium">Remaining days before the deadline.</p>
+        <p className="text-sm font-medium">Remaining days before the deadline:</p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-8 mt-2">
           <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-amber-500 rounded-full inline-block mr-1"></span> - 3 days
@@ -135,7 +135,7 @@ function TaskList({ studentName = "Juan" }) {
       {/* TASK LIST / TABLE — scrolls horizontally below md instead of restacking */}
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <div className="min-w-[640px]" role="table">
+          <div className="min-w-160" role="table">
 
             {/* Column header row */}
             <div
@@ -157,7 +157,7 @@ function TaskList({ studentName = "Juan" }) {
               </span>
             </div>
 
-            <div className="max-h-[24rem] sm:max-h-[28rem] md:h-125 overflow-y-auto" role="rowgroup">
+            <div className="max-h-96 sm:max-h-112 md:h-125 overflow-y-auto" role="rowgroup">
               {loading ? (
                 <div className="flex justify-center items-center h-40">
                   <LoadingIcon dimensions="w-10 h-10" />

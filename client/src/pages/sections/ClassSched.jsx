@@ -117,7 +117,7 @@ function ClassSched() {
           <div
             className="overflow-x-auto rounded-md border border-gray-200 [-webkit-overflow-scrolling:touch]"
           >
-            <div ref={scheduleRef} className="min-w-[850px]">
+            <div ref={scheduleRef} className="min-w-212.5">
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr>
