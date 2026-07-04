@@ -96,8 +96,8 @@ function Register(){
     <div className="relative min-h-screen">
 
 			{/* Registration Form */}
-			<div className="absolute inset-0 flex items-center justify-center z-1 px-4">
-				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 max-w sm:max-w-sm">
+			<div className="absolute inset-0 flex items-center justify-center px-4">
+				<form onSubmit={handleRegister} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 z-10">
 					<Button 
 						text={<Icon className="mr-2" icon="formkit:arrowleft" width="20" height="20" />}
 						typography="text-gray-500"
@@ -105,7 +105,7 @@ function Register(){
 						dimensions="w-fit m-0 p-0"
 						animation="active:scale-95 duration-100 transition-all"
 					/>
-					<div className="flex items-center justify-center mb-7 z-10">
+					<div className="flex items-center justify-center mb-7">
 						<img className="w-12" src={logo} alt="Logo"/>
 						<p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Registration Form</p>
 					</div>
@@ -163,11 +163,14 @@ function Register(){
 
 			{/* LAYA AT DIWA BACKGROUND */}
 			<div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
-				<img className={background} alt="Laya at Diwa"/>
+				<img className="opacity-50 w-72" src={background} alt="Laya at Diwa"/>
 			</div>
 
 			<div className="flex justify-center items-center fixed bottom-0 left-0 right-0 py-3">
-        <p className="text-xs">Encountered a problem?<span className="text-[#1B651B] font-semibold ml-1"><a href="https://forms.gle/S7CdziBEMCq6DtEF6">Report here</a></span></p>
+        <p className="text-xs">Encountered a problem?<span className="text-[#1B651B] font-semibold ml-1">
+					<a href="https://forms.gle/S7CdziBEMCq6DtEF6" target="_blank" rel="noreferrer">Report here</a>
+					</span>
+				</p>
       </div>
 		</div>
   );
