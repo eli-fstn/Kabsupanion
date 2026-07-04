@@ -112,7 +112,7 @@ export default function ClassResources() {
       <header className="mt-3">
         <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7">Class Resources</p>
         <p className="text-sm sm:text-base">Collaborate and exchange notes with your fellow blockmates.</p>
-        <p className="text-gray-400 text-xs sm:text-base mt-2">For the best viewing experience, we recommend uploading your files in <span className="font-bold">PNG, JPG/JPEG, or PDF</span> format.</p>
+        <p className="text-gray-500 text-xs sm:text-base mt-2">For the best viewing experience, we recommend uploading your files in <span className="font-bold">PNG, JPG/JPEG, or PDF</span> format.</p>
       </header>
 
       <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col">

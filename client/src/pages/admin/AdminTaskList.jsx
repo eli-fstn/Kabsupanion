@@ -202,6 +202,19 @@ function AdminList() {
 
   const filteredTasks = [...tasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
 
+  const getDueDateColor = (daysRemaining) =>
+    daysRemaining === 3
+      ? "text-amber-500"
+      : daysRemaining === 2
+      ? "text-orange-500 font-medium"
+      : daysRemaining === 1
+      ? "text-red-500 font-bold"
+      : daysRemaining === 0
+      ? "text-red-700 font-bold"
+      : daysRemaining < 0
+      ? "text-purple-900 font-bold"
+      : "";
+
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
@@ -238,26 +251,15 @@ function AdminList() {
                       const oneDay = 24 * 60 * 60 * 1000;
                       const currentDate = new Date().getTime();
                       const dueDate = new Date(t.dueDate);
-                      const daysRemaining = Math.ceil(
-                        (dueDate - currentDate) / oneDay
-                      );
+                      const daysRemaining = Math.ceil((dueDate - currentDate) / oneDay);
+                      const dueDateColor = getDueDateColor(daysRemaining);
 
                       return (
                         <tr key={i} className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
                         <td className="text-[#4a4a4a88]">{i + 1}</td>
                         <td>{t.title}</td>
                         <td>{t.subject?.code}</td>
-                        <td className={
-                          daysRemaining === 3
-                            ? "text-amber-500"
-                            : daysRemaining === 2
-                            ? "text-orange-500 font-medium"
-                            : daysRemaining === 1
-                            ? "text-red-500 font-bold"
-                            : daysRemaining <= 0
-                            ? "text-purple-900 font-bold"
-                            : ""
-                        }>
+                        <td className={`${dueDateColor}`}>
                           {formatDate(t.dueDate)}
                         </td> 
                         <td className="flex gap-2">

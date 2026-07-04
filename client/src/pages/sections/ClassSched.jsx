@@ -99,12 +99,8 @@ function ClassSched() {
   return (
     <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-sched">
       <header className="mt-3 mb-6">
-        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7">
-          Class Schedule
-        </p>
-        <p className="text-sm sm:text-base text-gray-500">
-          Keep track of your classes and never miss an important session.
-        </p>
+        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7">Class Schedule</p>
+        <p className="text-sm sm:text-base">Keep track of your classes and never miss an important session.</p>
       </header>
 
       {loading ? (
