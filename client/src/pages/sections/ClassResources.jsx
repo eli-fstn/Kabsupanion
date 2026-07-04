@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Icon } from "@iconify/react";
 import ResourceCard from "../../components/ui/ResourceCard";
 import { getResources, uploadResource } from "../../services/resources.ts";
@@ -17,6 +17,7 @@ export default function ClassResources() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingForm, setLoadingForm] = useState(false);
+  const sectionRef = useRef(null);
 
   // Add
   const [title, setTitle] = useState("");
@@ -28,6 +29,27 @@ export default function ClassResources() {
     file: "",
     general: ""
   });
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.7 }
+    );
+
+    const elements =
+      sectionRef.current.querySelectorAll(".animate-on-scroll");
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [resources]);
 
   const fetchResources = async () => {
     setLoading(true);
@@ -108,10 +130,10 @@ export default function ClassResources() {
   }
 
   return (
-    <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-resources">
+    <section ref={sectionRef} className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-resources">
       <header className="mt-3">
-        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">Class Resources</p>
-        <p className="text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">Collaborate and exchange notes with your fellow blockmates.</p>
+        <p className="animate-on-scroll font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">Class Resources</p>
+        <p className="animate-on-scroll text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">Collaborate and exchange notes with your fellow blockmates.</p>
       </header>
 
       <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl p-3 sm:p-4 flex flex-col transition-colors duration-300">
@@ -122,7 +144,7 @@ export default function ClassResources() {
             </div>
           ) : (
             resources.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-stretch">
+              <div className="animate-on-scroll grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-stretch">
                 {resources.map((resource) => (
                   <ResourceCard
                     key={resource.id}
@@ -135,12 +157,12 @@ export default function ClassResources() {
               </div>
             ) : (
               <div className="flex justify-center items-center flex-1 py-16 text-center px-4">
-                <p className="text-[#E0E0E0] dark:text-gray-500 text-sm sm:text-base">There's no resources uploaded yet.</p>
+                <p className="text-[#E0E0E0] dark:text-[#E0E0E0] text-sm sm:text-base">There's no resources uploaded yet.</p>
               </div>
             )
           )}
         </div>
-        <div className="flex justify-center items-center pt-3">
+        <div className="animate-on-scroll flex justify-center items-center pt-3">
           <Button
             text="+ Upload Resources"
             onClick={() => setModalOpen(true)}
@@ -158,15 +180,15 @@ export default function ClassResources() {
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center w-56 h-56 sm:h-64">
                 <LoadingIcon dimensions="w-16 h-16 sm:w-20 sm:h-20" />
-                <p className="text-[#E0E0E0] dark:text-gray-500 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite] text-center">Submitting...</p>
+                <p className="text-gray-400 dark:text-[#E0E0E0] text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite] text-center">Submitting...</p>
               </div>
             ) : (
               <>
-                <p className="font-bold text-base sm:text-[1.2rem] text-[#1B651B] dark:text-[#4ade80] font-['Montserrat']">Upload Resources</p>
-                <p className="text-[#E0E0E0] dark:text-gray-500 text-xs mb-5">Share learning materials with your classmates</p>
+                <p className="font-bold text-base sm:text-[1.2rem] text-[#1B651B] dark:text-[#56e556] font-['Montserrat']">Upload Resources</p>
+                <p className="text-gray-400 dark:text-[#E0E0E0] text-xs mb-5">Share learning materials with your classmates</p>
 
                 {/* Title of the resources*/}
-                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-300">Title <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-100">Title <span className="text-red-400">*</span></label>
                 <input
                   value={title}
                   onChange={(e) => {
@@ -175,23 +197,23 @@ export default function ClassResources() {
                   }}
                   type="text"
                   placeholder="Enter resource title"
-                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-green-700 dark:focus:border-green-500 
-                    ${error.title ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs bg-white dark:bg-[#121212] text-gray-900 dark:text-gray-100 focus:border-green-700 dark:focus:border-green-500 
+                    ${error.title ? "border-red-500" : "border-gray-300 dark:border-[#2a2a2a]"}`}
                 />
                 {error.title && (
                   <p className="text-red-500 text-xs">{error.title}</p>
                 )}
 
                 {/* Subject */}
-                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-300">Subject <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-100">Subject <span className="text-red-400">*</span></label>
                 <select
                   value={subjectID}
                   onChange={(e) => {
                     setSubjectID(e.target.value);
                     setError((prev) => ({ ...prev, subject: "" }));
                   }}
-                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-green-700 dark:focus:border-green-500 
-                    ${error.subject ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs bg-white dark:bg-[#121212] text-gray-900 dark:text-gray-100 focus:border-green-700 dark:focus:border-green-500 
+                    ${error.subject ? "border-red-500" : "border-gray-300 dark:border-[#2a2a2a]"}`}
                 >
                   <option value="">Select a subject</option>
                   {subjects.map((subject) => (
@@ -205,7 +227,7 @@ export default function ClassResources() {
                 )}
 
                 {/* File to be uploaded */}
-                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-300">File <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-100">File <span className="text-red-400">*</span></label>
                 <input
                   onChange={(e) => {
                     setFile(e.target.files[0]);
@@ -213,18 +235,18 @@ export default function ClassResources() {
                   }}
                   type="file"
                   accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx"
-                  className={`border rounded-lg p-2.5 w-full outline-none text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-[#1B651B] dark:focus:border-green-500 transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 
-                    ${error.file ? "border-red-500" : "border-gray-200 dark:border-gray-600"}`}
+                  className={`border rounded-lg p-2.5 w-full outline-none text-xs bg-white dark:bg-[#121212] text-gray-900 dark:text-gray-100 focus:border-[#1B651B] dark:focus:border-green-500 transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-[#288a28]
+                    ${error.file ? "border-red-500" : "border-gray-200 dark:border-[#2a2a2a]"}`}
                 />
                 {error.file && (
                   <p className="text-red-500 text-xs">{error.file}</p>
                 )}
 
                 {/* Uploaded by (current user)*/}
-                <label className="text-xs font-bold mb-1 mt-3 text-gray-700 dark:text-gray-300">Uploaded by</label>
+                <label className="text-xs font-bold mb-1 mt-3 text-gray-700 dark:text-gray-100">Uploaded by</label>
                 <div className="flex flex-row items-center mt-2 min-w-0">
-                  <UserIcon typography="text-[#E0E0E0] dark:text-gray-500 shrink-0" dimensions="w-5" />
-                  <span className="ml-1 text-xs font-bold text-gray-500 dark:text-[#E0E0E0] truncate">{student?.user?.name}</span>
+                  <UserIcon typography="text-gray-600 dark:text-[#E0E0E0] shrink-0" dimensions="w-5" />
+                  <span className="ml-1 text-xs font-bold text-[#E0E0E0] dark:text-[#E0E0E0] truncate">{student?.user?.name}</span>
                 </div>
 
                 {error.general && (
@@ -236,8 +258,8 @@ export default function ClassResources() {
                     type="button"
                     onClick={handleClose}
                     text="Cancel"
-                    bgColor="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    typography="text-gray-600 dark:text-gray-300 font-bold text-xs"
+                    bgColor="bg-gray-100 dark:bg-[#121212] hover:bg-gray-200 dark:hover:bg-[#444444]"
+                    typography="text-gray-600 dark:text-gray-100 font-bold text-xs"
                     padding="px-4 py-2"
                     dimensions="w-full sm:w-fit rounded-md"
                   />

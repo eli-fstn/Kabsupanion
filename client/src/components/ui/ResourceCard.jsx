@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useUser } from "../../context/userContext";
 import Button from "./Button";
 import { Icon } from "@iconify/react";
@@ -19,8 +20,6 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     };
   }, [open]);
 
-  // Cloudinary's document-conversion page transform (f_jpg,pg_N) applies to
-  // multi-page documents. Plain images have no pages and should render as-is.
   const DOCUMENT_EXTENSIONS = ["pdf", "docx", "pptx", "doc", "ppt"];
   const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg"];
 
@@ -49,7 +48,6 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
   };
 
   const handlePageLoad = (page) => {
-    // Only documents have additional pages to lazily reveal.
     if (!isDocument) return;
     setPages((prev) =>
       prev.includes(page + 1) ? prev : [...prev, page + 1]
@@ -76,7 +74,7 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
         </div>
       </div>
 
-      {open && (
+      {open && createPortal(
         <div
           className="fixed inset-0 z-50 bg-black/70 dark:bg-black/80 flex items-center justify-center p-3 sm:p-6"
           onClick={handleClose}
@@ -115,7 +113,8 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
