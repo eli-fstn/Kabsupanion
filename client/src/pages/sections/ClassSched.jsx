@@ -30,6 +30,28 @@ function ClassSched() {
   const [downloading, setDownloading] = useState(false);
   const scheduleRef = useRef(null);
   const { darkMode } = useTheme();
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.7 }
+    );
+
+    const elements =
+      sectionRef.current.querySelectorAll(".animate-on-scroll");
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [subjects]);
 
   const handleDownload = async () => {
     if (!scheduleRef.current) return;
@@ -101,12 +123,12 @@ function ClassSched() {
     subject && to24hr(subject.startTime) === slot;
 
   return (
-    <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-sched">
+    <section ref={sectionRef} className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-sched">
       <header className="mt-3 mb-6">
-        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">
+        <p className="animate-on-scroll font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">
           Class Schedule
         </p>
-        <p className="text-sm sm:text-base text-gray-500 dark:text-[#E0E0E0]">
+        <p className="animate-on-scroll text-sm sm:text-base text-gray-500 dark:text-[#E0E0E0]">
           Keep track of your classes and never miss an important session.
         </p>
       </header>
@@ -125,13 +147,13 @@ function ClassSched() {
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr>
-                    <th className="bg-[#1B651B] text-white border border-gray-300 dark:border-[#444444] p-2 text-xs w-24">
+                    <th className="animate-on-scroll bg-[#1B651B] text-white border border-gray-300 dark:border-[#444444] p-2 text-xs w-24">
                       TIME
                     </th>
                     {DAYS.map((d) => (
                       <th
                         key={d}
-                        className="bg-[#F5F5F5] dark:bg-[#1f1f1f] border border-gray-200 dark:border-[#2b2b2b] text-black dark:text-gray-200 text-xs uppercase w-32 p-3"
+                        className="animate-on-scroll bg-[#F5F5F5] dark:bg-[#1f1f1f] border border-gray-200 dark:border-[#2b2b2b] text-black dark:text-gray-200 text-xs uppercase w-32 p-3"
                       >
                         {d}
                       </th>
@@ -141,10 +163,10 @@ function ClassSched() {
                 <tbody className="bg-white dark:bg-[#1a1a1a]">
                   {TIME_SLOTS.map((slot, si) => (
                     <tr key={slot}>
-                      <td className="border border-gray-300 dark:border-[#444444] py-3 text-center text-xs font-bold text-gray-500 dark:text-[#E0E0E0] bg-gray-50 dark:bg-[#1a1a1a] w-24 whitespace-nowrap px-2">
+                      <td className="animate-on-scroll border border-gray-300 dark:border-[#444444] py-3 text-center text-xs font-bold text-gray-500 dark:text-[#E0E0E0] bg-gray-50 dark:bg-[#1a1a1a] w-24 whitespace-nowrap px-2">
                         <div>{TIME_LABELS[si]}</div>
                         {TIME_LABELS[si + 1] && (
-                          <div className="text-[10px] font-normal opacity-60">
+                          <div className="animate-on-scroll text-[10px] font-normal opacity-60">
                             – {TIME_LABELS[si + 1]}
                           </div>
                         )}
@@ -160,10 +182,10 @@ function ClassSched() {
                         return (
                           <td
                             key={d}
-                            className={`border border-gray-300 dark:border-[#444444] w-32 text-center text-xs font-bold ${bgColor}`}
+                            className={`animate-on-scroll border border-gray-300 dark:border-[#444444] w-32 text-center text-xs font-bold ${bgColor}`}
                           >
                             {subject && start ? (
-                              <div className={`px-2 py-3 ${textColor}`}>
+                              <div className={`animate-on-scroll px-2 py-3 ${textColor}`}>
                                 <p className="font-bold">{subject.code}</p>
                                 <p className="font-normal opacity-70 text-[10px]">
                                   {subject.room}
@@ -187,7 +209,7 @@ function ClassSched() {
       )}
 
       {!loading && subjects.length > 0 && (
-        <div className="flex justify-center items-center mt-5">
+        <div className="animate-on-scroll flex justify-center items-center mt-5">
           <Button
             text={downloading ? "Downloading..." : "Download Schedule"}
             onClick={handleDownload}

@@ -47,7 +47,7 @@ function Modal({ isOpen, onClose, children }) {
 
   return (
   <div className="fixed inset-0 z-1000 bg-black/70 flex justify-center items-center" style={{ pointerEvents: "all" }} >
-    <div ref={modalRef} className="bg-white rounded-xl p-3" style={{ pointerEvents: "all" }}>
+    <div ref={modalRef} className="bg-white dark:bg-[#1a1a1a] rounded-xl p-3" style={{ pointerEvents: "all" }}>
       {children}
     </div>
   </div>
