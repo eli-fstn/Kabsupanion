@@ -45,7 +45,7 @@ function Navbar() {
             src={logo}
             alt="Logo"
           />
-          <p className="font-bold text-base sm:text-xl md:text-[1.5rem] pl-2 text-[#1B651B] font-['Roboto_Condensed'] truncate">
+          <p className="font-bold text-xl md:text-[1.5rem] pl-2 text-[#1B651B] font-['Roboto_Condensed'] truncate">
             Kabsupanion
           </p>
         </div>
