@@ -1,16 +1,15 @@
 import Button from "../ui/Button";
 import { Link } from "react-router-dom";
-import logo from "/assets/images/Kabsupanion-Logo.png";
 
 function Footer() {
   return (
-    <footer className="w-full bg-[#1B651B] mt-12 sm:mt-16 md:mt-20">
+    <footer className="w-full bg-[#1B651B] dark:bg-[#0f3d0f] mt-12 sm:mt-16 md:mt-20 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-2">
 
         {/* Upper Half */}
         <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-2 py-4 text-center sm:text-left">
           <div className="flex flex-row items-center min-w-0">
-            <img className="w-9 sm:w-10 shrink-0" src={logo} alt="Logo" />
+            <img className="w-9 sm:w-10 shrink-0" src="/assets/images/Kabsupanion-Logo.png" alt="Logo" />
             <p className="font-bold text-lg sm:text-xl md:text-[1.5rem] pl-2 text-white/70 font-['Roboto_Condensed'] truncate">
               Kabsupanion
             </p>
@@ -70,7 +69,7 @@ function Footer() {
         </div>
 
         <div className="flex justify-center py-2">
-          <p className="text-xs text-white/70 text-center wrap-break-word">
+          <p className="text-xs text-white/70 text-center break-words">
             © {new Date().getFullYear()} Kabsupanion. All rights reserved.
           </p>
         </div>

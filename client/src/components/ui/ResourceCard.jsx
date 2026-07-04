@@ -19,25 +19,29 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     };
   }, [open]);
 
-  const extension = fileUrl?.split(".").pop()?.toLowerCase();
+  // Cloudinary's document-conversion page transform (f_jpg,pg_N) applies to
+  // multi-page documents. Plain images have no pages and should render as-is.
+  const DOCUMENT_EXTENSIONS = ["pdf", "docx", "pptx", "doc", "ppt"];
+  const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg"];
 
-  const isPdf = extension === "pdf";
-  const isImage = ["png", "jpg", "jpeg", "webp"].includes(extension);
-  const isDocx = extension === "docx";
-  const isPptx = extension === "pptx";
+  const getExtension = (url) => {
+    if (!url) return "";
+    const clean = url.split("?")[0].split("#")[0];
+    return clean.split(".").pop().toLowerCase();
+  };
 
-  const toPageUrl = (url, page) =>
-    url
+  const fileExtension = getExtension(fileUrl);
+  const isDocument = DOCUMENT_EXTENSIONS.includes(fileExtension);
+  const isImage = IMAGE_EXTENSIONS.includes(fileExtension);
+
+  const toPageUrl = (url, page) => {
+    if (!isDocument) return url;
+    return url
       .replace("/upload/", `/upload/f_jpg,pg_${page}/`)
-      .replace(".pdf", ".jpg");
+      .replace(/\.(pdf|docx|pptx|doc|ppt)$/i, ".jpg");
+  };
 
-  let previewUrl = null;
-
-  if (isPdf) {
-    previewUrl = toPageUrl(fileUrl, 1);
-  } else if (isImage) {
-    previewUrl = fileUrl;
-  }
+  const previewUrl = fileUrl ? toPageUrl(fileUrl, 1) : null;
 
   const handleClose = () => {
     setOpen(false);
@@ -45,6 +49,8 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
   };
 
   const handlePageLoad = (page) => {
+    // Only documents have additional pages to lazily reveal.
+    if (!isDocument) return;
     setPages((prev) =>
       prev.includes(page + 1) ? prev : [...prev, page + 1]
     );
@@ -54,100 +60,59 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="bg-white border border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition flex flex-col h-full"
+        className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 transition flex flex-col h-full"
       >
-        <div className="h-32 sm:h-36 md:h-40 bg-gray-100 border-b border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-          {isPdf && (
-            <img
-              src={previewUrl}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-          )}
-
-          {isImage && (
-            <img
-              src={fileUrl}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-          )}
-
-          {isDocx && (
-            <div className="flex flex-col items-center justify-center">
-              <Icon icon="vscode-icons:file-type-word" className="text-6xl" />
-              <p className="text-xs mt-2">Word Document</p>
-            </div>
-          )}
-
-          {isPptx && (
-            <div className="flex flex-col items-center justify-center">
-              <Icon icon="vscode-icons:file-type-powerpoint" className="text-6xl" />
-              <p className="text-xs mt-2">PowerPoint</p>
-            </div>
+        <div className="h-32 sm:h-36 md:h-40 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#1a1a1a] flex items-center justify-center overflow-hidden shrink-0">
+          {previewUrl ? (
+            <img src={previewUrl} alt={title} className="w-full h-full object-cover" />
+          ) : (
+            <p className="text-gray-400 dark:text-[#E0E0E0] text-xs">No preview</p>
           )}
         </div>
         <div className="p-3 sm:p-4 flex flex-col gap-1 min-w-0">
-          <p className="text-xs text-gray-500 truncate">{subject}</p>
-          <p className="font-semibold text-sm sm:text-base leading-tight line-clamp-1">{title}</p>
-          <p className="text-xs text-gray-400 truncate">{uploadedBy}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{subject}</p>
+          <p className="font-semibold text-sm sm:text-base leading-tight line-clamp-1 text-gray-900 dark:text-gray-100">{title}</p>
+          <p className="text-xs text-gray-400 dark:text-[#E0E0E0] truncate">{uploadedBy}</p>
         </div>
       </div>
 
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-6"
+          className="fixed inset-0 z-50 bg-black/70 dark:bg-black/80 flex items-center justify-center p-3 sm:p-6"
           onClick={handleClose}
         >
           <div
-            className="bg-white rounded-xl overflow-hidden w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl h-[85vh] sm:h-[88vh] md:h-[90vh] flex flex-col"
+            className="bg-white dark:bg-[#1a1a1a] rounded-xl overflow-hidden w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl h-[85vh] sm:h-[88vh] md:h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-start sm:items-center gap-3 p-3 sm:p-4 border-b">
+            <div className="flex justify-between items-start sm:items-center gap-3 p-3 sm:p-4 border-b border-gray-200 dark:border-[#1a1a1a]">
               <div className="min-w-0">
-                <p className="font-semibold text-sm sm:text-base truncate">{title}</p>
-                <p className="text-xs text-gray-400 truncate">{subject} · {uploadedBy}</p>
+                <p className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-gray-100">{title}</p>
+                <p className="text-xs text-gray-400 dark:text-[#E0E0E0] truncate">{subject} · {uploadedBy}</p>
               </div>
               <Button
                 onClick={handleClose}
                 bgColor="bg-transparent"
-                typography="text-gray-400 hover:text-gray-600"
+                typography="text-gray-400 dark:text-[#E0E0E0] hover:text-gray-600 dark:hover:text-white"
                 padding="p-1"
                 dimensions="rounded-md shrink-0"
                 animation="active:scale-95 transition-all duration-100"
                 text={<Icon icon="mdi:close" className="text-2xl" />}
               />
             </div>
-            <div className="w-full flex-1 overflow-y-auto flex flex-col items-center bg-gray-100 p-2 sm:p-4 gap-3 sm:gap-4">
-              {isPdf &&
-                pages.map((page) => (
-                  <img
-                    key={page}
-                    src={toPageUrl(fileUrl, page)}
-                    alt={`Page ${page}`}
-                    className="w-full rounded shadow"
-                    onLoad={() => handlePageLoad(page)}
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                ))}
-
-              {isImage && (
+            <div className="w-full flex-1 overflow-y-auto flex flex-col items-center bg-gray-100 dark:bg-[#121212] p-2 sm:p-4 gap-3 sm:gap-4">
+              {pages.map((page) => (
                 <img
-                  src={fileUrl}
-                  alt={title}
-                  className="max-w-full rounded shadow"
+                  key={page}
+                  src={toPageUrl(fileUrl, page)}
+                  alt={`Page ${page}`}
+                  className="w-full rounded shadow"
+                  onLoad={() => handlePageLoad(page)}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
                 />
-              )}
-
-              {(isDocx || isPptx) && (
-                <iframe
-                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
-                  className="w-full h-full"
-                  title={title}
-                />
-              )}
+              ))}
             </div>
           </div>
         </div>

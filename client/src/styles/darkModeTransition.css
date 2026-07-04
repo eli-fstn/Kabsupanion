@@ -1,0 +1,41 @@
+  @import "tailwindcss";
+
+/* ---------------------------------------------------------------------
+   Dark mode circular reveal transition
+   Paste this into your existing global stylesheet (e.g. src/styles/style.css),
+   or keep it as its own file and `import` it once in main.jsx.
+   --------------------------------------------------------------------- */
+
+/* Disable the browser's default cross-fade so only our circle clip-path
+   animation (defined in themeContext.jsx) is visible. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Light -> Dark: the new (dark) snapshot should paint OVER the old one
+   as the circle expands. */
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+/* Dark -> Light: reverse the stacking order so the circle still reads as
+   "new content revealing outward" instead of "old content being covered". */
+.dark::view-transition-old(root) {
+  z-index: 2;
+}
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* Soft fallback for browsers without View Transitions support (e.g. older
+   Firefox/Safari) — colors still ease instead of snapping instantly. */
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
