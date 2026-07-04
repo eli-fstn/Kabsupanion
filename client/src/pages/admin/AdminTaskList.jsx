@@ -200,6 +200,8 @@ function AdminList() {
     }
   };
 
+  const filteredTasks = [...tasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
@@ -232,7 +234,7 @@ function AdminList() {
               tasks.length > 0 ? (
                 <table className="w-full">
                   <tbody>
-                    {tasks.map((t, i) => {
+                    {filteredTasks.map((t, i) => {
                       const oneDay = 24 * 60 * 60 * 1000;
                       const currentDate = new Date().getTime();
                       const dueDate = new Date(t.dueDate);

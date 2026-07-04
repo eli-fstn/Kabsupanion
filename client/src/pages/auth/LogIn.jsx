@@ -87,6 +87,8 @@ function LogIn() {
 
   return (
     <div className="relative min-h-screen">
+
+      {/* Log In Form */}
       <div className="absolute inset-0 flex items-center justify-center px-4">
         <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 z-10">
           <div className="flex items-center justify-center mb-7">
@@ -128,12 +130,17 @@ function LogIn() {
           </p>
         </form>
       </div>
+
+      {/* LAYA AT DIWA BACKGROUND */}
       <div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
         <img className="opacity-50 w-72" src={background} alt="Laya at Diwa"/>
       </div>
 
       <div className="flex justify-center items-center fixed bottom-0 left-0 right-0 py-3">
-        <p className="text-xs">Encountered a problem?<span className="text-[#1B651B] font-semibold ml-1"><a href="https://forms.gle/S7CdziBEMCq6DtEF6">Report here</a></span></p>
+        <p className="text-xs">Encountered a problem?<span className="text-[#1B651B] font-semibold ml-1">
+					<a href="https://forms.gle/S7CdziBEMCq6DtEF6" target="_blank" rel="noreferrer">Report here</a>
+					</span>
+				</p>
       </div>
     </div>
   );
