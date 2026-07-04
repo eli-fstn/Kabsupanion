@@ -8,7 +8,7 @@ import Footer from "../../components/layout/Footer";
 
 function Dashboard() {
   return (
-    <div className="bg-[#fafafa] min-h-screen">
+    <div className="bg-[#fafafa] dark:bg-[#121212] min-h-screen transition-colors duration-300">
       <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar />
       </div>

@@ -61,30 +61,30 @@ function TaskList({ studentName = "Juan" }) {
 
   const getDueDateColor = (daysRemaining) =>
     daysRemaining === 3
-      ? "text-amber-500"
+      ? "text-amber-500 dark:text-amber-400"
       : daysRemaining === 2
-      ? "text-orange-500 font-medium"
+      ? "text-orange-500 dark:text-orange-400 font-medium"
       : daysRemaining === 1
-      ? "text-red-500 font-bold"
+      ? "text-red-500 dark:text-red-400 font-bold"
       : daysRemaining === 0
-      ? "text-red-700 font-bold"
+      ? "text-red-700 dark:text-red-500 font-bold"
       : daysRemaining < 0
-      ? "text-purple-900 font-bold"
+      ? "text-purple-900 dark:text-purple-400 font-bold"
       : "";
 
   return (
     <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="task-list">
       <header>
-        <h1 className="text-3xl md:text-4xl lg:text-[2.8rem] font-bold font-[amaranth] text-[#003A02] flex flex-wrap items-baseline gap-x-2">
+        <h1 className="text-3xl md:text-4xl lg:text-[2.8rem] font-bold font-[amaranth] text-[#003A02] dark:text-[#56e556] flex flex-wrap items-baseline gap-x-2">
           Hello there,
           <span className="font-[parisienne] font-bold text-4xl md:text-5xl lg:text-[3.3rem]">
             {student?.user?.name?.split(" ").slice(-1)[0]}!
           </span>
         </h1>
         <div className="mt-3">
-          <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat]">Today's Tasks</p>
-          <p className="text-sm sm:text-base">
-            You have <span className="text-[#003A02] font-bold text-base sm:text-[1.3rem]">{task.length}</span> tasks ongoing.{" "}
+          <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] text-gray-900 dark:text-gray-100">Today's Tasks</p>
+          <p className="text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">
+            You have <span className="text-[#003A02] dark:text-[#56e556] font-bold text-base sm:text-[1.3rem]">{task.length}</span> tasks ongoing.{" "}
             {task.length === 0 ? <span>Well done!</span> : <span>Stay focused and complete them on time!</span>}
           </p>
         </div>
@@ -92,21 +92,21 @@ function TaskList({ studentName = "Juan" }) {
 
       {/* LEGENDS */}
       <div className="mt-3">
-        <p className="text-sm font-medium">Remaining days before the deadline:</p>
+        <p className="text-sm font-medium text-gray-700 dark:text-[#E0E0E0]">Remaining days before the deadline:</p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-2">
-          <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
+          <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-amber-500 rounded-full inline-block mr-1"></span> - 3 days
           </p>
-          <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
+          <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-orange-500 rounded-full inline-block mr-1"></span> - 2 days
           </p>
-          <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
+          <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-1"></span> - Due tomorrow
           </p>
-          <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
+          <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-red-700 rounded-full inline-block mr-1"></span> - Due today
           </p>
-          <p className="text-xs font-medium text-gray-500 flex items-center whitespace-nowrap">
+          <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
             <span className="w-3 h-3 bg-purple-900 rounded-full inline-block mr-1"></span> - Overdue
           </p>
         </div>
@@ -117,11 +117,11 @@ function TaskList({ studentName = "Juan" }) {
         <Button
           text="ALL"
           onClick={() => setActiveSubject("ALL")}
-          bgColor={activeSubject === "ALL" ? "bg-[#1B651B]" : "bg-white"}
-          typography={activeSubject === "ALL" ? "text-sm font-bold text-white whitespace-nowrap" : "text-sm font-bold text-gray-700 whitespace-nowrap"}
+          bgColor={activeSubject === "ALL" ? "bg-[#1B651B]" : "bg-white dark:bg-[#1a1a1a]"}
+          typography={activeSubject === "ALL" ? "text-sm font-bold text-white whitespace-nowrap" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap"}
           dimensions="rounded-md"
           padding="px-5 py-1"
-          shadow="shadow-md border border-gray-200"
+          shadow="shadow-md border border-gray-200 dark:border-[#1a1a1a]"
           animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
         />
         {subject.map((subject) => (
@@ -129,24 +129,24 @@ function TaskList({ studentName = "Juan" }) {
             key={subject.id}
             text={subject.code}
             onClick={() => setActiveSubject(subject.code)}
-            bgColor={activeSubject === subject.code ? "bg-[#1B651B]" : "bg-white"}
-            typography={activeSubject === subject.code ? "text-sm font-bold text-white whitespace-nowrap" : "text-sm font-bold text-gray-700 whitespace-nowrap"}
+            bgColor={activeSubject === subject.code ? "bg-[#1B651B]" : "bg-white dark:bg-[#1a1a1a]"}
+            typography={activeSubject === subject.code ? "text-sm font-bold text-white whitespace-nowrap" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap"}
             dimensions="rounded-md"
             padding="px-5 py-1"
-            shadow="shadow-md border border-gray-200"
+            shadow="shadow-md border border-gray-200 dark:border-[#1a1a1a]"
             animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
           />
         ))}
       </div>
 
       {/* TASK LIST / TABLE — scrolls horizontally below md instead of restacking */}
-      <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl overflow-hidden transition-colors duration-300">
         <div className="overflow-x-auto">
           <div className="min-w-160" role="table">
 
             {/* Column header row */}
             <div
-              className="grid grid-cols-[.1fr_3fr_1fr_1fr] bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200"
+              className="grid grid-cols-[.1fr_3fr_1fr_1fr] bg-[#F5F5F5] dark:bg-[#1f1f1f] p-3 items-center text-[#888888] dark:text-[#6a6a6a] text-sm font-bold border-b border-gray-200 dark:border-[#1a1a1a]"
               role="row"
             >
               <span role="columnheader"></span>
@@ -170,7 +170,7 @@ function TaskList({ studentName = "Juan" }) {
                   <LoadingIcon dimensions="w-10 h-10" />
                 </div>
               ) : filteredTasks.length === 0 ? (
-                <div className="flex justify-center items-center h-40 text-gray-400 text-center px-4 text-sm">
+                <div className="flex justify-center items-center h-20 flex-1 text-gray-400 dark:text-gray-500 text-center px-4 text-sm">
                   {activeSubject === "ALL"
                     ? "No tasks for today. Great job!"
                     : "No tasks for this subject. Keep up the good work!"}
@@ -187,7 +187,7 @@ function TaskList({ studentName = "Juan" }) {
                     <div
                       key={t.id}
                       role="row"
-                      className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 p-3 items-center text-sm font-medium transition-all duration-300 ${
+                      className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 dark:border-[#2a2a2a] p-3 items-center text-sm font-medium text-gray-800 dark:text-gray-200 transition-all duration-300 ${
                         t.completed ? "opacity-40 line-through" : "opacity-100"
                       }`}
                     >

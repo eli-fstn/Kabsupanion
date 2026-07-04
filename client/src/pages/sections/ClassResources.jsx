@@ -110,12 +110,11 @@ export default function ClassResources() {
   return (
     <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-resources">
       <header className="mt-3">
-        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7">Class Resources</p>
-        <p className="text-sm sm:text-base">Collaborate and exchange notes with your fellow blockmates.</p>
-        <p className="text-gray-500 text-xs sm:text-base mt-2">For the best viewing experience, we recommend uploading your files in <span className="font-bold">PNG, JPG/JPEG, or PDF</span> format.</p>
+        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">Class Resources</p>
+        <p className="text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">Collaborate and exchange notes with your fellow blockmates.</p>
       </header>
 
-      <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col">
+      <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl p-3 sm:p-4 flex flex-col transition-colors duration-300">
         <div className="max-h-[60vh] sm:max-h-[65vh] md:h-150 overflow-y-auto flex flex-col">
           {loading ? (
             <div className="flex justify-center items-center flex-1 py-16">
@@ -136,7 +135,7 @@ export default function ClassResources() {
               </div>
             ) : (
               <div className="flex justify-center items-center flex-1 py-16 text-center px-4">
-                <p className="text-gray-400 text-sm sm:text-base">There's no resources uploaded yet.</p>
+                <p className="text-[#E0E0E0] dark:text-gray-500 text-sm sm:text-base">There's no resources uploaded yet.</p>
               </div>
             )
           )}
@@ -159,15 +158,15 @@ export default function ClassResources() {
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center w-56 h-56 sm:h-64">
                 <LoadingIcon dimensions="w-16 h-16 sm:w-20 sm:h-20" />
-                <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite] text-center">Submitting...</p>
+                <p className="text-[#E0E0E0] dark:text-gray-500 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite] text-center">Submitting...</p>
               </div>
             ) : (
               <>
-                <p className="font-bold text-base sm:text-[1.2rem] text-[#1B651B] font-['Montserrat']">Upload Resources</p>
-                <p className="text-gray-400 text-xs mb-5">Share learning materials with your classmates</p>
+                <p className="font-bold text-base sm:text-[1.2rem] text-[#1B651B] dark:text-[#4ade80] font-['Montserrat']">Upload Resources</p>
+                <p className="text-[#E0E0E0] dark:text-gray-500 text-xs mb-5">Share learning materials with your classmates</p>
 
                 {/* Title of the resources*/}
-                <label className="text-xs font-bold mb-1 mt-2">Title <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-300">Title <span className="text-red-400">*</span></label>
                 <input
                   value={title}
                   onChange={(e) => {
@@ -176,23 +175,23 @@ export default function ClassResources() {
                   }}
                   type="text"
                   placeholder="Enter resource title"
-                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                    ${error.title ? "border-red-500" : "border-gray-300"}`}
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-green-700 dark:focus:border-green-500 
+                    ${error.title ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
                 />
                 {error.title && (
                   <p className="text-red-500 text-xs">{error.title}</p>
                 )}
 
                 {/* Subject */}
-                <label className="text-xs font-bold mb-1 mt-2">Subject <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-300">Subject <span className="text-red-400">*</span></label>
                 <select
                   value={subjectID}
                   onChange={(e) => {
                     setSubjectID(e.target.value);
                     setError((prev) => ({ ...prev, subject: "" }));
                   }}
-                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
-                    ${error.subject ? "border-red-500" : "border-gray-300"}`}
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-green-700 dark:focus:border-green-500 
+                    ${error.subject ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
                 >
                   <option value="">Select a subject</option>
                   {subjects.map((subject) => (
@@ -206,7 +205,7 @@ export default function ClassResources() {
                 )}
 
                 {/* File to be uploaded */}
-                <label className="text-xs font-bold mb-1 mt-2">File <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1 mt-2 text-gray-700 dark:text-gray-300">File <span className="text-red-400">*</span></label>
                 <input
                   onChange={(e) => {
                     setFile(e.target.files[0]);
@@ -214,31 +213,31 @@ export default function ClassResources() {
                   }}
                   type="file"
                   accept=".pdf, .png, .jpg, .jpeg, .docx, .pptx"
-                  className={`border rounded-lg p-2.5 w-full outline-none text-xs focus:border-[#1B651B] transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 
-                    ${error.file ? "border-red-500" : "border-gray-200"}`}
+                  className={`border rounded-lg p-2.5 w-full outline-none text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-[#1B651B] dark:focus:border-green-500 transition-all duration-200 mb-1 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#1B651B] file:text-white hover:file:bg-green-700 
+                    ${error.file ? "border-red-500" : "border-gray-200 dark:border-gray-600"}`}
                 />
                 {error.file && (
                   <p className="text-red-500 text-xs">{error.file}</p>
                 )}
 
                 {/* Uploaded by (current user)*/}
-                <label className="text-xs font-bold mb-1 mt-3">Uploaded by</label>
-                <div className="flex flex-row items-center mt-2">
-                  <UserIcon typography="text-gray-400 shrink-0" dimensions="w-5" />
-                  <span className="ml-1 text-xs font-bold text-gray-500 truncate">{student?.user?.name}</span>
+                <label className="text-xs font-bold mb-1 mt-3 text-gray-700 dark:text-gray-300">Uploaded by</label>
+                <div className="flex flex-row items-center mt-2 min-w-0">
+                  <UserIcon typography="text-[#E0E0E0] dark:text-gray-500 shrink-0" dimensions="w-5" />
+                  <span className="ml-1 text-xs font-bold text-gray-500 dark:text-[#E0E0E0] truncate">{student?.user?.name}</span>
                 </div>
 
                 {error.general && (
-                  <p className="text-red-500 text-[.8rem] leading-4 font-bold my-2 text-center">{error.general}</p>
+                  <p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>
                 )}
 
-                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-4">
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-5">
                   <Button
                     type="button"
                     onClick={handleClose}
                     text="Cancel"
-                    bgColor="bg-gray-100 hover:bg-gray-200"
-                    typography="text-gray-600 font-bold text-xs"
+                    bgColor="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    typography="text-gray-600 dark:text-gray-300 font-bold text-xs"
                     padding="px-4 py-2"
                     dimensions="w-full sm:w-fit rounded-md"
                   />

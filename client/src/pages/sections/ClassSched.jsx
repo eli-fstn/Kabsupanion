@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { getSubjects } from "../../services/subjects";
 import { toPng } from "html-to-image";
 import Button from "../../components/ui/Button";
+import { useTheme } from "../../context/themeContext";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME_SLOTS = [
@@ -14,13 +15,13 @@ const TIME_LABELS = [
 ];
 
 const COLORS = [
-  "bg-cyan-100", "bg-yellow-100", "bg-green-100", "bg-orange-100",
-  "bg-pink-100", "bg-purple-100", "bg-red-100", "bg-blue-100",
+  "bg-cyan-100 dark:bg-cyan-900/40", "bg-yellow-100 dark:bg-yellow-900/40", "bg-green-100 dark:bg-green-900/40", "bg-orange-100 dark:bg-orange-900/40",
+  "bg-pink-100 dark:bg-pink-900/40", "bg-purple-100 dark:bg-purple-900/40", "bg-red-100 dark:bg-red-900/40", "bg-blue-100 dark:bg-blue-900/40",
 ];
 
 const TEXT_COLORS = [
-  "text-cyan-800", "text-yellow-800", "text-green-800", "text-orange-800",
-  "text-pink-800", "text-purple-800", "text-red-800", "text-blue-800",
+  "text-cyan-800 dark:text-cyan-200", "text-yellow-800 dark:text-yellow-200", "text-green-800 dark:text-green-200", "text-orange-800 dark:text-orange-200",
+  "text-pink-800 dark:text-pink-200", "text-purple-800 dark:text-purple-200", "text-red-800 dark:text-red-200", "text-blue-800 dark:text-blue-200",
 ];
 
 function ClassSched() {
@@ -28,12 +29,15 @@ function ClassSched() {
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const scheduleRef = useRef(null);
+  const { darkMode } = useTheme();
 
   const handleDownload = async () => {
     if (!scheduleRef.current) return;
     setDownloading(true);
     try {
       const dataUrl = await toPng(scheduleRef.current, {
+        // Keep the downloaded image on a light background regardless of
+        // the current theme, so it stays legible/printable either way.
         backgroundColor: "#ffffff",
         pixelRatio: 2,
       });
@@ -99,41 +103,45 @@ function ClassSched() {
   return (
     <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-sched">
       <header className="mt-3 mb-6">
-        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7">Class Schedule</p>
-        <p className="text-sm sm:text-base">Keep track of your classes and never miss an important session.</p>
+        <p className="font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">
+          Class Schedule
+        </p>
+        <p className="text-sm sm:text-base text-gray-500 dark:text-[#E0E0E0]">
+          Keep track of your classes and never miss an important session.
+        </p>
       </header>
 
       {loading ? (
-        <div className="flex justify-center items-center h-60 text-gray-400 text-sm">
+        <div className="flex justify-center items-center h-60 text-gray-400 dark:text-[#E0E0E0] text-sm">
           Loading schedule...
         </div>
       ) : (
         <>
           {/* Horizontally scrollable schedule — table keeps its natural width and scrolls under this wrapper on narrow screens */}
           <div
-            className="overflow-x-auto rounded-md border border-gray-200 [-webkit-overflow-scrolling:touch]"
+            className="overflow-x-auto rounded-md border border-gray-200 dark:border-[#1a1a1a] [-webkit-overflow-scrolling:touch]"
           >
             <div ref={scheduleRef} className="min-w-212.5">
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr>
-                    <th className="bg-[#1B651B] text-white border border-gray-300 p-2 text-xs w-24">
+                    <th className="bg-[#1B651B] text-white border border-gray-300 dark:border-[#444444] p-2 text-xs w-24">
                       TIME
                     </th>
                     {DAYS.map((d) => (
                       <th
                         key={d}
-                        className="bg-[#F5F5F5] border border-gray-200 text-black text-xs uppercase w-32 p-3"
+                        className="bg-[#F5F5F5] dark:bg-[#1f1f1f] border border-gray-200 dark:border-[#2b2b2b] text-black dark:text-gray-200 text-xs uppercase w-32 p-3"
                       >
                         {d}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white">
+                <tbody className="bg-white dark:bg-[#1a1a1a]">
                   {TIME_SLOTS.map((slot, si) => (
                     <tr key={slot}>
-                      <td className="border border-gray-300 py-3 text-center text-xs font-bold text-gray-500 bg-gray-50 w-24 whitespace-nowrap px-2">
+                      <td className="border border-gray-300 dark:border-[#444444] py-3 text-center text-xs font-bold text-gray-500 dark:text-[#E0E0E0] bg-gray-50 dark:bg-[#1a1a1a] w-24 whitespace-nowrap px-2">
                         <div>{TIME_LABELS[si]}</div>
                         {TIME_LABELS[si + 1] && (
                           <div className="text-[10px] font-normal opacity-60">
@@ -152,7 +160,7 @@ function ClassSched() {
                         return (
                           <td
                             key={d}
-                            className={`border border-gray-300 w-32 text-center text-xs font-bold ${bgColor}`}
+                            className={`border border-gray-300 dark:border-[#444444] w-32 text-center text-xs font-bold ${bgColor}`}
                           >
                             {subject && start ? (
                               <div className={`px-2 py-3 ${textColor}`}>
@@ -172,7 +180,7 @@ function ClassSched() {
             </div>
           </div>
 
-          <p className="mt-2 text-xs text-gray-400 sm:hidden">
+          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 sm:hidden">
             Swipe sideways to see the full week.
           </p>
         </>
@@ -194,7 +202,7 @@ function ClassSched() {
       )}
 
       {!loading && subjects.length === 0 && (
-        <div className="flex flex-col justify-center items-center h-60 text-gray-400 text-sm gap-2">
+        <div className="flex flex-col justify-center items-center h-60 text-gray-400 dark:text-gray-500 text-sm gap-2">
           <p>No schedule found.</p>
         </div>
       )}
