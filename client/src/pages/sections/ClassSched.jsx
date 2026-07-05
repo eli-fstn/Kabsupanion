@@ -3,6 +3,7 @@ import { getSubjects } from "../../services/subjects";
 import { toPng } from "html-to-image";
 import Button from "../../components/ui/Button";
 import { useTheme } from "../../context/themeContext";
+import LoadingIcon from "../../components/ui/LoadingIcon";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME_SLOTS = [
@@ -134,15 +135,13 @@ function ClassSched() {
       </header>
 
       {loading ? (
-        <div className="flex justify-center items-center h-60 text-gray-400 dark:text-[#E0E0E0] text-sm">
-          Loading schedule...
+        <div className="flex justify-center items-center h-165 text-gray-400 dark:text-[#E0E0E0] bg-white dark:bg-[#1a1a1a] text-sm">
+          <LoadingIcon dimensions="w-10 h-10" />
         </div>
       ) : (
         <>
           {/* Horizontally scrollable schedule — table keeps its natural width and scrolls under this wrapper on narrow screens */}
-          <div
-            className="overflow-x-auto rounded-md border border-gray-200 dark:border-[#1a1a1a] [-webkit-overflow-scrolling:touch]"
-          >
+          <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-[#1a1a1a] [-webkit-overflow-scrolling:touch]">
             <div ref={scheduleRef} className="min-w-212.5">
               <table className="w-full border-collapse text-xs">
                 <thead>
@@ -166,7 +165,7 @@ function ClassSched() {
                       <td className="animate-on-scroll border border-gray-300 dark:border-[#444444] py-3 text-center text-xs font-bold text-gray-500 dark:text-[#E0E0E0] bg-gray-50 dark:bg-[#1a1a1a] w-24 whitespace-nowrap px-2">
                         <div>{TIME_LABELS[si]}</div>
                         {TIME_LABELS[si + 1] && (
-                          <div className="animate-on-scroll text-[10px] font-normal opacity-60">
+                          <div className="text-[10px] font-normal opacity-60">
                             – {TIME_LABELS[si + 1]}
                           </div>
                         )}
@@ -202,7 +201,7 @@ function ClassSched() {
             </div>
           </div>
 
-          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 sm:hidden">
+          <p className="mt-2 text-xs text-gray-400 dark:text-[#E0E0E0] sm:hidden">
             Swipe sideways to see the full week.
           </p>
         </>
@@ -224,7 +223,7 @@ function ClassSched() {
       )}
 
       {!loading && subjects.length === 0 && (
-        <div className="flex flex-col justify-center items-center h-60 text-gray-400 dark:text-gray-500 text-sm gap-2">
+        <div className="flex flex-col justify-center items-center h-96 text-gray-400 dark:text-[#E0E0E0] text-sm gap-2">
           <p>No schedule found.</p>
         </div>
       )}

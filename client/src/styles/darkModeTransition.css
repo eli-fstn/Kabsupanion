@@ -1,10 +1,4 @@
-  @import "tailwindcss";
-
-/* ---------------------------------------------------------------------
-   Dark mode circular reveal transition
-   Paste this into your existing global stylesheet (e.g. src/styles/style.css),
-   or keep it as its own file and `import` it once in main.jsx.
-   --------------------------------------------------------------------- */
+@import "tailwindcss";
 
 /* Disable the browser's default cross-fade so only our circle clip-path
    animation (defined in themeContext.jsx) is visible. */

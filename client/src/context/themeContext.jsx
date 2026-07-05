@@ -62,7 +62,7 @@ export function ThemeProvider({ children }) {
           ],
         },
         {
-          duration: 600,
+          duration: 500,
           easing: "ease-in-out",
           pseudoElement: "::view-transition-new(root)",
         }

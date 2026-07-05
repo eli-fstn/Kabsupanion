@@ -104,7 +104,7 @@ function AdminDashboard() {
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Total Students</label>
-              <p className="text-[2rem] font-bold text-[#1B651B] leading-8"><CountUp.default start={0} end={masterlist.length} duration={3}/></p>
+              <p className="text-[2rem] font-bold text-[#1B651B] leading-8"><CountUp.default start={0} end={masterlist.length} duration={2}/></p>
             </div>
           </div>
 
@@ -114,7 +114,7 @@ function AdminDashboard() {
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Tasks</label>
-              <p className="text-[2rem] font-bold text-[#185FA5] leading-8"><CountUp.default start={0} end={task.length} duration={3}/></p>
+              <p className="text-[2rem] font-bold text-[#185FA5] leading-8"><CountUp.default start={0} end={task.length} duration={2}/></p>
             </div>
           </div>
 
@@ -124,7 +124,7 @@ function AdminDashboard() {
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Resources</label>
-              <p className="text-[2rem] font-bold text-[#BA7517] leading-8"><CountUp.default start={0} end={resources.length} duration={3}/></p>
+              <p className="text-[2rem] font-bold text-[#BA7517] leading-8"><CountUp.default start={0} end={resources.length} duration={2}/></p>
             </div>
           </div>
         </div>
