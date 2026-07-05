@@ -136,8 +136,8 @@ export default function ClassResources() {
         <p className="animate-on-scroll text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">Collaborate and exchange notes with your fellow blockmates.</p>
       </header>
 
-      <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl p-3 sm:p-5 flex flex-col transition-colors duration-300">
-        <div className="max-h-[70vh] sm:max-h-[75vh] md:h-150 overflow-y-auto flex flex-col">
+      <div className="animate-on-scroll bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl p-3 sm:p-5 flex flex-col transition-colors duration-300">
+        <div className="max-h-[70vh] sm:max-h-[75vh] md:h-150 overflow-y-auto flex flex-col pt-2">
           {loading ? (
             <div className="flex justify-center items-center h-96">
               <LoadingIcon dimensions="w-10 h-10" />

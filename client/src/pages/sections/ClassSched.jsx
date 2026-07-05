@@ -4,6 +4,7 @@ import { toPng } from "html-to-image";
 import Button from "../../components/ui/Button";
 import { useTheme } from "../../context/themeContext";
 import LoadingIcon from "../../components/ui/LoadingIcon";
+import CvSULogo from "/assets/images/CvSU-logo.png";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME_SLOTS = [
@@ -29,6 +30,9 @@ function ClassSched() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  // Controls the export-only header below — true only for the brief moment
+  // we're taking the screenshot, so it never shows up on the live page.
+  const [isExporting, setIsExporting] = useState(false);
   const scheduleRef = useRef(null);
   const { darkMode } = useTheme();
   const sectionRef = useRef(null);
@@ -57,13 +61,14 @@ function ClassSched() {
   const handleDownload = async () => {
     if (!scheduleRef.current) return;
     setDownloading(true);
+    setIsExporting(true);
+
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
+
     try {
-      const dataUrl = await toPng(scheduleRef.current, {
-        // Keep the downloaded image on a light background regardless of
-        // the current theme, so it stays legible/printable either way.
-        backgroundColor: "#ffffff",
-        pixelRatio: 2,
-      });
+      const dataUrl = await toPng(scheduleRef.current);
       const link = document.createElement("a");
       link.download = "BSCS-2A-Class-Schedule.png";
       link.href = dataUrl;
@@ -71,6 +76,7 @@ function ClassSched() {
     } catch (err) {
       console.error("Download failed:", err);
     } finally {
+      setIsExporting(false);
       setDownloading(false);
     }
   };
@@ -142,7 +148,18 @@ function ClassSched() {
         <>
           {/* Horizontally scrollable schedule — table keeps its natural width and scrolls under this wrapper on narrow screens */}
           <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-[#1a1a1a] [-webkit-overflow-scrolling:touch]">
-            <div ref={scheduleRef} className="min-w-212.5">
+            <div ref={scheduleRef} className="min-w-300 bg-white dark:bg-[#1a1a1a]">
+
+              {/* Text that appears in the downloaded schedule but doesn't appear in the website */}
+              <div className="flex flex-row items-center justify-between bg-white dark:bg-[#1a1a1a]">
+                <p className={`${isExporting ? "block" : "hidden"} font-bold text-[1.5rem] text-black dark:text-white p-3 bg-white dark:bg-[#1a1a1a]`}> BSCS-2A | 1<sup>st</sup> Semester A.Y. 2026-2027</p>
+
+                <div className={`${isExporting ? "block" : "hidden"} flex items-center p-3 bg-white dark:bg-[#1a1a1a]`}>
+                  <img src={CvSULogo} alt="CvSU Logo" className="w-8 h-7"></img>
+                  <p className="text-black dark:text-white text-[1rem] ml-2">Cavite State University - Imus campus</p>
+                </div>
+              </div>
+
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr>

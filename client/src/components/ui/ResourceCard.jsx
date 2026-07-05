@@ -3,11 +3,13 @@ import { createPortal } from "react-dom";
 import { useUser } from "../../context/userContext";
 import Button from "./Button";
 import { Icon } from "@iconify/react";
+import jsPDF from "jspdf";
 
 function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
   const { student } = useUser();
   const [open, setOpen] = useState(false);
   const [pages, setPages] = useState([1]);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -54,11 +56,73 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     );
   };
 
+  const handleDownload = async () => {
+    if (!fileUrl) return;
+
+    if (isDocument) {
+      setDownloading(true);
+      try {
+        const pageImages = [];
+        let page = 1;
+
+        while (true) {
+          const res = await fetch(toPageUrl(fileUrl, page));
+          if (!res.ok) break;
+
+          const blob = await res.blob();
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          const { w, h } = await new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve({ w: img.width, h: img.height });
+            img.src = dataUrl;
+          });
+
+          pageImages.push({ dataUrl, w, h });
+          page++;
+        }
+
+        if (pageImages.length === 0) throw new Error("No pages found");
+
+        const pdf = new jsPDF({
+          unit: "px",
+          format: [pageImages[0].w, pageImages[0].h],
+        });
+
+        pageImages.forEach((img, i) => {
+          if (i > 0) pdf.addPage([img.w, img.h]);
+          pdf.addImage(img.dataUrl, "JPEG", 0, 0, img.w, img.h);
+        });
+
+        pdf.save(title.toLowerCase().endsWith(".pdf") ? title : `${title}.pdf`);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setDownloading(false);
+      }
+      return;
+    }
+
+    const downloadUrl = fileUrl.replace(
+      "/upload/",
+      `/upload/fl_attachment:${encodeURIComponent(title)}/`
+    );
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <div
         onClick={() => setOpen(true)}
-        className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 duration-300 ease-out hover:-translate-y-1 transition flex flex-col h-full"
+        className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 duration-300 ease-out hover:-translate-y-1 hover:border-[#7a7a7a] transition flex flex-col h-full"
       >
         <div className="h-36 md:h-40 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#1a1a1a] flex items-center justify-center overflow-hidden shrink-0">
           {previewUrl ? (
@@ -111,6 +175,18 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
                   }}
                 />
               ))}
+            </div>
+            <div className="flex items-center justify-center my-3">
+              <Button
+                text="Download"
+                onClick={handleDownload}
+                disabled={downloading}
+                bgColor="bg-[#1B651B]"
+                typography="text-white font-bold text-xs whitespace-nowrap"
+                padding="px-4 py-2"
+                dimensions="w-fit rounded-md"
+                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+              />
             </div>
           </div>
         </div>,
