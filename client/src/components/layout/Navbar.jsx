@@ -39,14 +39,14 @@ function Navbar() {
     <header className="w-full border-b border-gray-200 dark:border-[#444444] bg-white dark:bg-[#1a1a1a] transition-colors duration-300">
       <nav className="flex items-center justify-between gap-2 p-3 px-4 sm:px-5 md:px-7">
 
-        {/* LOGO */}
+        {/* LEFT SIDE: Logo + Name */}
         <div className="flex items-center min-w-0 shrink">
           <img
             className="w-8 sm:w-9 md:w-10 shrink-0"
             src={logo}
             alt="Logo"
           />
-          <p className="font-bold text-base sm:text-xl md:text-[1.5rem] pl-2 text-[#1B651B] dark:text-[#56e556] font-['Roboto_Condensed'] truncate">
+          <p className="font-bold text-xl md:text-[1.5rem] pl-2 text-[#1B651B] dark:text-[#56e556] font-['Roboto_Condensed'] truncate">
             Kabsupanion
           </p>
         </div>
@@ -75,24 +75,30 @@ function Navbar() {
               />
             </div>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 sm:w-44 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#1a1a1a] text-[#1B651B] dark:text-[#56e556] rounded-lg shadow-lg z-20 text-center">
-                <Button
-                  text={
-                    <>
-                      <Icon icon="gridicons:sign-out" width="22" height="22" className="shrink-0" />
-                      <span className="ml-2 whitespace-nowrap">Sign Out</span>
-                    </>
-                  }
-                  onClick={userSignOut}
-                  bgColor=""
-                  typography="text-sm font-bold text-[#1B651B] dark:text-[#4ade80] flex items-center justify-center"
-                  dimensions="w-full rounded-md"
-                  padding="px-5 py-2"
-                  animation="active:scale-95 transition-transform duration-100 hover:bg-gray-100 dark:hover:bg-[#555555]"
-                />
-              </div>
-            )}
+            {/* Always mounted now — visibility is animated via classes instead of
+                being conditionally rendered, so both opening AND closing animate. */}
+            <div
+              className={`absolute right-0 mt-2 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#1a1a1a] rounded-lg shadow-lg z-20 text-center transition-all duration-200 ease-out origin-top-right
+                ${dropdownOpen
+                  ? "opacity-100 scale-100 pointer-events-auto"
+                  : "opacity-0 scale-0 pointer-events-none"
+                }`}
+            >
+              <Button
+                text={
+                  <>
+                    <Icon icon="gridicons:sign-out" className="shrink-0 w-5 h-5 text-[#1B651B] dark:text-[#56e556] mr-2" />
+                    Sign Out
+                  </>
+                }
+                onClick={userSignOut}
+                bgColor=""
+                typography="text-sm font-bold text-[#1B651B] dark:text-[#56e556] flex items-center justify-center whitespace-nowrap"
+                dimensions="w-full rounded-md"
+                padding="px-5 py-2"
+                animation="transition duration-100 hover:bg-gray-100 dark:hover:bg-[#555555]"
+              />
+            </div>
           </div>
         </div>
       </nav>

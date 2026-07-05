@@ -142,7 +142,7 @@ function TaskList({ studentName = "Juan" }) {
       {/* TASK LIST / TABLE — scrolls horizontally below md instead of restacking */}
       <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl overflow-hidden transition-colors duration-300">
         <div className="overflow-x-auto">
-          <div className="min-w-170" role="table">
+          <div className="min-w-200" role="table">
 
             {/* Table header */}
             <div
@@ -188,7 +188,7 @@ function TaskList({ studentName = "Juan" }) {
                     <div
                       key={t.id}
                       role="row"
-                      className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 dark:border-[#2a2a2a] p-2 items-center text-sm font-medium text-gray-800 dark:text-gray-200 transition-all duration-300 ${
+                      className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 dark:border-[#2a2a2a] p-3 items-center text-sm font-medium text-gray-800 dark:text-gray-200 transition-all duration-300 ${
                         t.completed ? "opacity-40 line-through" : "opacity-100"
                       }`}
                     >
@@ -200,12 +200,12 @@ function TaskList({ studentName = "Juan" }) {
                           className="accent-[#1B651B] cursor-pointer mr-2"
                         />
                       </span>
-                      <span className="pr-2 text-xs sm:text-[1rem]">{t.title}</span>
-                      <span className="pr-2 text-xs sm:text-[1rem]">{t.subject?.code}</span>
-                      <span className={`flex items-center gap-2 text-xs sm:text-[1rem] ${dueDateColor}`}>
+                      <span className="pr-2 text-sm sm:text-[1rem]">{t.title}</span>
+                      <span className="pr-2 text-sm sm:text-[1rem]">{t.subject?.code}</span>
+                      <span className={`flex items-center gap-2 text-sm sm:text-[1rem] ${dueDateColor}`}>
                         {formatDate(t.dueDate)}
                         {daysRemaining === 1 && (
-                          <Icon icon="mdi:alert-circle" width="16" className="text-red-500 shrink-0" />
+                          <Icon icon="mdi:alert-circle" className="text-red-500 shrink-0 w-4 h-4" />
                         )}
                       </span>
                     </div>
