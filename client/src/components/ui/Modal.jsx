@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 function getScrollbarWidth() {
   return window.innerWidth - document.documentElement.clientWidth;
@@ -45,13 +46,14 @@ function Modal({ isOpen, onClose, children }) {
 
   if (!isOpen) return null;
 
-  return (
-  <div className="fixed inset-0 z-1000 bg-black/70 flex justify-center items-center" style={{ pointerEvents: "all" }} >
-    <div ref={modalRef} className="bg-white dark:bg-[#1a1a1a] rounded-xl p-3" style={{ pointerEvents: "all" }}>
-      {children}
-    </div>
-  </div>
-);
+  return createPortal(
+    <div className="fixed inset-0 z-1000 bg-black/70 flex justify-center items-center" style={{ pointerEvents: "all" }} >
+      <div ref={modalRef} className="bg-white dark:bg-[#1a1a1a] rounded-xl p-3" style={{ pointerEvents: "all" }}>
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
 }
 
 export default Modal;

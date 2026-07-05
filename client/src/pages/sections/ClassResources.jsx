@@ -246,7 +246,7 @@ export default function ClassResources() {
                 <label className="text-xs font-bold mb-1 mt-3 text-gray-700 dark:text-gray-100">Uploaded by</label>
                 <div className="flex flex-row items-center mt-2 min-w-0">
                   <UserIcon typography="text-gray-600 dark:text-[#E0E0E0] shrink-0" dimensions="w-5" />
-                  <span className="ml-1 text-xs font-bold text-[#E0E0E0] dark:text-[#E0E0E0] truncate">{student?.user?.name}</span>
+                  <span className="ml-1 text-xs font-bold text-gray-600 dark:text-[#E0E0E0] truncate">{student?.user?.name}</span>
                 </div>
 
                 {error.general && (
