@@ -136,15 +136,15 @@ export default function ClassResources() {
         <p className="animate-on-scroll text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">Collaborate and exchange notes with your fellow blockmates.</p>
       </header>
 
-      <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl p-3 sm:p-4 flex flex-col transition-colors duration-300">
-        <div className="max-h-[60vh] sm:max-h-[65vh] md:h-150 overflow-y-auto flex flex-col">
+      <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl p-3 sm:p-5 flex flex-col transition-colors duration-300">
+        <div className="max-h-[70vh] sm:max-h-[75vh] md:h-150 overflow-y-auto flex flex-col">
           {loading ? (
-            <div className="flex justify-center items-center flex-1 py-16">
+            <div className="flex justify-center items-center h-96">
               <LoadingIcon dimensions="w-10 h-10" />
             </div>
           ) : (
             resources.length > 0 ? (
-              <div className="animate-on-scroll grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 items-stretch">
                 {resources.map((resource) => (
                   <ResourceCard
                     key={resource.id}
@@ -156,7 +156,7 @@ export default function ClassResources() {
                 ))}
               </div>
             ) : (
-              <div className="flex justify-center items-center flex-1 py-16 text-center px-4">
+              <div className="flex justify-center items-center h-96 text-center">
                 <p className="text-[#E0E0E0] dark:text-[#E0E0E0] text-sm sm:text-base">There's no resources uploaded yet.</p>
               </div>
             )

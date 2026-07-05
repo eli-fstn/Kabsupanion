@@ -213,12 +213,13 @@ function AdminMasterlist() {
       <Sidebar />
 
       <div className="flex-1 p-8">
-        <div className="mb-6">
+        <div className="mb-4">
           <p className="font-bold text-[1.7rem] font-[montserrat]">Masterlist</p>
           <p className="text-gray-400 text-sm">Manage and monitor the official masterlist.</p>
         </div>
 
-        <div className="mt-5 flex flex-row justify-between items-center">
+        {/*  FILTER BUTTONS */}
+        <div className="my-3 flex flex-row justify-between items-center">
           <div className="">
             {regStatus.map((status) => (
               <Button
@@ -227,21 +228,24 @@ function AdminMasterlist() {
                 onClick={() => handleStatusChange(status)}
                 bgColor={activeStatus === status ? "bg-[#1B651B]" : "bg-white"}
                 typography={activeStatus === status ? "text-sm font-bold text-white uppercase" : "text-sm font-bold text-gray-700 uppercase"}
-                dimensions="rounded-md"
+                dimensions="rounded-2xl"
                 padding="px-5 py-1"
-                shadow="shadow-md border border-gray-200"
+                shadow="border border-gray-300"
                 margin="mr-4"
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+                animation="active:scale-95 transition duration-200 hover:border-gray-500"
               />
             ))}
           </div>
           <div className="">
-            <p className="text-sm font-bold text-[#888888]">Total Students: <span className="text-[#003A02] font-bold text-[1.3rem] ml-1"><CountUp.default start={0} end={filteredStudents.length} duration={3}/></span></p>
+            <p className="text-sm font-bold text-[#888888]">Total Students: <span className="text-[#003A02] font-bold text-[1.3rem] ml-1"><CountUp.default start={0} end={filteredStudents.length} duration={1}/></span></p>
           </div>
       </div>
 
-        <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
+        {/* TABLE */}
+        <div className="bg-white w-full mt-4 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
+
+            {/* TABLE HEADER */}
             <thead>
               <tr className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
                 <th className="flex items-center">No.</th>
@@ -253,6 +257,7 @@ function AdminMasterlist() {
             </thead>
           </table>
 
+          {/* TABLE BODY */}
           <div className="h-95 overflow-y-auto flex flex-col">
             {loading ? (
               <div className="flex justify-center items-center flex-1">

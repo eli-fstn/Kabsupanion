@@ -117,24 +117,24 @@ function TaskList({ studentName = "Juan" }) {
         <Button
           text="ALL"
           onClick={() => setActiveSubject("ALL")}
-          bgColor={activeSubject === "ALL" ? "bg-[#1B651B]" : "bg-white dark:bg-[#1a1a1a]"}
-          typography={activeSubject === "ALL" ? "text-sm font-bold text-white whitespace-nowrap" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap"}
-          dimensions="rounded-md"
+          bgColor={activeSubject === "ALL" ? "bg-[#1B651B] duration-300 transition" : "bg-white dark:bg-[#1a1a1a] duration-300 transition"}
+          typography={activeSubject === "ALL" ? "text-sm font-bold text-white whitespace-nowrap duration-300 transition" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap duration-300 transition"}
+          dimensions="rounded-2xl"
           padding="px-5 py-1"
-          shadow="shadow-md border border-gray-200 dark:border-[#1a1a1a]"
-          animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+          shadow="border border-gray-300 dark:border-[#5a5a5a]"
+          animation="transition duration-200 hover:border-gray-500 dark:hover:border-[#8a8a8a]"
         />
         {subject.map((subject) => (
           <Button
             key={subject.id}
             text={subject.code}
             onClick={() => setActiveSubject(subject.code)}
-            bgColor={activeSubject === subject.code ? "bg-[#1B651B]" : "bg-white dark:bg-[#1a1a1a]"}
-            typography={activeSubject === subject.code ? "text-sm font-bold text-white whitespace-nowrap" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap"}
-            dimensions="rounded-md"
+            bgColor={activeSubject === subject.code ? "bg-[#1B651B] duration-300 transition" : "bg-white dark:bg-[#121212] duration-300 transition"}
+            typography={activeSubject === subject.code ? "text-sm font-bold text-white whitespace-nowrap duration-300 transition" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap duration-300 transition"}
+            dimensions="rounded-2xl"
             padding="px-5 py-1"
-            shadow="shadow-md border border-gray-200 dark:border-[#1a1a1a]"
-            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28] hover:text-white"
+            shadow={activeSubject === subject.code ? "border border-[#1B651B] dark:border-[#1B651B]" : "border border-gray-300 dark:border-[#5a5a5a]"}
+            animation={activeSubject === subject.code ? "" : "transition duration-200 hover:border-gray-500 dark:hover:border-[#8a8a8a]"}
           />
         ))}
       </div>
@@ -142,35 +142,36 @@ function TaskList({ studentName = "Juan" }) {
       {/* TASK LIST / TABLE — scrolls horizontally below md instead of restacking */}
       <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl overflow-hidden transition-colors duration-300">
         <div className="overflow-x-auto">
-          <div className="min-w-160" role="table">
+          <div className="min-w-170" role="table">
 
-            {/* Column header row */}
+            {/* Table header */}
             <div
               className="grid grid-cols-[.1fr_3fr_1fr_1fr] bg-[#F5F5F5] dark:bg-[#1f1f1f] p-3 items-center text-[#888888] dark:text-[#6a6a6a] text-sm font-bold border-b border-gray-200 dark:border-[#1a1a1a]"
               role="row"
             >
               <span role="columnheader"></span>
-              <span role="columnheader" className="flex items-center">
-                <Icon className="mr-2 shrink-0" icon="ix:tasks-all" width="25" height="25" />
+              <span role="columnheader" className="flex items-center text-sm sm:text-[1rem]">
+                <Icon className="mr-2 shrink-0 w-5 h-5" icon="ix:tasks-all"/>
                 Task
               </span>
-              <span role="columnheader" className="flex items-center">
-                <Icon className="mr-2 shrink-0" icon="material-symbols:book-outline" width="25" height="25" />
+              <span role="columnheader" className="flex items-center text-sm sm:text-[1rem]">
+                <Icon className="mr-2 shrink-0 w-5 h-5" icon="material-symbols:book-outline"/>
                 Subject
               </span>
-              <span role="columnheader" className="flex items-center">
-                <Icon className="mr-2 shrink-0" icon="mingcute:time-line" width="25" height="25" />
+              <span role="columnheader" className="flex items-center text-sm sm:text-[1rem]">
+                <Icon className="mr-2 shrink-0 w-5 h-5" icon="mingcute:time-line"/>
                 Due Date
               </span>
             </div>
 
-            <div className="max-h-96 sm:max-h-112 md:h-125 overflow-y-auto" role="rowgroup">
+            {/* Table body */}
+            <div className="h-96 overflow-y-auto" role="rowgroup">
               {loading ? (
                 <div className="flex justify-center items-center h-96">
                   <LoadingIcon dimensions="w-10 h-10" />
                 </div>
               ) : filteredTasks.length === 0 ? (
-                <div className="flex justify-center items-center h-20 flex-1 text-gray-400 dark:text-gray-500 text-center px-4 text-sm">
+                <div className="flex justify-center items-center my-5 h-96 flex-1 text-gray-400 dark:text-gray-500 text-center px-4 text-sm">
                   {activeSubject === "ALL"
                     ? "No tasks for today. Great job!"
                     : "No tasks for this subject. Keep up the good work!"}
@@ -187,11 +188,11 @@ function TaskList({ studentName = "Juan" }) {
                     <div
                       key={t.id}
                       role="row"
-                      className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 dark:border-[#2a2a2a] p-3 items-center text-sm font-medium text-gray-800 dark:text-gray-200 transition-all duration-300 ${
+                      className={`grid grid-cols-[.1fr_3fr_1fr_1fr] border-b border-gray-100 dark:border-[#2a2a2a] p-2 items-center text-sm font-medium text-gray-800 dark:text-gray-200 transition-all duration-300 ${
                         t.completed ? "opacity-40 line-through" : "opacity-100"
                       }`}
                     >
-                      <span>
+                      <span className="flex items-center">
                         <input
                           type="checkbox"
                           checked={t.completed}
@@ -199,9 +200,9 @@ function TaskList({ studentName = "Juan" }) {
                           className="accent-[#1B651B] cursor-pointer mr-2"
                         />
                       </span>
-                      <span className="truncate pr-2">{t.title}</span>
-                      <span className="truncate pr-2">{t.subject?.code}</span>
-                      <span className={`flex items-center gap-2 ${dueDateColor}`}>
+                      <span className="pr-2 text-xs sm:text-[1rem]">{t.title}</span>
+                      <span className="pr-2 text-xs sm:text-[1rem]">{t.subject?.code}</span>
+                      <span className={`flex items-center gap-2 text-xs sm:text-[1rem] ${dueDateColor}`}>
                         {formatDate(t.dueDate)}
                         {daysRemaining === 1 && (
                           <Icon icon="mdi:alert-circle" width="16" className="text-red-500 shrink-0" />
@@ -215,6 +216,9 @@ function TaskList({ studentName = "Juan" }) {
           </div>
         </div>
       </div>
+      <p className="mt-2 text-xs text-gray-400 dark:text-[#E0E0E0] sm:hidden">
+        Swipe sideways to see the full task.
+      </p>
     </section>
   );
 }
