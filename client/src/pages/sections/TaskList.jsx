@@ -1,10 +1,10 @@
 import { Icon } from "@iconify/react";
-import Button from "../../components/ui/Button";
+import Button from "../../components/ui/Button.jsx";
 import { useState, useEffect } from "react";
-import { useUser } from "../../context/userContext";
+import { useUser } from "../../context/userContext.jsx";
 import { getTasks, finishedTask, unfinishTask } from "../../services/taskList.ts";
 import { getSubjects } from "../../services/subjects.ts";
-import { formatDate } from "../../../utils/FormattedDate";
+import { formatDate } from "../../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function TaskList({ studentName = "Juan" }) {
@@ -166,7 +166,7 @@ function TaskList({ studentName = "Juan" }) {
 
             <div className="max-h-96 sm:max-h-112 md:h-125 overflow-y-auto" role="rowgroup">
               {loading ? (
-                <div className="flex justify-center items-center h-40">
+                <div className="flex justify-center items-center h-96">
                   <LoadingIcon dimensions="w-10 h-10" />
                 </div>
               ) : filteredTasks.length === 0 ? (
