@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button.jsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUser } from "../../context/userContext.jsx";
 import { getTasks, finishedTask, unfinishTask } from "../../services/taskList.ts";
 import { getSubjects } from "../../services/subjects.ts";
@@ -13,6 +13,28 @@ function TaskList({ studentName = "Juan" }) {
   const [task, setTask] = useState([]);
   const { student } = useUser();
   const [loading, setLoading] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const elements =
+      sectionRef.current.querySelectorAll(".animate-on-scroll");
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [task]);
 
   const fetchTask = async () => {
     setLoading(true);
@@ -73,8 +95,8 @@ function TaskList({ studentName = "Juan" }) {
       : "";
 
   return (
-    <section className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="task-list">
-      <header>
+    <section ref={sectionRef} className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="task-list">
+      <header className="animate-on-scroll">
         <h1 className="text-3xl md:text-4xl lg:text-[2.8rem] font-bold font-[amaranth] text-[#003A02] dark:text-[#56e556] flex flex-wrap items-baseline gap-x-2">
           Hello there,
           <span className="font-[parisienne] font-bold text-4xl md:text-5xl lg:text-[3.3rem]">
@@ -91,7 +113,7 @@ function TaskList({ studentName = "Juan" }) {
       </header>
 
       {/* LEGENDS */}
-      <div className="mt-3">
+      <div className="animate-on-scroll mt-3">
         <p className="text-sm font-medium text-gray-700 dark:text-[#E0E0E0]">Remaining days before the deadline:</p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-2">
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
@@ -113,16 +135,16 @@ function TaskList({ studentName = "Juan" }) {
       </div>
 
       {/* FILTER BUTTONS */}
-      <div className="mt-5 flex flex-wrap gap-3 overflow-x-auto pb-1 -mx-1 px-1 sm:mx-0 sm:px-0">
+      <div className="animate-on-scroll mt-5 flex flex-wrap gap-3 overflow-x-auto pb-1 -mx-1 px-1 sm:mx-0 sm:px-0">
         <Button
           text="ALL"
           onClick={() => setActiveSubject("ALL")}
-          bgColor={activeSubject === "ALL" ? "bg-[#1B651B] duration-300 transition" : "bg-white dark:bg-[#1a1a1a] duration-300 transition"}
+          bgColor={activeSubject === "ALL" ? "bg-[#1B651B] duration-300 transition" : "bg-white dark:bg-[#121212] duration-300 transition"}
           typography={activeSubject === "ALL" ? "text-sm font-bold text-white whitespace-nowrap duration-300 transition" : "text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap duration-300 transition"}
           dimensions="rounded-2xl"
           padding="px-5 py-1"
-          shadow="border border-gray-300 dark:border-[#5a5a5a]"
-          animation="transition duration-200 hover:border-gray-500 dark:hover:border-[#8a8a8a]"
+          shadow={activeSubject === "ALL" ? "border border-[#1B651B] dark:border-[#1B651B]" : "border border-gray-300 dark:border-[#5a5a5a]"}
+          animation={activeSubject === "ALL" ? "" : "transition duration-200 hover:border-gray-500 dark:hover:border-[#8a8a8a]"}
         />
         {subject.map((subject) => (
           <Button
@@ -140,7 +162,7 @@ function TaskList({ studentName = "Juan" }) {
       </div>
 
       {/* TASK LIST / TABLE — scrolls horizontally below md instead of restacking */}
-      <div className="bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl overflow-hidden transition-colors duration-300">
+      <div className="animate-on-scroll bg-white dark:bg-[#1a1a1a] w-full mt-5 border border-gray-200 dark:border-[#1a1a1a] rounded-xl overflow-hidden transition-colors duration-300">
         <div className="overflow-x-auto">
           <div className="min-w-200" role="table">
 
