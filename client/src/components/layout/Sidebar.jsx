@@ -36,7 +36,7 @@ function Sidebar() {
       {/* TOP */}
       <div>
         <div className="flex items-center justify-center">
-          <img src={logo} alt="Logo" className="w-8" />
+          <img src={logo} alt="Logo" className="w-7 rounded-md" />
           <p className="text-[1rem] font-bold ml-1 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion Admin</p>
         </div>
 

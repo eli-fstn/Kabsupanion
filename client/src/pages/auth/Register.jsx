@@ -106,7 +106,7 @@ function Register(){
 						animation="active:scale-95 duration-100 transition-all"
 					/>
 					<div className="flex items-center justify-center mb-7">
-						<img className="w-12" src={logo} alt="Logo"/>
+						<img className="w-10 rounded-md" src={logo} alt="Kabsupanion Logo"/>
 						<p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Registration Form</p>
 					</div>
           

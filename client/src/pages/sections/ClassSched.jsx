@@ -130,7 +130,7 @@ function ClassSched() {
     subject && to24hr(subject.startTime) === slot;
 
   return (
-    <section ref={sectionRef} className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-sched">
+    <section ref={sectionRef} className="min-h-screen p-4 sm:p-5 lg:px-20" id="class-sched">
       <header className="mt-3 mb-6">
         <p className="animate-on-scroll font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">
           Class Schedule
@@ -148,7 +148,7 @@ function ClassSched() {
         <>
           {/* Horizontally scrollable schedule — table keeps its natural width and scrolls under this wrapper on narrow screens */}
           <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-[#1a1a1a] [-webkit-overflow-scrolling:touch]">
-            <div ref={scheduleRef} className="min-w-300 bg-white dark:bg-[#1a1a1a]">
+            <div ref={scheduleRef} className="min-w-290 bg-white dark:bg-[#1a1a1a]">
 
               {/* Text that appears in the downloaded schedule but doesn't appear in the website */}
               <div className="flex flex-row items-center justify-between bg-white dark:bg-[#1a1a1a]">
