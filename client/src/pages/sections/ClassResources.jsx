@@ -130,7 +130,7 @@ export default function ClassResources() {
   }
 
   return (
-    <section ref={sectionRef} className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="class-resources">
+    <section ref={sectionRef} className="min-h-screen p-4 sm:p-5 lg:px-20" id="class-resources">
       <header className="mt-3">
         <p className="animate-on-scroll font-bold text-[1.5rem] md:text-[1.7rem] font-[montserrat] leading-7 text-gray-900 dark:text-gray-100">Class Resources</p>
         <p className="animate-on-scroll text-sm sm:text-base text-gray-700 dark:text-[#E0E0E0]">Collaborate and exchange notes with your fellow blockmates.</p>

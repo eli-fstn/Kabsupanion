@@ -92,7 +92,7 @@ function LogIn() {
       <div className="absolute inset-0 flex items-center justify-center px-4">
         <form onSubmit={handleLogIn} className="bg-[#FAF9F6] flex flex-col p-5 rounded-xl shadow-md w-80 z-10">
           <div className="flex items-center justify-center mb-7">
-            <img className="w-12" src={logo} alt="Logo" />
+            <img className="w-10 rounded-md" src={logo} alt="Kabsupanion Logo" />
             <p className="font-bold text-2xl pl-2 text-[#1B651B] font-['Roboto_Condensed']">Kabsupanion</p>
           </div>
 

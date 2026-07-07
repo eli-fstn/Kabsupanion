@@ -95,7 +95,7 @@ function TaskList({ studentName = "Juan" }) {
       : "";
 
   return (
-    <section ref={sectionRef} className="min-h-screen p-4 sm:p-6 md:p-8 lg:p-10" id="task-list">
+    <section ref={sectionRef} className="min-h-screen p-4 sm:p-5 lg:px-20" id="task-list">
       <header className="animate-on-scroll">
         <h1 className="text-3xl md:text-4xl lg:text-[2.8rem] font-bold font-[amaranth] text-[#003A02] dark:text-[#56e556] flex flex-wrap items-baseline gap-x-2">
           Hello there,
@@ -117,19 +117,19 @@ function TaskList({ studentName = "Juan" }) {
         <p className="text-sm font-medium text-gray-700 dark:text-[#E0E0E0]">Remaining days before the deadline:</p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-2">
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-amber-500 rounded-full inline-block mr-1"></span> - 3 days
+            <span className="w-3 h-3 bg-amber-500 dark:bg-amber-400 rounded-full inline-block mr-1"></span> - 3 days
           </p>
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-orange-500 rounded-full inline-block mr-1"></span> - 2 days
+            <span className="w-3 h-3 bg-orange-500 dark:bg-orange-400 rounded-full inline-block mr-1"></span> - 2 days
           </p>
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-red-500 rounded-full inline-block mr-1"></span> - Due tomorrow
+            <span className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full inline-block mr-1"></span> - Due tomorrow
           </p>
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-red-700 rounded-full inline-block mr-1"></span> - Due today
+            <span className="w-3 h-3 bg-red-700 dark:bg-red-500 rounded-full inline-block mr-1"></span> - Due today
           </p>
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-purple-900 rounded-full inline-block mr-1"></span> - Overdue
+            <span className="w-3 h-3 bg-purple-900 dark:bg-purple-400 rounded-full inline-block mr-1"></span> - Overdue
           </p>
         </div>
       </div>
@@ -222,12 +222,12 @@ function TaskList({ studentName = "Juan" }) {
                           className="accent-[#1B651B] cursor-pointer mr-2"
                         />
                       </span>
-                      <span className="pr-2 text-sm sm:text-[1rem]">{t.title}</span>
-                      <span className="pr-2 text-sm sm:text-[1rem]">{t.subject?.code}</span>
-                      <span className={`flex items-center gap-2 text-sm sm:text-[1rem] ${dueDateColor}`}>
+                      <span className="pr-2 text-sm lg:text-[1rem]">{t.title}</span>
+                      <span className="pr-2 text-sm lg:text-[1rem]">{t.subject?.code}</span>
+                      <span className={`flex items-center gap-2 text-sm lg:text-[1rem] ${dueDateColor}`}>
                         {formatDate(t.dueDate)}
                         {daysRemaining === 1 && (
-                          <Icon icon="mdi:alert-circle" className="text-red-500 shrink-0 w-4 h-4" />
+                          <Icon icon="mdi:alert-circle" className="text-red-500 dark:text-red-400 shrink-0 w-4 h-4" />
                         )}
                       </span>
                     </div>

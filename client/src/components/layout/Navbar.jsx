@@ -42,9 +42,9 @@ function Navbar() {
         {/* LEFT SIDE: Logo + Name */}
         <div className="flex items-center min-w-0 shrink">
           <img
-            className="w-8 sm:w-9 md:w-10 shrink-0"
+            className="w-7 sm:w-8 md:w-9 shrink-0 rounded-md"
             src={logo}
-            alt="Logo"
+            alt="Kabsupanion Logo"
           />
           <p className="font-bold text-xl md:text-[1.5rem] pl-2 text-[#1B651B] dark:text-[#56e556] font-['Roboto_Condensed'] truncate">
             Kabsupanion
