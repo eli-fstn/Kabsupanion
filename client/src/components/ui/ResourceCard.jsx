@@ -122,7 +122,7 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 duration-300 ease-out hover:-translate-y-1 hover:border-[#7a7a7a] transition flex flex-col h-full"
+        className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 duration-300 ease-out hover:-translate-y-1 hover:border-gray-300 dark:hover:border-[#7a7a7a] transition flex flex-col h-full"
       >
         <div className="h-36 md:h-40 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#1a1a1a] flex items-center justify-center overflow-hidden shrink-0">
           {previewUrl ? (
