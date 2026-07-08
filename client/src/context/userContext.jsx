@@ -10,6 +10,7 @@ export function UserProvider({ children }) {
 
   const fetchMe = async () => {
     const token = localStorage.getItem("token");
+
     if (!token) {
       setLoading(false);
       return;
@@ -19,7 +20,9 @@ export function UserProvider({ children }) {
       setStudent(data);
     } catch (error) {
       console.log(error);
-      localStorage.removeItem("token");
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        localStorage.removeItem("token");
+      }
     } finally {
       setLoading(false);
     }

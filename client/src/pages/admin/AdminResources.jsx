@@ -134,9 +134,9 @@ function AdminResources() {
                         <td>{t.uploadedBy.name}</td>
                         <td>
                           {status === "Pending" ?
-                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-orange-100 text-orange-700 border-orange-300">{status}</span>
+                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200">{status}</span>
                           :
-                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-green-100 text-green-700 border-green-300">{status}</span>
+                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-green-50 text-green-700 border-green-200">{status}</span>
                           }
                         </td>
                         <td className="flex gap-2">

@@ -230,9 +230,9 @@ function AdminMasterlist() {
                 typography={activeStatus === status ? "text-sm font-bold text-white uppercase" : "text-sm font-bold text-gray-700 uppercase"}
                 dimensions="rounded-2xl"
                 padding="px-5 py-1"
-                shadow="border border-gray-300"
+                shadow={activeStatus === status ? "border border-[#1B651B] dark:border-[#1B651B]" : "border border-gray-300 dark:border-[#5a5a5a]"}
                 margin="mr-4"
-                animation="active:scale-95 transition duration-200 hover:border-gray-500"
+                animation={activeStatus === status ? "" : "transition duration-200 hover:border-gray-500 dark:hover:border-[#8a8a8a]"}
               />
             ))}
           </div>
@@ -276,8 +276,8 @@ function AdminMasterlist() {
                           <span
                             className={`px-3 py-0.5 text-xs font-semibold rounded-full border ${
                               s.status === "regular"
-                                ? "bg-green-100 text-green-700 border-green-300 uppercase"
-                                : "bg-orange-100 text-orange-700 border-orange-300 uppercase"
+                                ? "bg-green-50 text-green-700 border-green-200 uppercase"
+                                : "bg-amber-50 text-amber-700 border-amber-200 uppercase"
                             }`}
                           >
                             {s.status}
