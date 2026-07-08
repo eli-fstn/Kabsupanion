@@ -87,17 +87,24 @@ function Footer() {
 
       {/* USER GUIDE MODAL */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="p-4 sm:p-6 w-80 sm:w-full max-w-lg sm:max-w-xl h-[60vh] sm:h-[85vh] md:h-150 overflow-y-auto space-y-8 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100">
+        <Button
+            onClick={() => setModalOpen(false)}
+            bgColor="bg-transparent"
+            typography="text-gray-400 dark:text-[#E0E0E0] hover:text-gray-600 dark:hover:text-white"
+            padding="p-1"
+            dimensions="rounded-md shrink-0"
+            animation="active:scale-95 transition-all duration-100"
+            text={<Icon icon="mdi:close" className="text-2xl" />}
+          />
+        <div className="w-full border-t border-t-gray-200 dark:border-t-[#2a2a2a] my-1"></div>
+        
+        <div className="p-4 sm:p-6 w-80 sm:w-full max-w-lg sm:max-w-xl h-[60vh] sm:h-[85vh] md:h-150 overflow-y-auto space-y-5 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100">
           <p className="text-xl sm:text-[1.7rem] font-bold font-[montserrat] text-gray-900 dark:text-white">Getting Started</p>
 
           <section>
-            <h2 className="text-lg sm:text-xl font-semibold mt-3 sm:mt-7 font-[montserrat] text-gray-900 dark:text-gray-100">
-              Install Kabsupanion
-            </h2>
+            <h2 className="text-lg sm:text-xl font-semibold sm:mt-7 font-[montserrat] text-gray-900 dark:text-gray-100">Install Kabsupanion</h2>
 
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">
-              Installing Kabsupanion provides a faster, app-like experience and lets you
-              access the platform directly from your device's home screen.
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Installing Kabsupanion provides a faster, app-like experience and lets you access the platform directly from your device's home screen.
             </p>
 
             <h4 className="font-medium mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">Android &amp; Desktop</h4>
@@ -160,7 +167,7 @@ function Footer() {
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Class Schedule</strong> provides a clear view of your weekly classes, making it easier to plan your day and stay on time.
             </p>
 
-            <h4 className="font-medium mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">Tips</h4>
+            <h4 className="font-medium mt-3 sm:mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">Tips</h4>
             <ul className="mt-2 text-xs md:text-sm list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
               <li>Review your schedule before classes.</li>
               <li>Check for any schedule updates.</li>
