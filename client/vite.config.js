@@ -5,7 +5,6 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const apiOrigin = new URL(env.VITE_API_URL).origin;
 
   return {
     plugins: [
@@ -18,7 +17,7 @@ export default defineConfig(({ mode }) => {
           globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
           runtimeCaching: [
             {
-              urlPattern: ({ url }) => url.origin === apiOrigin,
+              urlPattern: ({ url }) =>  new URL(env.VITE_API_URL).origin,
               handler: "NetworkFirst",
               options: {
                 cacheName: "api-cache",
