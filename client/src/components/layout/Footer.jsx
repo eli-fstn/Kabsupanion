@@ -107,11 +107,18 @@ function Footer() {
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Installing Kabsupanion provides a faster, app-like experience and lets you access the platform directly from your device's home screen.
             </p>
 
+            <div className="mt-3 sm:mt-5 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40 p-4">
+              <strong className="flex items-center text-xs mb-2 md:text-sm text-red-800 dark:text-red-300"><Icon icon="zondicons:exclamation-outline" className="mr-2" />Install Prompt Behavior</strong>
+
+              <p className="text-xs md:text-sm text-red-800 dark:text-red-300"><strong>Note:</strong> The <strong>Install Kabsupanion</strong> button is only displayed when your browser determines that Kabsupanion is eligible for installation.
+              </p>
+            </div>
+
             <h4 className="font-medium mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">Android &amp; Desktop</h4>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">On Chrome, Edge, or similar browsers, <strong>Install</strong> button in the footer to add Kabsupanion to your device.
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">On supported browsers, an Install button may appear in the footer, allowing you to install Kabsupanion. Browser support and availability may vary.
             </p>
 
-            <h4 className="font-medium mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">iPhone &amp; iPad (Safari)</h4>
+            <h4 className="font-medium mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">iPhone &amp; iPad (iOS/iPadOS)</h4>
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">iOS does not support the Install button for PWAs. Instead, install Kabsupanion manually using Safari by following these steps:
             </p>
 
@@ -123,11 +130,6 @@ function Footer() {
               <li>Tap <strong>Add</strong>.</li>
               <li>Launch Kabsupanion directly from your Home Screen.</li>
             </ol>
-
-            <div className="mt-3 sm:mt-5 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-4">
-              <p className="text-xs md:text-sm text-amber-800 dark:text-amber-300"><strong>Note:</strong> The Install button is  available on iPhone and iPad due to iOS limitations. To install Kabsupanion, you must use Safari's <strong>Add to Home Screen</strong> option.
-              </p>
-            </div>
           </section>
 
           <section>
@@ -144,13 +146,12 @@ function Footer() {
 
           <section>
             <h2 className="text-lg sm:text-xl mt-5 sm:mt-10 font-semibold font-[montserrat] text-gray-900 dark:text-gray-100">Task List</h2>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Task List</strong> displays academic tasks and deadlines assigned by your section administrator. Use it to stay informed about upcoming requirements and keep track of your progress throughout thesemester.
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Task List</strong> displays academic tasks and deadlines assigned by your section administrator. Use it to stay informed about upcoming requirements and keep track of your progress throughout the semester.
             </p>
 
             <h4 className="font-medium mt-3 sm:mt-5  font-[montserrat] text-gray-900 dark:text-gray-100">What You Can Do</h4>
             <ul className="mt-2 text-xs md:text-sm list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
               <li>View all assigned academic tasks and deadlines.</li>
-              <li>Monitor upcoming requirements for your section.</li>
               <li>Mark a task as completed by checking its checkbox.</li>
               <li>Use completed tasks as a personal reminder of your progress.</li>
             </ul>
@@ -212,7 +213,7 @@ function Footer() {
           <section>
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Need Help?</h2>
 
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">If you encounter technical issues, notice incorrect information, or have suggestions for improving Kabsupanion, use the <strong>Report a Problem</strong> button located in the footer to let us know.
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">If you encounter technical issues, notice incorrect information, or have suggestions for improving Kabsupanion, use the <strong>Report a Problem</strong> button or Feedback located in the footer to let us know.
             </p>
           </section>
 
