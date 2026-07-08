@@ -77,6 +77,7 @@ function TaskList({ studentName = "Juan" }) {
     fetchSubjects();
   }, []);
 
+
   const filteredTasks = activeSubject === "ALL"
   ? [...task].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
   : task.filter((t) => t.subject.code === activeSubject).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
