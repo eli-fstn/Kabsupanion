@@ -92,45 +92,45 @@ function AdminDashboard() {
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
       <div className="flex-1 p-8">
-        <div className="mb-7 leading-10">
-          <p className="font-bold text-[2rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
-          <p className="text-gray-400 text-sm">Here's what's happening in your section.</p>
+        <div className="mb-7 leading-5">
+          <p className="font-bold text-[1.7rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
+          <p className="text-gray-400 text-sm mt-1">Here's what's happening in your section.</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-10">
+        <div className="grid grid-cols-3 gap-5">
           <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700 flex items-center gap-4">
             <div className="bg-[#eaf3de] rounded-lg p-3">
-              <Icon icon="akar-icons:people-group" width="26" className="text-[#1B651B]" />
+              <Icon icon="akar-icons:people-group" className="text-[#1B651B] w-5 h-5" />
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Total Students</label>
-              <p className="text-[2rem] font-bold text-[#1B651B] leading-8"><CountUp.default start={0} end={masterlist.length} duration={2}/></p>
+              <p className="text-[1.7rem] font-bold text-[#1B651B] leading-7"><CountUp.default start={0} end={masterlist.length} duration={2}/></p>
             </div>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700  flex items-center gap-4">
             <div className="bg-[#e6f1fb] rounded-lg p-3">
-              <Icon icon="ix:tasks-all" width="26" className="text-[#185FA5]" />
+              <Icon icon="ix:tasks-all" className="text-[#185FA5] w-5 h-5" />
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Tasks</label>
-              <p className="text-[2rem] font-bold text-[#185FA5] leading-8"><CountUp.default start={0} end={task.length} duration={2}/></p>
+              <p className="text-[1.7rem] font-bold text-[#185FA5] leading-7"><CountUp.default start={0} end={task.length} duration={2}/></p>
             </div>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700  flex items-center gap-4">
             <div className="bg-[#faeeda] rounded-lg p-3">
-              <Icon icon="grommet-icons:resources" width="26" className="text-[#BA7517]" />
+              <Icon icon="grommet-icons:resources" className="text-[#BA7517] w-5 h-5" />
             </div>
             <div>
               <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Resources</label>
-              <p className="text-[2rem] font-bold text-[#BA7517] leading-8"><CountUp.default start={0} end={resources.length} duration={2}/></p>
+              <p className="text-[1.7rem] font-bold text-[#BA7517] leading-7"><CountUp.default start={0} end={resources.length} duration={2}/></p>
             </div>
           </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-5 mt-5 flex flex-col">
-          <p className="font-bold text-[1rem] mb-4">Recent Uploaded Resources</p>
+          <p className="font-bold text-sm mb-4">Recent Uploaded Resources</p>
 
           {/* Recent Resources */}
           <div className="h-71.25 flex flex-col justify-start">
@@ -172,7 +172,7 @@ function AdminDashboard() {
 
           {/* Bar Chart — Resources per Subject */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <p className="font-bold text-[1rem] mb-1">Resources per Subject</p>
+            <p className="font-bold text-sm mb-1">Resources per Subject</p>
             <p className="text-gray-400 text-xs mb-4">Number of uploaded files per subject</p>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={subjectData} barSize={18}>
@@ -190,7 +190,7 @@ function AdminDashboard() {
 
           {/* Pie Chart — Tasks per Subject */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <p className="font-bold text-[1rem] mb-1">Tasks per Subject</p>
+            <p className="font-bold text-sm mb-1">Tasks per Subject</p>
             <p className="text-gray-400 text-xs mb-4">Distribution of tasks across subjects</p>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>

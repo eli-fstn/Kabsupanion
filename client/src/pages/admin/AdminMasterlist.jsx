@@ -214,7 +214,7 @@ function AdminMasterlist() {
 
       <div className="flex-1 p-8">
         <div className="mb-4">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">Masterlist</p>
+          <p className="font-bold text-[1.5rem] font-[montserrat]">Masterlist</p>
           <p className="text-gray-400 text-sm">Manage and monitor the official masterlist.</p>
         </div>
 
@@ -227,11 +227,11 @@ function AdminMasterlist() {
                 text={status}
                 onClick={() => handleStatusChange(status)}
                 bgColor={activeStatus === status ? "bg-[#1B651B]" : "bg-white"}
-                typography={activeStatus === status ? "text-sm font-bold text-white uppercase" : "text-sm font-bold text-gray-700 uppercase"}
+                typography={activeStatus === status ? "text-xs font-bold text-white uppercase" : "text-xs font-bold text-gray-700 uppercase"}
                 dimensions="rounded-2xl"
                 padding="px-5 py-1"
                 shadow={activeStatus === status ? "border border-[#1B651B] dark:border-[#1B651B]" : "border border-gray-300 dark:border-[#5a5a5a]"}
-                margin="mr-4"
+                margin="mr-2"
                 animation={activeStatus === status ? "" : "transition duration-200 hover:border-gray-500 dark:hover:border-[#8a8a8a]"}
               />
             ))}
@@ -330,7 +330,7 @@ function AdminMasterlist() {
 
         {/* Add Modal */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20"/>
@@ -412,7 +412,7 @@ function AdminMasterlist() {
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20"/>
@@ -487,7 +487,7 @@ function AdminMasterlist() {
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-3">
+          <div className="flex flex-col items-center w-72 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20"/>

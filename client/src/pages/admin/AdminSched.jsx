@@ -38,7 +38,7 @@ function AdminSched() {
   const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   const time_slots = [
     "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
-  "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
+    "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
   ];
 
   const time_labels = [
@@ -120,11 +120,52 @@ function AdminSched() {
     let hasError = false;
     const newError = { subject: "", day: "", startTime: "", endTime: "", room: "", general: "" };
 
-    if (!addSubjectId) { newError.subject = "Subject is required."; hasError = true; }
-    if (!addDay) { newError.day = "Day is required."; hasError = true; }
-    if (!addStartTime) { newError.startTime = "Start time is required."; hasError = true; }
-    if (!addEndTime) { newError.endTime = "End time is required."; hasError = true; }
-    if (!addRoom) { newError.room = "Room is required."; hasError = true; }
+    if (!addSubjectId) {
+      newError.subject = "Subject is required."; hasError = true; 
+    }
+    if (!addDay) {
+      newError.day = "Day is required."; hasError = true;
+    }
+    if (!addStartTime) {
+      newError.startTime = "Start time is required."; hasError = true;
+    }
+    if (!addEndTime) {
+      newError.endTime = "End time is required."; hasError = true;
+    }
+    if (!addRoom) {
+      newError.room = "Room is required."; hasError = true;
+    }
+    if (!time_slots.includes(addEndTime)) {
+      newError.endTime = "Time doesn't exist in the time slot."
+      hasError = true;
+    }
+    if (addDay && addStartTime && addEndTime) {
+      const hasConflict = scheduleData.some((sched) => {
+        if (sched.day !== addDay) return false;
+
+        const existingStart = to24hr(sched.startTime);
+        const existingEnd = to24hr(sched.endTime);
+
+        return addStartTime < existingEnd && addEndTime > existingStart;
+      });
+      if (!time_slots.includes(addStartTime)) {
+        newError.startTime = "Time doesn't exist in the time slot."
+        hasError = true;
+      }
+      else if (hasConflict) {
+        newError.startTime = "This time slot overlaps with an existing schedule.";
+        hasError = true;
+      }
+
+      if (!time_slots.includes(addEndTime)) {
+        newError.endTime = "Time doesn't exist in the time slot."
+        hasError = true;
+      }
+      else if (hasConflict) {
+        newError.endTime = "This time slot overlaps with an existing schedule.";
+        hasError = true;
+      }
+    }
 
     if (hasError) { setError(newError); return; }
 
@@ -163,7 +204,6 @@ function AdminSched() {
 
     if (hasError) { setEditError(newError); return; }
 
-    console.log(editDay);
     setLoadingForm(true);
     try {
       await editSchedule(selectedSchedule.subjectId, selectedSchedule.scheduleId, editDay, to12hr(editStartTime), to12hr(editEndTime), editRoom);
@@ -194,17 +234,13 @@ function AdminSched() {
     }
   };
 
-  console.log(scheduleData);
-  console.log(to24hr("10:00 AM"));
-  console.log(to24hr("12:00 PM"));
-
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
         <div className="mb-6">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">Class Schedule</p>
+          <p className="font-bold text-[1.5rem] font-[montserrat]">Class Schedule</p>
           <p className="text-gray-400 text-sm">Keep the section's class schedule up to date.</p>
         </div>
 
@@ -287,7 +323,7 @@ function AdminSched() {
 
         {/* Add Modal */}
         <Modal isOpen={addModalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20" />
@@ -342,7 +378,7 @@ function AdminSched() {
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20" />
@@ -389,7 +425,7 @@ function AdminSched() {
 
         {/* Delete Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-3">
+          <div className="flex flex-col items-center w-72 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20" />

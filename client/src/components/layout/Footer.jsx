@@ -87,18 +87,20 @@ function Footer() {
 
       {/* USER GUIDE MODAL */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-        <Button
+        <div className="flex justify-end">
+          <Button
             onClick={() => setModalOpen(false)}
             bgColor="bg-transparent"
-            typography="text-gray-400 dark:text-[#E0E0E0] hover:text-gray-600 dark:hover:text-white"
-            padding="p-1"
-            dimensions="rounded-md shrink-0"
+            typography="text-gray-400 hover:text-gray-600"
+            padding="p-2 px-5"
+            dimensions="rounded-md"
             animation="active:scale-95 transition-all duration-100"
             text={<Icon icon="mdi:close" className="text-2xl" />}
           />
-        <div className="w-full border-t border-t-gray-200 dark:border-t-[#2a2a2a] my-1"></div>
+        </div>
+        <div className="w-full border-t border-t-gray-200 dark:border-t-[#2a2a2a]"></div>
         
-        <div className="p-4 sm:p-6 w-80 sm:w-full max-w-lg sm:max-w-xl h-[60vh] sm:h-[85vh] md:h-150 overflow-y-auto space-y-5 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100">
+        <div className="p-5 sm:p-8 w-80 sm:w-full max-w-lg sm:max-w-xl h-[60vh] sm:h-[85vh] md:h-150 overflow-y-auto space-y-5 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 rounded-xl">
           <p className="text-xl sm:text-[1.7rem] font-bold font-[montserrat] text-gray-900 dark:text-white">Getting Started</p>
 
           <section>

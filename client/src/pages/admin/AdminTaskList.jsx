@@ -221,7 +221,7 @@ function AdminList() {
 
       <div className="flex-1 p-8">
         <div className="mb-6">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">Task List</p>
+          <p className="font-bold text-[1.5rem] font-[montserrat]">Task List</p>
           <p className="text-gray-400 text-sm">Manage and monitor student tasks, assignments, and deadlines.</p>
         </div>
 
@@ -310,7 +310,7 @@ function AdminList() {
 
         {/* Add Modal */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20"/>
@@ -391,7 +391,7 @@ function AdminList() {
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
                <div className="flex flex-col justify-center items-center h-70">
                   <LoadingIcon dimensions="w-20 h-20"/>
@@ -468,7 +468,7 @@ function AdminList() {
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-3">
+          <div className="flex flex-col items-center w-72 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20"/>
