@@ -7,9 +7,11 @@ import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import CountUp from "react-countup";
+import Pagination from "../../components/ui/Pagination.jsx";
 
 function AdminMasterlist() {
   const [list, setList] = useState([]);
+  const [listPage, setListPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingForm, setLoadingForm] = useState(false);
   const [activeStatus, setActiveStatus] = useState("All");
@@ -68,6 +70,7 @@ function AdminMasterlist() {
 
   const handleStatusChange = (status) => {
     setActiveStatus(status);
+    setListPage(1);
   };
 
   const resetForm = () => {
@@ -208,11 +211,18 @@ function AdminMasterlist() {
     }
   };
 
+  const masterlistPerPage = 10;
+  const totalMasterlistPages = Math.ceil(list.length / masterlistPerPage);
+  const paginatedMasterlist = filteredStudents.slice(
+    (listPage - 1) * masterlistPerPage,
+    listPage * masterlistPerPage
+  );
+
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 px-8 py-4">
         <div className="mb-4">
           <p className="font-bold text-[1.5rem] font-[montserrat]">Masterlist</p>
           <p className="text-gray-400 text-sm">Manage and monitor the official masterlist.</p>
@@ -264,12 +274,12 @@ function AdminMasterlist() {
                 <LoadingIcon dimensions="w-10 h-10" />
               </div>
             ) : (
-              filteredStudents.length > 0 ? (
+              paginatedMasterlist.length > 0 ? (
                 <table className="w-full">
                   <tbody>
-                    {filteredStudents.map((s, i) => (
+                    {paginatedMasterlist.map((s, i) => (
                       <tr key={i} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
-                        <td className="text-[#828282]">{i + 1}</td>
+                        <td className="text-[#828282]">{(listPage - 1) * masterlistPerPage + i + 1}</td>
                         <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
                         <td>{s.studentNumber}</td>
                         <td>
@@ -314,8 +324,15 @@ function AdminMasterlist() {
               ))
             }
           </div>
+          <div className="mx-5">
+            <Pagination
+              currentPage={listPage}
+              totalPages={totalMasterlistPages}
+              onPageChange={setListPage}
+            />
+          </div>
 
-          <div className="flex justify-center items-center mb-5 mt-4">
+          <div className="flex justify-center items-center mb-5 mt-3">
             <Button 
               text="+ Add Student" 
               onClick={() => setModalOpen(true)} 
