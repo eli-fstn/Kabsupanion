@@ -228,11 +228,11 @@ function AdminList() {
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+              <tr className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
                 <th className="flex items-center">No.</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="ix:tasks-all" width="22" height="22" />Task</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="22" height="22" />Subject</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="mingcute:time-line" width="22" height="22" />Due Date</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="ix:tasks-all" width="20" height="20" />Task</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="20" height="20" />Subject</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="mingcute:time-line" width="20" height="20" />Due Date</th>
                 <th className="flex items-center">Actions</th>
               </tr>
             </thead>
@@ -240,8 +240,22 @@ function AdminList() {
 
           <div className="h-95 overflow-y-auto flex flex-col">
             {loading ? (
-              <div className="flex justify-center items-center flex-1">
-                <LoadingIcon dimensions="w-10 h-10" />
+              <div className="flex flex-col">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
+                  >
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-4" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-40" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-16" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-20" />
+                    <div className="flex gap-2">
+                      <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               tasks.length > 0 ? (

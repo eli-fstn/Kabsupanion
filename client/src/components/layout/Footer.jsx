@@ -204,10 +204,7 @@ function Footer() {
             <ul className="text-xs md:text-sm list-disc list-inside mt-2 text-gray-600 dark:text-gray-300 space-y-1">
               <li>Check Kabsupanion regularly for updates.</li>
               <li>Stay on top of your academic tasks and deadlines.</li>
-              <li>
-                Make use of shared learning resources to enhance your understanding.
-              </li>
-              <li>Keep your account credentials secure.</li>
+              <li>Make use of shared learning resources.</li>
               <li>Use the platform responsibly and respectfully.</li>
             </ul>
           </section>

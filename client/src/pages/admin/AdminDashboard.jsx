@@ -135,8 +135,20 @@ function AdminDashboard() {
           {/* Recent Resources */}
           <div className="h-71.25 flex flex-col justify-start">
             {loading ? (
-              <div className="flex justify-center items-center flex-1">
-                <LoadingIcon dimensions="w-10 h-10" />
+              <div className="flex flex-col">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 px-3 py-2 border-b border-gray-100"
+                  >
+                    <div className="bg-gray-200 rounded-lg w-9 h-9 animate-pulse" />
+                    <div className="flex-1 flex flex-col gap-1.5">
+                      <div className="h-3.5 bg-gray-200 rounded animate-pulse w-40" />
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-24" />
+                    </div>
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-14" />
+                  </div>
+                ))}
               </div>
             ) : (
               paginatedResources.length > 0 ? (

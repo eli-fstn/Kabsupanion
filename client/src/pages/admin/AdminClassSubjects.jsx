@@ -180,11 +180,11 @@ function AdminSubjects() {
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+              <tr className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
                 <th className="flex items-center">No.</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="22" height="22" />Code</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="mdi:text-box-outline" width="22" height="22" />Name</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="mdi:text" width="22" height="22" />Description</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="20" height="20" />Code</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="mdi:text-box-outline" width="20" height="20" />Name</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="mdi:text" width="20" height="20" />Description</th>
                 <th className="flex items-center">Actions</th>
               </tr>
             </thead>
@@ -192,8 +192,22 @@ function AdminSubjects() {
 
           <div className="h-95 overflow-y-auto flex flex-col">
             {loading ? (
-              <div className="flex justify-center items-center flex-1">
-                <LoadingIcon dimensions="w-10 h-10" />
+              <div className="flex flex-col">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
+                  >
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-4" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-12" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-32" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-40" />
+                    <div className="flex gap-4">
+                      <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               subjects.length > 0 ? (

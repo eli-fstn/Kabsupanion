@@ -257,11 +257,11 @@ function AdminMasterlist() {
 
             {/* TABLE HEADER */}
             <thead>
-              <tr className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+              <tr className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
                 <th className="flex items-center">No.</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="akar-icons:person" width="22" height="22" />Name</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:badge-outline" width="22" height="22" />Student Number</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="fluent:status-16-regular" width="22" height="22" />Registration Status</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="akar-icons:person" width="20" height="20" />Name</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:badge-outline" width="20" height="20" />Student Number</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="fluent:status-16-regular" width="20" height="20" />Registration Status</th>
                 <th className="flex items-center">Actions</th>
               </tr>
             </thead>
@@ -270,8 +270,22 @@ function AdminMasterlist() {
           {/* TABLE BODY */}
           <div className="h-95 overflow-y-auto flex flex-col">
             {loading ? (
-              <div className="flex justify-center items-center flex-1">
-                <LoadingIcon dimensions="w-10 h-10" />
+              <div className="flex flex-col">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
+                  >
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-4" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-32" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-24" />
+                    <div className="h-5 bg-gray-200 rounded-full animate-pulse w-20" />
+                    <div className="flex gap-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               paginatedMasterlist.length > 0 ? (

@@ -255,56 +255,71 @@ function AdminSched() {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {time_slots.map((time, si) => {
-                const timeStart = time.split(" - ")[0];
-                return (
+              {loading ? (
+                time_slots.map((time, si) => (
                   <tr key={time}>
-                    <td className="border border-gray-300 py-3 text-center text-xs font-bold text-gray-500 bg-gray-50 w-24 whitespace-nowrap px-2">
-                      <div>{time_labels[si]}</div>
-                      {time_labels[si + 1] && (
-                        <div className="text-[10px] font-normal opacity-60">
-                          – {time_labels[si + 1]}
-                        </div>
-                      )}
+                    <td className="border border-gray-300 py-3 text-center bg-gray-50 w-24 px-2">
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-14 mx-auto" />
                     </td>
-                    {days.map((d) => {
-                      const subject = scheduleData.find(
-                        (s) => s.day === d && timeStart >= to24hr(s.startTime) && timeStart < to24hr(s.endTime)
-                      );
-                      const colorIdx = subject ? getColorIndex(subject.code) : -1;
-                      const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
-                      const textColor =
-                        colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
-                      const isStart = subject && timeStart === to24hr(subject.startTime);
-
-                      return (
-                        <td key={d} className={`border border-gray-300 py-3 w-32 text-center text-xs font-bold ${subject ? getColor(subject.code) : ""}`}>
-                          {subject && isStart ? (
-                            <div className={`relative group px-1 ${textColor}`}>
-                              <p className="font-bold">{subject.code}</p>
-                              <p className="font-normal opacity-70">{subject.room}</p>
-                              <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
-                                <button
-                                  onClick={() => handleEditOpen(subject)}
-                                  className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
-                                >
-                                  <Icon icon="mdi:pencil-outline" width="12" className="text-gray-700" />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteOpen(subject)}
-                                  className="bg-white rounded p-0.5 shadow hover:bg-red-100"
-                                >
-                                  <Icon icon="mdi:trash-can-outline" width="12" className="text-red-500" />
-                                </button>
-                              </div>
-                            </div>
-                          ) : null}
-                        </td>
-                      );
-                    })}
+                    {days.map((d) => (
+                      <td key={d} className="border border-gray-300 py-3 w-32 text-center">
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-16 mx-auto" />
+                      </td>
+                    ))}
                   </tr>
-                );
-              })}
+                ))
+              ) : (
+                time_slots.map((time, si) => {
+                  const timeStart = time.split(" - ")[0];
+                  return (
+                    <tr key={time}>
+                      <td className="border border-gray-300 py-3 text-center text-xs font-bold text-gray-500 bg-gray-50 w-24 whitespace-nowrap px-2">
+                        <div>{time_labels[si]}</div>
+                        {time_labels[si + 1] && (
+                          <div className="text-[10px] font-normal opacity-60">
+                            – {time_labels[si + 1]}
+                          </div>
+                        )}
+                      </td>
+                      {days.map((d) => {
+                        const subject = scheduleData.find(
+                          (s) => s.day === d && timeStart >= to24hr(s.startTime) && timeStart < to24hr(s.endTime)
+                        );
+                        const colorIdx = subject ? getColorIndex(subject.code) : -1;
+                        const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
+                        const textColor =
+                          colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
+                        const isStart = subject && timeStart === to24hr(subject.startTime);
+
+                        return (
+                          <td key={d} className={`border border-gray-300 py-3 w-32 text-center text-xs font-bold ${subject ? getColor(subject.code) : ""}`}>
+                            {subject && isStart ? (
+                              <div className={`relative group px-1 ${textColor}`}>
+                                <p className="font-bold">{subject.code}</p>
+                                <p className="font-normal opacity-70">{subject.room}</p>
+                                <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
+                                  <button
+                                    onClick={() => handleEditOpen(subject)}
+                                    className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
+                                  >
+                                    <Icon icon="mdi:pencil-outline" width="12" className="text-gray-700" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteOpen(subject)}
+                                    className="bg-white rounded p-0.5 shadow hover:bg-red-100"
+                                  >
+                                    <Icon icon="mdi:trash-can-outline" width="12" className="text-red-500" />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
