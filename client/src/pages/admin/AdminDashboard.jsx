@@ -186,50 +186,64 @@ function AdminDashboard() {
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <p className="font-bold text-sm mb-1">Resources per Subject</p>
             <p className="text-gray-400 text-xs mb-4">Number of uploaded files per subject</p>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={subjectData} barSize={18}>
-                <XAxis dataKey="name" tick={{ fontSize: 9 }} />
-                <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="resources" radius={[4, 4, 0, 0]}>
-                  {subjectData.map((entry, index) => (
-                    <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <div className="flex justify-center items-center h-70">
+                <Icon icon="svg-spinners:3-dots-bounce" width="40" className="text-[#1B651B] " />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={subjectData} barSize={18}>
+                  <XAxis dataKey="name" tick={{ fontSize: 9 }} />
+                  <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="resources" radius={[4, 4, 0, 0]}>
+                    {subjectData.map((entry, index) => (
+                      <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
           {/* Pie Chart — Tasks per Subject */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <p className="font-bold text-sm mb-1">Tasks per Subject</p>
             <p className="text-gray-400 text-xs mb-4">Distribution of tasks across subjects</p>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={taskData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={85}
-                  paddingAngle={3}
-                  dataKey="value"
-                >
+            {loading ? (
+              <div className="flex justify-center items-center h-70">
+                <Icon icon="svg-spinners:3-dots-bounce" width="40" className="text-[#1B651B] " />
+              </div>
+            ) : (
+              <>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={taskData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={85}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {taskData.map((entry, index) => (
+                        <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
                   {taskData.map((entry, index) => (
-                    <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                    <div key={index} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: TASK_COLORS[index % TASK_COLORS.length] }}></div>
+                      <p className="text-xs text-gray-500">{entry.name} ({entry.value})</p>
+                    </div>
                   ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
-              {taskData.map((entry, index) => (
-                <div key={index} className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: TASK_COLORS[index % TASK_COLORS.length] }}></div>
-                  <p className="text-xs text-gray-500">{entry.name} ({entry.value})</p>
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>

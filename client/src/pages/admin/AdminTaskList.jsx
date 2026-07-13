@@ -241,7 +241,7 @@ function AdminList() {
           <div className="h-95 overflow-y-auto flex flex-col">
             {loading ? (
               <div className="flex flex-col">
-                {Array.from({ length: 8 }).map((_, i) => (
+                {Array.from({ length: 10 }).map((_, i) => (
                   <div
                     key={i}
                     className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
@@ -251,8 +251,8 @@ function AdminList() {
                     <div className="h-3 bg-gray-200 rounded animate-pulse w-16" />
                     <div className="h-3 bg-gray-200 rounded animate-pulse w-20" />
                     <div className="flex gap-2">
-                      <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
-                      <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
                     </div>
                   </div>
                 ))}

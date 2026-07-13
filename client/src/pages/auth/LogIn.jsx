@@ -8,7 +8,6 @@ import { handleApiError } from "../../services/errorHandler.ts";
 import logo from "/assets/images/Kabsupanion-Logo.png";
 import background from "/assets/images/Laya-at-Diwa.png";
 
-
 function LogIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

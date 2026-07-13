@@ -5,13 +5,13 @@ import error404 from "/assets/illustrations/error404.svg";
 function Error404() {
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     navigate((-1), { replace: true });
-  //   }, 5000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate((-1), { replace: true });
+    }, 5000);
 
-  //   return () => clearTimeout(timer);
-  // }, [navigate]);
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
     <div className="h-screen flex flex-col items-center justify-center text-center px-6">
