@@ -176,7 +176,7 @@ export default function ClassResources() {
 
         {/* FORM */}
         <Modal isOpen={modalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-full max-w-sm sm:max-w-md p-3">
+          <form onSubmit={handleSubmit} className="flex flex-col w-full max-w-sm sm:max-w-md p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center w-56 h-56 sm:h-64">
                 <LoadingIcon dimensions="w-16 h-16 sm:w-20 sm:h-20" />

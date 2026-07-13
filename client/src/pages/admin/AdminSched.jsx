@@ -38,7 +38,7 @@ function AdminSched() {
   const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   const time_slots = [
     "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
-  "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
+    "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
   ];
 
   const time_labels = [
@@ -120,11 +120,52 @@ function AdminSched() {
     let hasError = false;
     const newError = { subject: "", day: "", startTime: "", endTime: "", room: "", general: "" };
 
-    if (!addSubjectId) { newError.subject = "Subject is required."; hasError = true; }
-    if (!addDay) { newError.day = "Day is required."; hasError = true; }
-    if (!addStartTime) { newError.startTime = "Start time is required."; hasError = true; }
-    if (!addEndTime) { newError.endTime = "End time is required."; hasError = true; }
-    if (!addRoom) { newError.room = "Room is required."; hasError = true; }
+    if (!addSubjectId) {
+      newError.subject = "Subject is required."; hasError = true; 
+    }
+    if (!addDay) {
+      newError.day = "Day is required."; hasError = true;
+    }
+    if (!addStartTime) {
+      newError.startTime = "Start time is required."; hasError = true;
+    }
+    if (!addEndTime) {
+      newError.endTime = "End time is required."; hasError = true;
+    }
+    if (!addRoom) {
+      newError.room = "Room is required."; hasError = true;
+    }
+    if (!time_slots.includes(addEndTime)) {
+      newError.endTime = "Time doesn't exist in the time slot."
+      hasError = true;
+    }
+    if (addDay && addStartTime && addEndTime) {
+      const hasConflict = scheduleData.some((sched) => {
+        if (sched.day !== addDay) return false;
+
+        const existingStart = to24hr(sched.startTime);
+        const existingEnd = to24hr(sched.endTime);
+
+        return addStartTime < existingEnd && addEndTime > existingStart;
+      });
+      if (!time_slots.includes(addStartTime)) {
+        newError.startTime = "Time doesn't exist in the time slot."
+        hasError = true;
+      }
+      else if (hasConflict) {
+        newError.startTime = "This time slot overlaps with an existing schedule.";
+        hasError = true;
+      }
+
+      if (!time_slots.includes(addEndTime)) {
+        newError.endTime = "Time doesn't exist in the time slot."
+        hasError = true;
+      }
+      else if (hasConflict) {
+        newError.endTime = "This time slot overlaps with an existing schedule.";
+        hasError = true;
+      }
+    }
 
     if (hasError) { setError(newError); return; }
 
@@ -163,7 +204,6 @@ function AdminSched() {
 
     if (hasError) { setEditError(newError); return; }
 
-    console.log(editDay);
     setLoadingForm(true);
     try {
       await editSchedule(selectedSchedule.subjectId, selectedSchedule.scheduleId, editDay, to12hr(editStartTime), to12hr(editEndTime), editRoom);
@@ -194,17 +234,13 @@ function AdminSched() {
     }
   };
 
-  console.log(scheduleData);
-  console.log(to24hr("10:00 AM"));
-  console.log(to24hr("12:00 PM"));
-
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
 
       <div className="flex-1 p-8">
         <div className="mb-6">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">Class Schedule</p>
+          <p className="font-bold text-[1.5rem] font-[montserrat]">Class Schedule</p>
           <p className="text-gray-400 text-sm">Keep the section's class schedule up to date.</p>
         </div>
 
@@ -219,56 +255,71 @@ function AdminSched() {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {time_slots.map((time, si) => {
-                const timeStart = time.split(" - ")[0];
-                return (
+              {loading ? (
+                time_slots.map((time, si) => (
                   <tr key={time}>
-                    <td className="border border-gray-300 py-3 text-center text-xs font-bold text-gray-500 bg-gray-50 w-24 whitespace-nowrap px-2">
-                      <div>{time_labels[si]}</div>
-                      {time_labels[si + 1] && (
-                        <div className="text-[10px] font-normal opacity-60">
-                          – {time_labels[si + 1]}
-                        </div>
-                      )}
+                    <td className="border border-gray-300 py-3 text-center bg-gray-50 w-24 px-2">
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-14 mx-auto" />
                     </td>
-                    {days.map((d) => {
-                      const subject = scheduleData.find(
-                        (s) => s.day === d && timeStart >= to24hr(s.startTime) && timeStart < to24hr(s.endTime)
-                      );
-                      const colorIdx = subject ? getColorIndex(subject.code) : -1;
-                      const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
-                      const textColor =
-                        colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
-                      const isStart = subject && timeStart === to24hr(subject.startTime);
-
-                      return (
-                        <td key={d} className={`border border-gray-300 py-3 w-32 text-center text-xs font-bold ${subject ? getColor(subject.code) : ""}`}>
-                          {subject && isStart ? (
-                            <div className={`relative group px-1 ${textColor}`}>
-                              <p className="font-bold">{subject.code}</p>
-                              <p className="font-normal opacity-70">{subject.room}</p>
-                              <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
-                                <button
-                                  onClick={() => handleEditOpen(subject)}
-                                  className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
-                                >
-                                  <Icon icon="mdi:pencil-outline" width="12" className="text-gray-700" />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteOpen(subject)}
-                                  className="bg-white rounded p-0.5 shadow hover:bg-red-100"
-                                >
-                                  <Icon icon="mdi:trash-can-outline" width="12" className="text-red-500" />
-                                </button>
-                              </div>
-                            </div>
-                          ) : null}
-                        </td>
-                      );
-                    })}
+                    {days.map((d) => (
+                      <td key={d} className="border border-gray-300 py-3 w-32 text-center">
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-16 mx-auto" />
+                      </td>
+                    ))}
                   </tr>
-                );
-              })}
+                ))
+              ) : (
+                time_slots.map((time, si) => {
+                  const timeStart = time.split(" - ")[0];
+                  return (
+                    <tr key={time}>
+                      <td className="border border-gray-300 py-3 text-center text-xs font-bold text-gray-500 bg-gray-50 w-24 whitespace-nowrap px-2">
+                        <div>{time_labels[si]}</div>
+                        {time_labels[si + 1] && (
+                          <div className="text-[10px] font-normal opacity-60">
+                            – {time_labels[si + 1]}
+                          </div>
+                        )}
+                      </td>
+                      {days.map((d) => {
+                        const subject = scheduleData.find(
+                          (s) => s.day === d && timeStart >= to24hr(s.startTime) && timeStart < to24hr(s.endTime)
+                        );
+                        const colorIdx = subject ? getColorIndex(subject.code) : -1;
+                        const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
+                        const textColor =
+                          colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
+                        const isStart = subject && timeStart === to24hr(subject.startTime);
+
+                        return (
+                          <td key={d} className={`border border-gray-300 py-3 w-32 text-center text-xs font-bold ${subject ? getColor(subject.code) : ""}`}>
+                            {subject && isStart ? (
+                              <div className={`relative group px-1 ${textColor}`}>
+                                <p className="font-bold">{subject.code}</p>
+                                <p className="font-normal opacity-70">{subject.room}</p>
+                                <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
+                                  <button
+                                    onClick={() => handleEditOpen(subject)}
+                                    className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
+                                  >
+                                    <Icon icon="mdi:pencil-outline" width="12" className="text-gray-700" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteOpen(subject)}
+                                    className="bg-white rounded p-0.5 shadow hover:bg-red-100"
+                                  >
+                                    <Icon icon="mdi:trash-can-outline" width="12" className="text-red-500" />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -287,7 +338,7 @@ function AdminSched() {
 
         {/* Add Modal */}
         <Modal isOpen={addModalOpen} onClose={handleClose}>
-          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20" />
@@ -342,7 +393,7 @@ function AdminSched() {
 
         {/* Edit Modal */}
         <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-3">
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-70">
                 <LoadingIcon dimensions="w-20 h-20" />
@@ -389,7 +440,7 @@ function AdminSched() {
 
         {/* Delete Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-3">
+          <div className="flex flex-col items-center w-72 p-6">
             {loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20" />

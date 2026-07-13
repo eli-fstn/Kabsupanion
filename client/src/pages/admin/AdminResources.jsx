@@ -91,18 +91,18 @@ function AdminResources() {
 
       <div className="flex-1 p-8">
         <div className="mb-6">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">Resources List</p>
+          <p className="font-bold text-[1.5rem] font-[montserrat]">Resources List</p>
           <p className="text-gray-400 text-sm">Manage and monitor uploaded resources for your section.</p>
         </div>
 
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="grid grid-cols-[.2fr_.5fr_1fr_1fr_1fr_1fr_.6fr] gap-4 bg-[#F5F5F5] p-3 items-center text-[#888888] text-sm font-bold border-b border-gray-200">
+              <tr className="grid grid-cols-[.2fr_.5fr_1fr_1fr_1fr_1fr_.6fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
                 <td className="flex items-center">No.</td>
                 <th className="flex items-center">Image</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="mdi:text-box-outline" width="22" height="22" />Title</th>
-                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="22" height="22" />Subject</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="mdi:text-box-outline" width="20" height="20" />Title</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="20" height="20" />Subject</th>
                 <th className="flex items-center"><UserIcon dimensions="w-5 h-5 mr-2" />Uploader</th>
                 <th className="flex items-center">Status</th>
                 <th className="flex items-center">Actions</th>
@@ -112,8 +112,24 @@ function AdminResources() {
 
           <div className="h-110 overflow-y-auto flex flex-col">
             {loading ? (
-              <div className="flex justify-center items-center flex-1">
-                <LoadingIcon dimensions="w-10 h-10" />
+              <div className="flex flex-col">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-[.2fr_.5fr_1fr_1fr_1fr_1fr_.6fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
+                  >
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-4" />
+                    <div className="w-10 h-10 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-32" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-16" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-24" />
+                    <div className="h-5 bg-gray-200 rounded-full animate-pulse w-16" />
+                    <div className="flex gap-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               resources.length > 0 ? (
@@ -174,7 +190,7 @@ function AdminResources() {
 
         {/* Approval */}
         <Modal isOpen={confirmationModal} onClose={() => setConfirmationModalOpen(false)}>
-          <div className="flex flex-col w-100 p-3">
+          <div className="flex flex-col w-100 p-6">
             <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Resources Approval</p>
             <p className="text-gray-400 text-xs mb-5">Review and approve or reject this uploaded resource.</p>
 
@@ -263,7 +279,7 @@ function AdminResources() {
 
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-          <div className="flex flex-col items-center w-72 p-3">
+          <div className="flex flex-col items-center w-72 p-6">
             {loadingForm ? (
                <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20"/>
