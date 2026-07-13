@@ -214,7 +214,7 @@ function AdminSubjects() {
                 <table className="w-full">
                   <tbody>
                     {subjects.map((t, i) => (
-                      <tr key={i.id} className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                      <tr key={i} className="grid grid-cols-[.2fr_.5fr_2fr_2fr_.6fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
                         <td className="text-[#4a4a4a88]">{i + 1}</td>
                         <td>{t.code}</td>
                         <td>{t.name}</td>

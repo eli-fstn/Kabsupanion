@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import error404 from "/assets/illustrations/error404.svg";
+import error404 from "../../assets/illustrations/error404.svg";
 
 function Error404() {
   const navigate = useNavigate();

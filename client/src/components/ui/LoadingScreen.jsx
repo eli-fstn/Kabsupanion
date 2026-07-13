@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import logo from "/assets/images/Kabsupanion-Logo.png";
+import logo from "../../assets/images/Kabsupanion-Logo.png";
 
 function LoadingScreen() {
   return (

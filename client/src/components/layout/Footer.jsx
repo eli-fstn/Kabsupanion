@@ -1,11 +1,11 @@
 import Button from "../ui/Button";
 import { Link } from "react-router-dom";
-import logo from "/assets/images/Kabsupanion-Logo.png";
+import logo from "../../assets/images/Kabsupanion-Logo.png";
 import Modal from "../../components/ui/Modal";
 import { useState } from "react";
 import Card from "../ui/Card";
-import FrontEndDev from "/assets/images/Elijah.jpg"
-import BackEndDev from "/assets/images/Lorenz.png"
+import FrontEndDev from "../../assets/images/Elijah.jpg"
+import BackEndDev from "../../assets/images/Lorenz.png"
 import { Icon } from "@iconify/react";
 import { useInstallPrompt } from "../../hooks/useInstallPrompt";
 

@@ -7,8 +7,8 @@ import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { handleApiError } from "../../services/errorHandler.ts";
 import LoadingScreen from "../../components/ui/LoadingScreen";
-import logo from "/assets/images/Kabsupanion-Logo.png";
-import background from "/assets/images/Laya-at-Diwa.png";
+import logo from "../../assets/images/Kabsupanion-Logo.png";
+import background from "../../assets/images/Laya-at-Diwa.png";
 
 function Register(){
 	const isNumber = (value) => /^[0-9]+$/.test(value);
