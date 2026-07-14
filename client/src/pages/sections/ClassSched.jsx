@@ -4,7 +4,7 @@ import { toPng } from "html-to-image";
 import Button from "../../components/ui/Button";
 import { useTheme } from "../../context/themeContext";
 import LoadingIcon from "../../components/ui/LoadingIcon";
-import CvSULogo from "/assets/images/CvSU-logo.png";
+import CvSULogo from "../../assets/images/CvSU-logo.png";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME_SLOTS = [

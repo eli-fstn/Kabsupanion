@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import CountUp from 'react-countup';
 import Pagination from "../../components/ui/Pagination.jsx";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
-import { useGreeting } from "../../hooks/useGreeting.ts";
+import { useGreeting } from "../../hooks/useGreeting.js";
 
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);

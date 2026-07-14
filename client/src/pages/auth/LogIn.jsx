@@ -5,8 +5,8 @@ import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler.ts";
-import logo from "/assets/images/Kabsupanion-Logo.png";
-import background from "/assets/images/Laya-at-Diwa.png";
+import logo from "../../assets/images/Kabsupanion-Logo.png";
+import background from "../../assets/images/Laya-at-Diwa.png";
 
 function LogIn() {
   const [email, setEmail] = useState("");

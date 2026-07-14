@@ -1,4 +1,4 @@
-import error503 from "/assets/illustrations/error503.svg";
+import error503 from "../../assets/illustrations/error503.svg";
 
 function Error503() {
   return (

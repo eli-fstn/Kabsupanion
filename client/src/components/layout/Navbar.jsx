@@ -5,7 +5,7 @@ import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button";
 import UserIcon from "../common/UserIcon";
 import DarkModeToggle from "../../components/ui/DarkModeToggle";
-import logo from "/assets/images/Kabsupanion-Logo.png";
+import logo from "../../assets/images/Kabsupanion-Logo.png";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
