@@ -239,7 +239,7 @@ function Footer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Card>
               <div className="flex flex-col items-center h-full w-full max-w-50 mx-auto cursor-pointer">
-                <img className="w-20 h-20 rounded-[50%] border-green-700 dark:border-[#56e556] border-2 p-0.5" src={FrontEndDev} alt="Elijah Festin" />
+                <img className="w-20 h-20 rounded-[50%] border-green-700 dark:border-[#56e556] border-2 p-0.5" src={FrontEndDev} loading="lazy" alt="Elijah Festin" />
                 <p className="mt-3 text-sm text-gray-700 dark:text-gray-200 font-[montserrat] font-semibold">Elijah Festin</p>
                 <p className="text-xs text-[#1B651B] dark:text-[#56e556] font-medium m-1">Front-End Developer</p>
                 <p className="text-xs mt-3 text-gray-500 dark:text-gray-300 text-center">Designed and developed the user interface and implemented the client-side functionality.</p>
@@ -256,7 +256,7 @@ function Footer() {
             </Card>
             <Card>
               <div className="flex flex-col items-center h-full w-full max-w-50 mx-auto cursor-pointer">
-                <img className="w-20 h-20 rounded-[50%] border-green-700 dark:border-[#56e556] border-2 p-0.5" src={BackEndDev} alt="Lorenz Tuboro" />
+                <img className="w-20 h-20 rounded-[50%] border-green-700 dark:border-[#56e556] border-2 p-0.5" src={BackEndDev} loading="lazy" alt="Lorenz Tuboro" />
                 <p className="mt-3 text-sm text-gray-700 dark:text-gray-200 font-[montserrat] font-semibold">Lorenz Tuboro</p>
                 <p className="text-xs text-[#1B651B] dark:text-[#56e556] font-medium m-1">Back-End Developer</p>
                 <p className="text-xs mt-3 text-gray-500 dark:text-gray-300 text-center">Developed the server-side functionality, API, authentication, and database integration.</p>

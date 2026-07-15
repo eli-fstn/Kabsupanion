@@ -142,6 +142,7 @@ function AdminResources() {
                           <img
                             src={toPageUrl(t.fileUrl, 1)}
                             alt={t.title}
+                            loading="lazy"
                             className="w-10 h-10 rounded object-cover border border-gray-200"
                           />
                         </td>

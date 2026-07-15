@@ -1,5 +1,6 @@
 import AppRoutes from "./routes/AppRoutes.jsx";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import LoadingScreen from "./components/ui/LoadingScreen.jsx";
 
 function App() {
   useEffect(() => {
@@ -8,7 +9,11 @@ function App() {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  return <AppRoutes />;
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <AppRoutes />
+    </Suspense>
+  );
 }
 
 export default App;

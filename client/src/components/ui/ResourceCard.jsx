@@ -126,7 +126,7 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
       >
         <div className="h-36 md:h-40 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#1a1a1a] flex items-center justify-center overflow-hidden shrink-0">
           {previewUrl ? (
-            <img src={previewUrl} alt={title} className="w-full h-full object-cover" />
+            <img src={previewUrl} alt={title} loading="lazy" className="w-full h-full object-cover" />
           ) : (
             <p className="text-gray-400 dark:text-[#E0E0E0] text-xs">No preview</p>
           )}

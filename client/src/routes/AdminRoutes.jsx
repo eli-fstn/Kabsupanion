@@ -1,15 +1,17 @@
+import { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "../routes/PrivateRoute.jsx";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminList from "../pages/admin/AdminTaskList.jsx";
-import AdminSched from "../pages/admin/AdminSched.jsx";
-import AdminResources from "../pages/admin/AdminResources.jsx";
-import AdminSubjects from "../pages/admin/AdminClassSubjects.jsx";
-import AdminMasterlist from "../pages/admin/AdminMasterlist.jsx";
-import Error404 from "../pages/errors/Error404.jsx";
+
+const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
+const AdminList = lazy(() => import("../pages/admin/AdminTaskList.jsx"));
+const AdminSched = lazy(() => import("../pages/admin/AdminSched.jsx"));
+const AdminResources = lazy(() => import("../pages/admin/AdminResources.jsx"));
+const AdminSubjects = lazy(() => import("../pages/admin/AdminClassSubjects.jsx"));
+const AdminMasterlist = lazy(() => import("../pages/admin/AdminMasterlist.jsx"));
+const Error404 = lazy(() => import("../pages/errors/Error404.jsx"));
 
 function AdminRoutes() {
-  return(
+  return (
     <Routes>
       <Route element={<PrivateRoute requiredRole={"admin"} />}>
         <Route path="/dashboard" element={<AdminDashboard />} />
@@ -18,9 +20,9 @@ function AdminRoutes() {
         <Route path="/resources" element={<AdminResources />} />
         <Route path="/subjects" element={<AdminSubjects />} />
         <Route path="/masterlist" element={<AdminMasterlist />} />
-      
+
         {/* Shows error 404 if the page doesn't exists. */}
-        <Route path="*" element={<Error404 />} /> 
+        <Route path="*" element={<Error404 />} />
       </Route>
     </Routes>
   );
