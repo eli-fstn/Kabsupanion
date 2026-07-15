@@ -6,6 +6,7 @@ import Button from "../../components/ui/Button";
 import UserIcon from "../common/UserIcon";
 import DarkModeToggle from "../../components/ui/DarkModeToggle";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
+import { clearApiCache } from "../../../utils/clearApiCache.js";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,9 +14,10 @@ function Navbar() {
   const navigate = useNavigate();
   const { student } = useUser();
 
-  const userSignOut = () => {
+  const userSignOut = async () => {
     setDropdownOpen(false);
     localStorage.removeItem("token");
+    await clearAPICache();
     navigate("/", { replace: true });
   }
 

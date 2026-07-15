@@ -200,6 +200,7 @@ function AdminResources() {
               <img 
                 src={selectedResource?.fileUrl.replace("/upload/", "/upload/f_jpg,pg_1,w_50,h_50,c_fill/")}
                 alt={selectedResource?.title}
+                loading="lazy"
                 className="text-xs duration-200 transition-all hover:shadow-md w-20"
                 onClick={() => setOpenPreview(true)}
               />

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getMe } from "../services/auth";
 import LoadingScreen from "../components/ui/LoadingScreen";
+import { clearApiCache } from "../../utils/clearApiCache.js";
 
 const UserContext = createContext(null);
 
@@ -22,6 +23,7 @@ export function UserProvider({ children }) {
       console.log(error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem("token");
+        await clearApiCache();
       }
     } finally {
       setLoading(false);
