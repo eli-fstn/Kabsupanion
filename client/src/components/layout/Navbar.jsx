@@ -17,7 +17,7 @@ function Navbar() {
   const userSignOut = async () => {
     setDropdownOpen(false);
     localStorage.removeItem("token");
-    await clearAPICache();
+    await clearApiCache();
     navigate("/", { replace: true });
   }
 

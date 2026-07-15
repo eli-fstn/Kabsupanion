@@ -6,6 +6,7 @@ import UserIcon from "../common/UserIcon";
 import LoadingScreen from "../ui/LoadingScreen";
 import { useState } from "react";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
+import { clearApiCache } from "../../../utils/clearApiCache.js";
 
 function Sidebar() {
   const { student } = useUser();
@@ -13,9 +14,10 @@ function Sidebar() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
-  const userSignOut = () => {
+  const userSignOut = async () => {
     setLoading(true);
     localStorage.removeItem("token");
+    await clearApiCache();
     navigate("/", { replace: true });
   };
 
