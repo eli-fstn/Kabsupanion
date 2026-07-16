@@ -10,6 +10,26 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
 
 ### Added
 
+- **Notes approval workflow.** New `note_status` enum (`pending`/`approved`/`rejected`) and
+  `notes.status` (NOT NULL, default `pending`), `notes.approved_by` (FK → users, SET NULL),
+  `notes.approved_at`. Migration `drizzle/0007_*.sql` (with a backfill setting existing notes to
+  `approved`). New uploads start `pending` and are hidden from other users until approved. Notes have
+  **no** time-based auto-deletion — an approved note stays until manually deleted.
+  - `GET /notes` — role-based visibility: non-admins see `approved` notes plus their own `pending`
+    uploads; admins see everything and may pass an admin-only `?status=pending|approved|rejected`
+    filter (`400` invalid value, `403` if a non-admin uses it). Responses include
+    `status`/`approvedBy`/`approvedAt`.
+  - `POST /notes` — created notes come back `status: "pending"`.
+  - `PATCH /admin/notes/:id/approve` — approve a pending note; `404` unknown, `409` if not pending.
+  - `POST /admin/notes/:id/reject` — reject a pending note; purges it immediately (Cloudinary + DB)
+    rather than persisting `rejected`; `404` unknown, `409` if not pending.
+  - `src/lib/notes.ts` `purgeNote` shared by reject and `DELETE /notes/:id`.
+- **Task deadline auto-deletion (Cron Trigger).** The Worker's default export is now an
+  `ExportedHandler` with a `scheduled` handler; a `*/15 * * * *` cron deletes tasks whose `dueDate`
+  calendar day has fully elapsed in **Asia/Manila (UTC+8)** — after end-of-day, not at the due
+  clock-time. Tasks with no `dueDate` are never touched; `task_completions` cascade via the existing
+  FK. New `src/lib/tasks.ts` (`purgeOverdueTasks` + `endOfDueDateManila`). No schema change, no new
+  env vars.
 - **Masterlist enrollment status.** New `student_status` enum (`regular`/`irregular`) and a
   `masterlist.status` column (NOT NULL, default `regular`). Status lives on the roster
   (student identity), not on `users`. `POST`/`PATCH /admin/masterlist` accept an optional

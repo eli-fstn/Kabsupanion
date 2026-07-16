@@ -37,10 +37,12 @@ through **Drizzle** (Neon HTTP driver).
 | POST   | `/subjects/:id/schedules` | Bearer + Admin | Add a timetable slot: `{ day, startTime, endTime, room? }` |
 | PATCH  | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Update a slot |
 | DELETE | `/subjects/:id/schedules/:scheduleId` | Bearer + Admin | Remove a slot |
-| GET    | `/notes`              | Bearer | All notes with nested subject + uploader; optional `?subjectId=` filter |
-| POST   | `/notes`              | Bearer | Upload a note (multipart): `subjectId`, `title`, `description?`, `file` (image/PDF/Word/PowerPoint, max 10 MB) |
+| GET    | `/notes`              | Bearer | Notes with nested subject + uploader; optional `?subjectId=` filter. Non-admins see approved notes + their own pending ones; admins see all and may pass admin-only `?status=pending\|approved\|rejected` |
+| POST   | `/notes`              | Bearer | Upload a note (multipart): `subjectId`, `title`, `description?`, `file` (image/PDF/Word/PowerPoint, max 10 MB). Starts `status: "pending"` — hidden from others until approved |
 | PATCH  | `/notes/:id`          | Bearer | Update `title`/`description`; uploader or admin |
 | DELETE | `/notes/:id`          | Bearer | Delete note + remove from Cloudinary; uploader or admin |
+| PATCH  | `/admin/notes/:id/approve` | Bearer + Admin | Approve a pending note (makes it visible). `409` if not pending |
+| POST   | `/admin/notes/:id/reject`  | Bearer + Admin | Reject a pending note; deletes it immediately (DB + Cloudinary). `409` if not pending |
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
 | PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
 | DELETE | `/admin/users/:id`      | Bearer + Admin | Delete a user account. Cannot delete yourself. |
@@ -131,6 +133,12 @@ and `false` for another. `404` if the task id doesn't exist, `400` if it isn't a
 All `/tasks` routes **require** `Authorization: Bearer <token>` — an unauthenticated call
 gets `401` (the auth check runs before body validation).
 
+**Auto-deletion:** a task with a `dueDate` is automatically removed once its due date's calendar
+day has fully elapsed in **Asia/Manila (UTC+8)** time — i.e. shortly after 11:59 PM on the due
+date (a background sweep runs every 15 min), **not** at the due clock-time. This intentionally
+keeps the task visible for the whole due day so a same-day "expired" notice can show first. Tasks
+with no `dueDate` are never auto-deleted.
+
 ### Error conventions
 
 Every failure returns a JSON body `{ "error": "human-readable message" }` with a status code:
@@ -180,10 +188,12 @@ const me = (await api.get("/auth/me")).data.user;
 | Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
-| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0006` applied to Neon; masterlist seeded via `npm run db:seed`. `masterlist.status` (`regular`/`irregular`) + `users→masterlist` FK cascade added in `0006`. |
+| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0007` applied to Neon; masterlist seeded via `npm run db:seed`. `masterlist.status` + `users→masterlist` FK cascade in `0006`; note approval columns (`status`/`approved_by`/`approved_at`) in `0007`. |
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
 | Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
 | Notes (`/notes/*`) | ✅ live | Communal note sharing with Cloudinary-backed file storage. Migration `0005` applied. |
+| Notes approval workflow | 🧪 verified locally | Uploads start `pending`; role-based visibility + admin `?status=`; admin `approve`/`reject` (migration `0007`). Verified locally end-to-end; **not yet deployed**. |
+| Task deadline auto-deletion | 🧪 verified locally | 15-min Cron Trigger deletes tasks past their `dueDate` calendar day (Asia/Manila). No schema change. Logic verified locally (non-destructive dry-run); **not yet deployed**. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.

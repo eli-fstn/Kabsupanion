@@ -5,6 +5,73 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-07-16 — Notes approval workflow + task deadline auto-deletion
+
+**Goal:** (1) gate note uploads behind admin approval (new uploads hidden until approved), and
+(2) automatically delete tasks once their due date's calendar day has ended. Backend only;
+frontend impact flagged, not implemented.
+
+- **Notes approval (migration `0007`):** new `note_status` enum (`pending`/`approved`/`rejected`)
+  and `notes.status` (NOT NULL default `pending`), `notes.approved_by` (FK → users, SET NULL),
+  `notes.approved_at`. `POST /notes` starts `pending`; `GET /notes` filters by role (non-admins see
+  `approved` + their own `pending`; admins see all, with an admin-only `?status=` moderation filter,
+  `400` invalid / `403` non-admin). New `PATCH /admin/notes/:id/approve` (`409` if not pending) and
+  `POST /admin/notes/:id/reject` (`409` if not pending). New `src/lib/notes.ts` `purgeNote` shared by
+  reject and `DELETE /notes/:id`.
+- **Task deadline sweep (no schema change — `dueDate` already existed):** `src/index.ts` is now an
+  `ExportedHandler` with a `scheduled` handler; a `*/15 * * * *` cron calls `purgeOverdueTasks`
+  (`src/lib/tasks.ts`), deleting tasks whose `dueDate` day has fully elapsed in Asia/Manila (UTC+8).
+  `task_completions` cascade via the existing FK.
+
+### Why (decisions + gotchas)
+
+- **Pivot from notes-retention to task-deadline-deletion.** An earlier revision of this plan put a
+  retention timer on *notes* (auto-delete approved notes after N days). That was dropped entirely:
+  notes now stay until manually deleted, and the auto-deletion need moved to *tasks* instead. So
+  there is **no** `NOTE_RETENTION_DAYS`, no `[vars]`, and no `purgeExpiredNotes`.
+- **Deadline cutoff is end-of-day, not the due clock-time.** A task due `7-17 2:00 PM` must stay
+  visible the whole calendar day so the frontend's same-day "expired" notification can fire; it's only
+  swept after ~11:59 PM. Evaluated in **Asia/Manila (UTC+8, no DST)** — the school's timezone — so
+  the boundary matches user perception. Fixed offset means plain arithmetic (`endOfDueDateManila`), no
+  `Intl`/ICU timezone handling. Cron granularity is 15 min (cron can't fire exactly at 11:59 PM), so
+  worst case a task lingers ~15 min past end-of-day.
+- **Fetch-then-filter-in-JS** in `purgeOverdueTasks` (not one SQL `WHERE`): the Manila cutoff differs
+  per row (depends on each task's own `dueDate`), and keeping the tz logic in JS is easier to test than
+  embedding `AT TIME ZONE` in SQL. Fine at this app's task volume.
+- **Reject = immediate purge, not a persisted `rejected` row** — reuses `purgeNote`, so a rejected
+  upload is simply gone rather than lingering in a state nobody revisits. `rejected` stays in the enum
+  for completeness.
+- **Backfill (migration `0007`, hand-appended):** `UPDATE notes SET status='approved',
+  approved_at=now() WHERE status='pending'` so pre-existing notes keep their current visibility (they'd
+  otherwise all become `pending` from the column DEFAULT). No expiry risk since notes have no retention.
+- **Migration ledger gotcha (important):** an earlier `0007` from a prior session had already been
+  applied to the shared Neon DB; a branch reset removed the migration *file* but not the DB objects. So
+  regenerating `0007` (`0007_fast_sandman`) collided with the existing `note_status` type on
+  `db:migrate` (`type "note_status" already exists`). A `git reset` reverts files, not the database.
+  Resolved by reconciling drizzle's bookkeeping — `UPDATE drizzle.__drizzle_migrations SET
+  created_at=<new journal when>, hash=<new file sha256> WHERE id=<phantom row>` — adopting the phantom
+  ledger row as the new migration so `db:migrate` no-ops. (Verify via `drizzle.__drizzle_migrations`
+  vs `drizzle/meta/_journal.json` if it recurs.)
+
+### Verified (local, `wrangler dev`, against Neon)
+
+Migration reconciled → `db:migrate` clean; `npx tsc --noEmit` clean. Notes, end-to-end with a real
+Cloudinary round-trip: student upload → `pending`; uploader sees own pending, a second student does
+not; admin approve → `200` (approvedBy/At set), re-approve → `409`; admin `?status=pending` → `200`,
+`?status=garbage` → `400`, non-admin `?status=` → `403`; reject → `200 {deleted:true}`, gone +
+Cloudinary `404`, re-reject → `404`; `DELETE /notes/:id` → purged + Cloudinary `404`. Task sweep
+verified **non-destructively** (read-only dry-run + `endOfDueDateManila` unit-asserts): a task due
+today survives, a task due 3 days ago is selected, a task with no `dueDate` is excluded. The real
+scheduled sweep was **not** triggered — it would delete the 5 already-past-due *real* tasks (Jul 6–10)
+from the shared DB; that destructive run is left for deploy / explicit sign-off. **Not yet deployed.**
+
+### Frontend impact (flagged — not implemented, backend-only change)
+
+`GET /notes` now returns `status`/`approvedBy`/`approvedAt`; non-admins no longer see others' pending
+notes; `POST /notes` returns `status:"pending"`; the two admin note endpoints will want a
+moderation-queue UI. Tasks disappear ~15 min after their Manila due-day ends — intentionally timed to
+leave room for the planned "near deadline" (1 day before) and "expired" (on due date) notifications.
+
 ## 2026-06-26 — Masterlist enrollment `status` + cascade-delete claimed users
 
 **Goal:** track whether a student is `regular` or `irregular`, and let admins remove a roster
