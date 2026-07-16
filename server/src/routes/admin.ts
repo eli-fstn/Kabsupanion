@@ -2,8 +2,9 @@ import { Hono } from "hono";
 import { eq } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
-import { masterlist, users, userRole, studentStatus, type User } from "../db/schema";
+import { masterlist, users, userRole, studentStatus, notes, type User } from "../db/schema";
 import { requireAuth, requireAdmin } from "../middleware/auth";
+import { purgeNote } from "../lib/notes";
 
 export const adminRoutes = new Hono<AppEnv>();
 
@@ -233,4 +234,70 @@ adminRoutes.delete("/masterlist/:studentNumber", async (c) => {
     return c.json({ error: "Roster entry not found" }, 404);
   }
   return c.json({ studentNumber: deleted.studentNumber, deleted: true });
+});
+
+// PATCH /admin/notes/:id/approve — make a pending note visible to everyone.
+// `404` if missing, `409` if the note is not currently pending.
+adminRoutes.patch("/notes/:id/approve", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid note id" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+
+  const [note] = await db
+    .select({ id: notes.id, status: notes.status })
+    .from(notes)
+    .where(eq(notes.id, id))
+    .limit(1);
+  if (!note) {
+    return c.json({ error: "Note not found" }, 404);
+  }
+  if (note.status !== "pending") {
+    return c.json({ error: "Note is not pending approval" }, 409);
+  }
+
+  const [updated] = await db
+    .update(notes)
+    .set({
+      status: "approved",
+      approvedBy: c.get("user").id,
+      approvedAt: new Date(),
+    })
+    .where(eq(notes.id, id))
+    .returning();
+  return c.json(updated);
+});
+
+// POST /admin/notes/:id/reject — reject a pending note. Purges it immediately
+// (Cloudinary asset best-effort + DB row) rather than persisting a `rejected`
+// row. `404` if missing, `409` if the note is not currently pending.
+adminRoutes.post("/notes/:id/reject", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid note id" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+
+  const [note] = await db
+    .select({
+      id: notes.id,
+      status: notes.status,
+      publicId: notes.publicId,
+      resourceType: notes.resourceType,
+    })
+    .from(notes)
+    .where(eq(notes.id, id))
+    .limit(1);
+  if (!note) {
+    return c.json({ error: "Note not found" }, 404);
+  }
+  if (note.status !== "pending") {
+    return c.json({ error: "Note is not pending approval" }, 409);
+  }
+
+  await purgeNote(db, c.env, note);
+  return c.json({ id, status: "rejected", deleted: true });
 });

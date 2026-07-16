@@ -50,6 +50,13 @@
       "when": 1782447505251,
       "tag": "0006_remarkable_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784201080733,
+      "tag": "0007_fast_sandman",
+      "breakpoints": true
     }
   ]
 }

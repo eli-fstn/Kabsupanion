@@ -5,3 +5,9 @@ compatibility_date = "2025-06-01"
 # Secrets (DATABASE_URL, JWT_SECRET) are NOT set here.
 # Local:      put them in .dev.vars
 # Production: run `wrangler secret put DATABASE_URL`
+
+[triggers]
+# Sweep every 15 minutes: delete tasks whose due date's calendar day (Asia/Manila,
+# UTC+8) has fully elapsed. Cron can't fire exactly at 11:59 PM, so worst case a
+# task is removed ~15 min after end-of-day.
+crons = ["*/15 * * * *"]

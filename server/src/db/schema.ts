@@ -27,6 +27,11 @@ export const userRole = pgEnum("user_role", ["student", "admin"]);
 // irregular one. Belongs on the masterlist (student identity), not users.
 export const studentStatus = pgEnum("student_status", ["regular", "irregular"]);
 
+// Moderation state of an uploaded note. New uploads start `pending` (hidden
+// from other users until an admin approves). `rejected` exists in the enum for
+// completeness, but rejected notes are purged immediately rather than persisted.
+export const noteStatus = pgEnum("note_status", ["pending", "approved", "rejected"]);
+
 // The section roster, pre-loaded from data the school provides (student numbers
 // + names only — no emails). Registration is gated against this table: only a
 // valid, unclaimed student number can create an account.
@@ -153,6 +158,14 @@ export const notes = pgTable("notes", {
   fileName: text("file_name").notNull(),
   fileSize: integer("file_size").notNull(),
   format: text("format").notNull(),
+  // Approval workflow: new uploads are `pending` until an admin approves them.
+  // Notes have no time-based auto-deletion — an approved note stays until it is
+  // manually deleted.
+  status: noteStatus("status").notNull().default("pending"),
+  approvedBy: uuid("approved_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  approvedAt: timestamp("approved_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

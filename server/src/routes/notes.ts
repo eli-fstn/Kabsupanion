@@ -1,16 +1,22 @@
 import { Hono } from "hono";
-import { eq } from "drizzle-orm";
+import { eq, and, or } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
-import { notes, subjects, users } from "../db/schema";
+import { notes, subjects, users, noteStatus } from "../db/schema";
 import { requireAuth } from "../middleware/auth";
-import { uploadFile, deleteFile } from "../lib/cloudinary";
+import { uploadFile } from "../lib/cloudinary";
+import { purgeNote } from "../lib/notes";
 
 export const noteRoutes = new Hono<AppEnv>();
 
 noteRoutes.use("*", requireAuth);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const NOTE_STATUSES = noteStatus.enumValues; // ["pending", "approved", "rejected"]
+
+function isNoteStatus(value: unknown): value is (typeof NOTE_STATUSES)[number] {
+  return typeof value === "string" && (NOTE_STATUSES as readonly string[]).includes(value);
+}
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
@@ -24,13 +30,43 @@ const ALLOWED_MIME_TYPES = new Set([
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ]);
 
-// GET /notes — all notes newest-first, optional ?subjectId= filter.
-// Each note includes its subject and uploader (name only).
+// GET /notes — notes newest-first, optional ?subjectId= filter.
+// Visibility: admins see everything (optionally narrowed by an admin-only
+// ?status= moderation filter); everyone else sees approved notes plus their
+// own still-pending uploads. Each note includes its subject and uploader.
 noteRoutes.get("/", async (c) => {
   const subjectId = c.req.query("subjectId");
   if (subjectId !== undefined && !UUID_RE.test(subjectId)) {
     return c.json({ error: "Invalid subjectId" }, 400);
   }
+
+  const user = c.get("user");
+  const statusParam = c.req.query("status");
+
+  // `?status=` is an admin-only moderation-queue filter.
+  let statusFilter: (typeof NOTE_STATUSES)[number] | undefined;
+  if (statusParam !== undefined) {
+    if (user.role !== "admin") {
+      return c.json({ error: "Forbidden" }, 403);
+    }
+    if (!isNoteStatus(statusParam)) {
+      return c.json(
+        { error: "`status` must be 'pending', 'approved', or 'rejected'" },
+        400
+      );
+    }
+    statusFilter = statusParam;
+  }
+
+  const visibility =
+    user.role === "admin"
+      ? statusFilter
+        ? eq(notes.status, statusFilter)
+        : undefined
+      : or(
+          eq(notes.status, "approved"),
+          and(eq(notes.status, "pending"), eq(notes.uploadedBy, user.id))
+        );
 
   const db = createDb(c.env.DATABASE_URL);
 
@@ -43,7 +79,7 @@ noteRoutes.get("/", async (c) => {
     .from(notes)
     .innerJoin(subjects, eq(subjects.id, notes.subjectId))
     .leftJoin(users, eq(users.id, notes.uploadedBy))
-    .where(subjectId ? eq(notes.subjectId, subjectId) : undefined)
+    .where(and(subjectId ? eq(notes.subjectId, subjectId) : undefined, visibility))
     .orderBy(notes.createdAt);
 
   return c.json(
@@ -129,6 +165,7 @@ noteRoutes.post("/", async (c) => {
       fileName: file.name,
       fileSize: file.size,
       format: upload.format,
+      status: "pending",
     })
     .returning();
 
@@ -226,13 +263,6 @@ noteRoutes.delete("/:id", async (c) => {
     return c.json({ error: "Forbidden" }, 403);
   }
 
-  // Best-effort Cloudinary cleanup — a failed delete should not block DB removal.
-  try {
-    await deleteFile(note.publicId, note.resourceType, c.env);
-  } catch {
-    // intentionally swallowed
-  }
-
-  await db.delete(notes).where(eq(notes.id, id));
+  await purgeNote(db, c.env, note);
   return c.json({ id, deleted: true });
 });
