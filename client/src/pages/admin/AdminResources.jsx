@@ -22,8 +22,12 @@ function AdminResources() {
     setLoading(true);
     try {
       const data = await getResources();
-      console.log(data);
-      setResources(data);
+      const sorted = [...data].sort((a, b) => {
+        if (a.status === "pending" && b.status !== "pending") return -1;
+        if (a.status !== "pending" && b.status === "pending") return 1;
+        return 0;
+      });
+      setResources(sorted);
     } catch (error) {
       console.log(error);
     } finally {
