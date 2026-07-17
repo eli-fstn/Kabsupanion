@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getMe } from "../services/auth";
 import LoadingScreen from "../components/ui/LoadingScreen";
-import { clearApiCache } from "../../utils/clearApiCache.js";
+import { clearApiCache } from "../utils/clearApiCache.js";
 
 const UserContext = createContext(null);
 

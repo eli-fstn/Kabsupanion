@@ -1,6 +1,6 @@
 import Sidebar from "../../components/layout/Sidebar";
 import { Icon } from "@iconify/react";
-import { getResources, deleteResources } from "../../services/resources";
+import { getResources, deleteResources, approvedResources, rejectedResources } from "../../services/resources";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import UserIcon from "../../components/common/UserIcon";
@@ -12,7 +12,7 @@ function AdminResources() {
   const [selectedResource, setSelectedResource] = useState(null);
   const [confirmationModal, setConfirmationModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pages, setPages] = useState([1]);
   const [openPreview, setOpenPreview] = useState(false); 
@@ -22,6 +22,7 @@ function AdminResources() {
     setLoading(true);
     try {
       const data = await getResources();
+      console.log(data);
       setResources(data);
     } catch (error) {
       console.log(error);
@@ -68,6 +69,19 @@ function AdminResources() {
     setPages([1]);
     setConfirmationModalOpen(true);
   };
+
+  const handleApproveStatus = async (resource) => {
+    setLoadingForm(true);
+    try {
+      await approvedResources(resource.id);
+      setConfirmationModalOpen(false);
+      fetchResources();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingForm(false);
+    }
+  }
 
   const toPageUrl = (url, page) =>
     url
@@ -150,10 +164,10 @@ function AdminResources() {
                         <td>{t.subject.code}</td>
                         <td>{t.uploadedBy.name}</td>
                         <td>
-                          {status === "Pending" ?
-                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200">{status}</span>
+                          {t.status === "pending" ?
+                            <span className="px-3 py-1 uppercase text-xs font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200">{t.status}</span>
                           :
-                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-green-50 text-green-700 border-green-200">{status}</span>
+                            <span className="px-3 py-1 uppercase text-xs font-semibold rounded-full border bg-green-50 text-green-700 border-green-200">{t.status}</span>
                           }
                         </td>
                         <td className="flex gap-2">
@@ -191,92 +205,108 @@ function AdminResources() {
 
         {/* Approval */}
         <Modal isOpen={confirmationModal} onClose={() => setConfirmationModalOpen(false)}>
-          <div className="flex flex-col w-100 p-6">
-            <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Resources Approval</p>
-            <p className="text-gray-400 text-xs mb-5">Review and approve or reject this uploaded resource.</p>
+          {loadingForm ? (
+            <div className="flex flex-col justify-center items-center w-60 h-60">
+              <LoadingIcon dimensions="w-20 h-20"/>
+              <p className="text-gray-400 text-sm mt-5">Approving...</p>
+            </div>
+          ) : (
+            <div className="flex flex-col w-100 p-6">
+              <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Resources Approval</p>
+              <p className="text-gray-400 text-xs mb-5">Review and approve or reject this uploaded resource.</p>
 
-            <label className="text-xs font-bold mb-1 mt-4">Image <span className="text-red-400">*</span></label>
-            <div className="flex flex-col items-center gap-2">
-              <img 
-                src={selectedResource?.fileUrl.replace("/upload/", "/upload/f_jpg,pg_1,w_50,h_50,c_fill/")}
-                alt={selectedResource?.title}
-                loading="lazy"
-                className="text-xs duration-200 transition-all hover:shadow-md w-20"
-                onClick={() => setOpenPreview(true)}
-              />
-              <span className="text-gray-400 text-xs text-center">(Click the image to show the full preview)</span>
-              {openPreview &&
-              <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={handleClose}>
-                <div className="bg-white rounded-xl overflow-hidden w-[40vw] h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={handleClose}
-                      bgColor="bg-transparent"
-                      typography="text-gray-400 hover:text-gray-600"
-                      padding="p-2 px-5"
-                      dimensions="rounded-md"
-                      animation="active:scale-95 transition-all duration-100"
-                      text={<Icon icon="mdi:close" className="text-2xl" />}
-                    />
-                  </div>
-                  <div className="w-full flex-1 overflow-y-auto flex flex-col items-center bg-gray-100 p-4 gap-4">
-                    {selectedResource?.fileUrl && pages.map((page) => (
-                      <img
-                        key={page}
-                        src={toPageUrl(selectedResource.fileUrl, page)}
-                        alt={`Page ${page}`}
-                        className="w-full rounded shadow"
-                        onLoad={() => handlePageLoad(page)}
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
+              <label className="text-xs font-bold mb-1 mt-4">Image <span className="text-red-400">*</span></label>
+              <div className="flex flex-col items-center gap-2">
+                <img 
+                  src={selectedResource?.fileUrl.replace("/upload/", "/upload/f_jpg,pg_1,w_50,h_50,c_fill/")}
+                  alt={selectedResource?.title}
+                  loading="lazy"
+                  className="text-xs duration-200 transition-all hover:shadow-md w-20"
+                  onClick={() => setOpenPreview(true)}
+                />
+                <span className="text-gray-400 text-xs text-center">(Click the image to show the full preview)</span>
+                {openPreview &&
+                <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={handleClose}>
+                  <div className="bg-white rounded-xl overflow-hidden w-[40vw] h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={handleClose}
+                        bgColor="bg-transparent"
+                        typography="text-gray-400 hover:text-gray-600"
+                        padding="p-2 px-5"
+                        dimensions="rounded-md"
+                        animation="active:scale-95 transition-all duration-100"
+                        text={<Icon icon="mdi:close" className="text-2xl" />}
                       />
-                    ))}
+                    </div>
+                    <div className="w-full flex-1 overflow-y-auto flex flex-col items-center bg-gray-100 p-4 gap-4">
+                      {selectedResource?.fileUrl && pages.map((page) => (
+                        <img
+                          key={page}
+                          src={toPageUrl(selectedResource.fileUrl, page)}
+                          alt={`Page ${page}`}
+                          className="w-full rounded shadow"
+                          onLoad={() => handlePageLoad(page)}
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
+                }
               </div>
-              }
+
+              <label className="text-xs font-bold mb-1 mt-4">Title <span className="text-red-400">*</span></label>
+              <p className="text-xs font-semibold text-gray-800 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">{selectedResource?.title}</p>
+
+              <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
+              <p className="text-xs font-semibold text-gray-800 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">{selectedResource?.subject?.code}</p>
+
+              <label className="text-xs font-bold mb-1 mt-4">Uploader <span className="text-red-400">*</span></label>
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                <UserIcon dimensions="w-4 h-4" typography="text-gray-800" />
+                <p className="text-xs font-semibold text-gray-800">{selectedResource?.uploadedBy?.name}</p>
+              </div>
+
+              <label className="text-xs font-bold mb-1 mt-4">Status <span className="text-red-400">*</span></label>
+              <p className={`px-3 py-1 uppercase text-xs w-fit font-semibold rounded-full border ${selectedResource?.status === "pending" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-green-50 text-green-700 border-green-200" }`}>{selectedResource?.status}</p>
+
+              <div className="flex justify-center items-center gap-3 mt-7">
+                <Button
+                  type="button"
+                  onClick={() => setConfirmationModalOpen(false)}
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200"
+                  typography="text-gray-600 font-bold text-xs"
+                  padding="px-4 py-2"
+                  dimensions="w-fit rounded-md"
+                />
+                {selectedResource?.status === "approved" ? (
+                  <Button
+                    type="button"
+                    text="Already Approved"
+                    bgColor="bg-[#1B651B] opacity-50"
+                    typography="text-white font-bold text-xs"
+                    padding="px-4 py-2"
+                    dimensions="w-fit rounded-md"
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={() => handleApproveStatus(selectedResource)}
+                    text="Approve"
+                    bgColor="bg-[#1B651B]"
+                    typography="text-white font-bold text-xs"
+                    padding="px-4 py-2"
+                    dimensions="w-fit rounded-md"
+                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                  />
+                )}
+              </div>
             </div>
-
-            <label className="text-xs font-bold mb-1 mt-4">Title <span className="text-red-400">*</span></label>
-            <p className="text-xs font-semibold text-gray-800 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">{selectedResource?.title}</p>
-
-            <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
-            <p className="text-xs font-semibold text-gray-800 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">{selectedResource?.subject?.code}</p>
-
-            <label className="text-xs font-bold mb-1 mt-4">Uploader <span className="text-red-400">*</span></label>
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-              <UserIcon dimensions="w-4 h-4" typography="text-gray-800" />
-              <p className="text-xs font-semibold text-gray-800">{selectedResource?.uploadedBy?.name}</p>
-            </div>
-
-            <label className="text-xs font-bold mb-1 mt-4">Status <span className="text-red-400">*</span></label>
-            <p className="px-3 py-1 text-xs w-fit font-semibold rounded-full border bg-orange-100 text-orange-700 border-orange-300">{status}</p>
-
-            <div className="flex justify-center items-center gap-3 mt-7">
-              <Button
-                type="button"
-                onClick={() => setConfirmationModalOpen(false)}
-                text="Cancel"
-                bgColor="bg-gray-100 hover:bg-gray-200"
-                typography="text-gray-600 font-bold text-xs"
-                padding="px-4 py-2"
-                dimensions="w-fit rounded-md"
-              />
-              <Button
-                type="button"
-                onClick={() => {
-                  setConfirmationModalOpen(false);
-                }}
-                text="Approve"
-                bgColor="bg-[#1B651B]"
-                typography="text-white font-bold text-xs"
-                padding="px-4 py-2"
-                dimensions="w-fit rounded-md"
-                animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
-              />
-            </div>
-          </div>
+          )}
         </Modal>
 
         {/* Delete Confirmation Modal */}
@@ -307,7 +337,7 @@ function AdminResources() {
                   />
                   <Button
                     type="button"
-                    onClick={handleDeleteConfirm}
+                    onClick={() => handleDeleteConfirm()}
                     text="Delete"
                     bgColor="bg-[#A32D2D] hover:bg-red-800"
                     typography="text-white font-bold text-xs"

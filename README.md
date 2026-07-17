@@ -20,15 +20,15 @@ The platform consolidates essential academic resources into a single interface, 
 
 | Feature                                              | Status      | Description                                                         |
 | ---------------------------------------------------- | ----------- | ------------------------------------------------------------------- |
-| Task List (`/dashboard`)                             | IMPLEMENTED | Manage and track academic tasks and deadlines efficiently.          |
-| Class Schedule (`/dashboard`)                        | IMPLEMENTED | View weekly class schedules in an organized format.                 |
-| Class Resources(`/dashboard`)                        | IMPLEMENTED | Upload, access, and share study notes and reviewers.                |
-| Admin Dashboard Panel (`/admin/dashboard`)           | IMPLEMENTED | Centralized control panel for managing system overview and data.    |
-| Admin Task List Panel (`/admin/tasks`)               | IMPLEMENTED | Create, update, and manage academic tasks and deadlines.            |
-| Admin Class Schedule Panel (`/admin/schedule`)       | IMPLEMENTED | Maintain and organize class schedules for the section.              |
-| Admin Class Resources Panel (`/admin/resources`)     | IMPLEMENTED | Manage and organize shared notes and study materials.               |
-| Admin Class Subjects Panel (`/admin/subjects`)       | IMPLEMENTED | Create, update, and organize subjects for the assigned class.       |
-| Admin Class List Panel (`/admin/masterlist`)         | IMPLEMENTED | Manage student records, status, and section membership information. |
+| Task List (`/dashboard`)                             | ✅ IMPLEMENTED | Manage and track academic tasks and deadlines efficiently.          |
+| Class Schedule (`/dashboard`)                        | ✅ IMPLEMENTED | View weekly class schedules in an organized format.                 |
+| Class Resources(`/dashboard`)                        | ✅ IMPLEMENTED | Upload, access, and share study notes and reviewers.                |
+| Admin Dashboard Panel (`/admin/dashboard`)           | ✅ IMPLEMENTED | Centralized control panel for managing system overview and data.    |
+| Admin Task List Panel (`/admin/tasks`)               | ✅ IMPLEMENTED | Create, update, and manage academic tasks and deadlines.            |
+| Admin Class Schedule Panel (`/admin/schedule`)       | ✅ IMPLEMENTED | Maintain and organize class schedules for the section.              |
+| Admin Class Resources Panel (`/admin/resources`)     | ✅ IMPLEMENTED | Manage and organize shared notes and study materials.               |
+| Admin Class Subjects Panel (`/admin/subjects`)       | ✅ IMPLEMENTED | Create, update, and organize subjects for the assigned class.       |
+| Admin Class List Panel (`/admin/masterlist`)         | ✅ IMPLEMENTED | Manage student records, status, and section membership information. |
 
 ---
 

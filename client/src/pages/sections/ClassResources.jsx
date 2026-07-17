@@ -18,6 +18,8 @@ export default function ClassResources() {
   const [loading, setLoading] = useState(false);
   const [loadingForm, setLoadingForm] = useState(false);
   const sectionRef = useRef(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const successTimeoutRef = useRef(null);
 
   // Add
   const [title, setTitle] = useState("");
@@ -55,7 +57,7 @@ export default function ClassResources() {
     setLoading(true);
     try {
       const data = await getResources();
-      setResources(data);
+      setResources(data.filter((resource) => resource.status === "approved"));
     } catch (error) {
       console.log(error);
     } finally {
@@ -107,8 +109,14 @@ export default function ClassResources() {
     setLoadingForm(true);
     try {
       await uploadResource(title, subjectID, student?.user?.name, file);
-      setModalOpen(false);
+      setShowSuccess(true);
       fetchResources();
+
+      successTimeoutRef.current = setTimeout(() => {
+        setShowSuccess(false);
+        setModalOpen(false);
+        resetForm();
+      }, 5000);
     } catch (error) {
       handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
       console.log(error);
@@ -125,6 +133,10 @@ export default function ClassResources() {
   }
 
   const handleClose = () => {
+    if (successTimeoutRef.current) {
+      clearTimeout(successTimeoutRef.current);
+    }
+    setShowSuccess(false);
     resetForm();
     setModalOpen(false);
   }
@@ -181,6 +193,12 @@ export default function ClassResources() {
               <div className="flex flex-col justify-center items-center w-56 h-56 sm:h-64">
                 <LoadingIcon dimensions="w-16 h-16 sm:w-20 sm:h-20" />
                 <p className="text-gray-400 dark:text-[#E0E0E0] text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite] text-center">Submitting...</p>
+              </div>
+            ) : showSuccess ? (
+              <div className="flex flex-col justify-center items-center w-56 h-56 text-center">
+                <Icon icon="mdi:clock-check-outline" className="text-[#1B651B] mb-3 w-16 h-16 sm:w-20 sm:h-20" />
+                <p className="font-bold text-md text-[#1B651B]">Submitted!</p>
+                <p className="text-gray-400 dark:text-[#E0E0E0] text-xs mt-2">Your resource is now in pending state and will be visible to your blockmates once approved.</p>
               </div>
             ) : (
               <>

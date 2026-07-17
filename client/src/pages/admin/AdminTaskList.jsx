@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import { handleApiError } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
-import { formatDate } from "../../../utils/FormattedDate";
+import { formatDate } from "../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function AdminList() {
@@ -210,8 +210,6 @@ function AdminList() {
       : daysRemaining === 1
       ? "text-red-500 font-bold"
       : daysRemaining === 0
-      ? "text-red-700 font-bold"
-      : daysRemaining < 0
       ? "text-purple-900 font-bold"
       : "";
 
@@ -220,12 +218,31 @@ function AdminList() {
       <Sidebar />
 
       <div className="flex-1 p-8">
-        <div className="mb-6">
+        <div className="">
           <p className="font-bold text-[1.5rem] font-[montserrat]">Task List</p>
           <p className="text-gray-400 text-sm">Manage and monitor student tasks, assignments, and deadlines.</p>
         </div>
 
-        <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
+        {/* Legend */}
+        <div className="my-5">
+          <p className="text-sm font-medium text-gray-700 dark:text-[#E0E0E0]">Remaining days before the deadline:</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-2">
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-amber-500 dark:bg-amber-400 rounded-full inline-block mr-1"></span> - 3 days
+            </p>
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-orange-500 dark:bg-orange-400 rounded-full inline-block mr-1"></span> - 2 days
+            </p>
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full inline-block mr-1"></span> - Due tomorrow
+            </p>
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-purple-900 dark:bg-purple-400 rounded-full inline-block mr-1"></span> - Due today
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white w-full border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
