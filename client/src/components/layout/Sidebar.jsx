@@ -6,7 +6,7 @@ import UserIcon from "../common/UserIcon";
 import LoadingScreen from "../ui/LoadingScreen";
 import { useState } from "react";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
-import { clearApiCache } from "../../../utils/clearApiCache.js";
+import { clearApiCache } from "../../utils/clearApiCache.js";
 
 function Sidebar() {
   const { student } = useUser();

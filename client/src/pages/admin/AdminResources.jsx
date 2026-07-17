@@ -1,6 +1,6 @@
 import Sidebar from "../../components/layout/Sidebar";
 import { Icon } from "@iconify/react";
-import { getResources, deleteResources } from "../../services/resources";
+import { getResources, deleteResources, approvedResources, rejectedResources } from "../../services/resources";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import UserIcon from "../../components/common/UserIcon";
@@ -12,7 +12,7 @@ function AdminResources() {
   const [selectedResource, setSelectedResource] = useState(null);
   const [confirmationModal, setConfirmationModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pages, setPages] = useState([1]);
   const [openPreview, setOpenPreview] = useState(false); 
@@ -53,6 +53,7 @@ function AdminResources() {
   const handleDeleteConfirm = async () => {
     setLoadingForm(true);
     try {
+      await rejectedResources(selectedResource.id);
       await deleteResources(selectedResource.id);
       setDeleteModalOpen(false);
       fetchResources();
@@ -68,6 +69,14 @@ function AdminResources() {
     setPages([1]);
     setConfirmationModalOpen(true);
   };
+
+  const handleApproveStatus = async (resources) => {
+    try {
+      approvedResources(resources.id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const toPageUrl = (url, page) =>
     url
@@ -150,10 +159,10 @@ function AdminResources() {
                         <td>{t.subject.code}</td>
                         <td>{t.uploadedBy.name}</td>
                         <td>
-                          {status === "Pending" ?
-                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200">{status}</span>
+                          {resources.status === "pending" ?
+                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-amber-50 text-amber-700 border-amber-200">{resources.status}</span>
                           :
-                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-green-50 text-green-700 border-green-200">{status}</span>
+                            <span className="px-3 py-1 text-xs font-semibold rounded-full border bg-green-50 text-green-700 border-green-200">{resources.status}</span>
                           }
                         </td>
                         <td className="flex gap-2">
@@ -307,7 +316,7 @@ function AdminResources() {
                   />
                   <Button
                     type="button"
-                    onClick={handleDeleteConfirm}
+                    onClick={() => handleDeleteConfirm()}
                     text="Delete"
                     bgColor="bg-[#A32D2D] hover:bg-red-800"
                     typography="text-white font-bold text-xs"

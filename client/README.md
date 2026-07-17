@@ -34,17 +34,23 @@
 
 ## Tech Stack
 
-| Category | Technologies |
-|----------|--------------|
-| Framework | React 19 |
-| Build Tool | Vite |
-| Styling | Tailwind CSS |
-| Routing | React Router DOM |
-| HTTP Client | Axios |
-| Icons | Iconify |
-| Notifications | React Hot Toast |
-| Language | JavaScript (JSX) |
-| API Communication | REST API |
+| Category                        | Technology        |
+| :------------------------------ | :---------------- |
+| **Framework**                   | React 19          |
+| **Language**                    | JavaScript (JSX)  |
+| **Build Tool**                  | Vite              |
+| **Styling**                     | Tailwind CSS      |
+| **Routing**                     | React Router DOM  |
+| **State Management**            | React Context API |
+| **HTTP Client**                 | Axios             |
+| **Charts & Data Visualization** | Recharts          |
+| **Animations**                  | React CountUp     |
+| **PDF Rendering**               | React PDF         |
+| **Icons**                       | Iconify           |
+| **Progressive Web App**         | Vite Plugin PWA   |
+| **Linting**                     | ESLint            |
+| **Deployment**                  | Vercel            |
+| **Backend Communication**       | REST API          |
 
 ---
 
@@ -52,33 +58,50 @@
 
 ```text
 client/
-├── assets/              # Static assets (icons, images, illustrations)
-├── src/
-│   ├── components/
-│   │   ├── common/      # Shared reusable components
-│   │   ├── layout/      # Layout components
-│   │   └── ui/          # Reusable UI components
-│   │
-│   ├── context/         # React Context providers
-│   ├── hooks/           # Custom React hooks
-│   ├── pages/
-│   │   ├── admin/
-│   │   ├── auth/
-│   │   ├── errors/
-│   │   ├── sections/
-│   │   └── student/
-│   │
-│   ├── routes/          # Route definitions
-│   ├── services/        # API services
-│   ├── styles/          # Global styles
-│   ├── App.jsx
-│   └── main.jsx
+├── public/
+│   ├── icon/                    # PWA and application icons
+│   ├── favicon.ico
+│   └── site.webmanifest
 │
-├── utils/               # Utility functions
-├── .env
+├── src/
+│   ├── assets/
+│   │   ├── illustrations/       # SVGs and illustrations
+│   │   └── images/              # Images and other media assets
+│   │
+│   ├── components/
+│   │   ├── common/              # Shared reusable components
+│   │   ├── layout/              # Layout components (Navbar, Sidebar, Footer, etc.)
+│   │   └── ui/                  # Reusable UI components
+│   │
+│   ├── context/                 # React Context providers
+│   ├── hooks/                   # Custom React hooks
+│   │
+│   ├── pages/
+│   │   ├── admin/               # Administrator pages
+│   │   ├── auth/                # Authentication pages
+│   │   ├── errors/              # Error pages
+│   │   ├── sections/            # Shared section pages
+│   │   └── student/             # Student pages
+│   │
+│   ├── routes/                  # Route configuration
+│   ├── services/                # API and service functions
+│   ├── styles/                  # Global styles
+│   ├── utils/                   # Utility/helper functions
+│   │
+│   ├── App.jsx                  # Root application component
+│   ├── main.jsx                 # Application entry point
+│   └── vite-env.d.ts            # Vite TypeScript declarations
+│
+├── .env                         # Environment variables
+├── .gitignore
 ├── CHANGELOG.md
+├── eslint.config.js
+├── index.html
 ├── package.json
+├── package-lock.json
+├── README.md
 ├── tailwind.config.js
+├── vercel.json
 └── vite.config.js
 ```
 

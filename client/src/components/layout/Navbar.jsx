@@ -6,7 +6,7 @@ import Button from "../../components/ui/Button";
 import UserIcon from "../common/UserIcon";
 import DarkModeToggle from "../../components/ui/DarkModeToggle";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
-import { clearApiCache } from "../../../utils/clearApiCache.js";
+import { clearApiCache } from "../../utils/clearApiCache.js";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);

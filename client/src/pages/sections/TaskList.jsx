@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useUser } from "../../context/userContext.jsx";
 import { getTasks, finishedTask, unfinishTask } from "../../services/taskList.ts";
 import { getSubjects } from "../../services/subjects.ts";
-import { formatDate } from "../../../utils/FormattedDate.ts";
+import { formatDate } from "../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
 function TaskList({ studentName = "Juan" }) {
@@ -90,8 +90,6 @@ function TaskList({ studentName = "Juan" }) {
       : daysRemaining === 1
       ? "text-red-500 dark:text-red-400 font-bold"
       : daysRemaining === 0
-      ? "text-red-700 dark:text-red-500 font-bold"
-      : daysRemaining < 0
       ? "text-purple-900 dark:text-purple-400 font-bold"
       : "";
 
@@ -127,10 +125,7 @@ function TaskList({ studentName = "Juan" }) {
             <span className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full inline-block mr-1"></span> - Due tomorrow
           </p>
           <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-red-700 dark:bg-red-500 rounded-full inline-block mr-1"></span> - Due today
-          </p>
-          <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
-            <span className="w-3 h-3 bg-purple-900 dark:bg-purple-400 rounded-full inline-block mr-1"></span> - Overdue
+            <span className="w-3 h-3 bg-purple-900 dark:bg-purple-400 rounded-full inline-block mr-1"></span> - Due today
           </p>
         </div>
       </div>
