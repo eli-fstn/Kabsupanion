@@ -77,15 +77,29 @@ function Navbar() {
               />
             </div>
 
-            {/* Always mounted now — visibility is animated via classes instead of
-                being conditionally rendered, so both opening AND closing animate. */}
             <div
-              className={`absolute right-0 mt-2 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#1a1a1a] rounded-lg shadow-lg z-20 text-center transition-all duration-200 ease-out origin-top-right
+              className={`absolute right-0 mt-2 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#1a1a1a] rounded-lg shadow-lg z-20 transition-all duration-200 ease-out origin-top-right
                 ${dropdownOpen
                   ? "opacity-100 scale-100 pointer-events-auto"
                   : "opacity-0 scale-0 pointer-events-none"
                 }`}
             >
+              {student.user.role === "admin" && 
+                <Button
+                  text={
+                    <>
+                      <Icon icon="gg:website" className="shrink-0 w-5 h-5 text-[#1B651B] dark:text-[#56e556] mr-2" />
+                      View as Admin
+                    </>
+                  }
+                  onClick={() => navigate(-1)}
+                  bgColor=""
+                  typography="text-sm font-bold text-[#1B651B] dark:text-[#56e556] flex items-center justify-center whitespace-nowrap"
+                  dimensions="w-full rounded-md"
+                  padding="px-5 py-2"
+                  animation="transition duration-100 hover:bg-gray-100 dark:hover:bg-[#555555]"
+                />
+              }
               <Button
                 text={
                   <>

@@ -93,7 +93,7 @@ function AdminDashboard() {
       <Sidebar />
       <div className="flex-1 p-8">
         <div className="mb-7 leading-5">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").at(0)}!</span></p>
+          <p className="font-bold text-[1.7rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").slice(-1)[0]}!</span></p>
           <p className="text-gray-400 text-sm mt-1">Here's what's happening in your section.</p>
         </div>
 

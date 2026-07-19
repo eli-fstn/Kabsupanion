@@ -91,6 +91,20 @@ function Sidebar() {
         <Button
           text={
             <>
+              <Icon icon="gg:website" width="17" height="17" />
+              <span className="ml-1">View as Student</span>
+            </>
+          }
+          onClick={() => navigate("/student/dashboard")}
+          bgColor="hover:bg-[#f4f4f4]"
+          typography="text-[.7rem] font-bold text-[#828282] flex items-center hover:text-[#1B651B]"
+          dimensions="w-full rounded-md"
+          padding="p-2"
+        />
+
+        <Button
+          text={
+            <>
               <Icon icon="gridicons:sign-out" width="17" height="17" />
               <span className="ml-1">Sign Out</span>
             </>
