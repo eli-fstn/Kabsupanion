@@ -8,7 +8,6 @@ import Modal from "../../components/ui/Modal";
 import { handleApiError } from "../../services/errorHandler.ts";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
-import background from "../../assets/images/Laya-at-Diwa.png";
 
 function Register(){
 	const isNumber = (value) => /^[0-9]+$/.test(value);
@@ -239,11 +238,6 @@ function Register(){
 						/>
 					</div>
 				</form>
-			</div>
-
-			{/* LAYA AT DIWA BACKGROUND */}
-			<div className="sm:block absolute bottom-0 right-4 md:right-20 lg:right-80 z-0">
-				<img className="opacity-50 w-72" src={background} alt="Laya at Diwa"/>
 			</div>
 
 			<div className="flex justify-center items-center fixed bottom-0 left-0 right-0 py-3">
