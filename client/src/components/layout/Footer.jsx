@@ -100,7 +100,7 @@ function Footer() {
         </div>
         <div className="w-full border-t border-t-gray-200 dark:border-t-[#2a2a2a]"></div>
         
-        <div className="p-5 sm:p-8 w-80 sm:w-full max-w-lg sm:max-w-xl h-[60vh] sm:h-[85vh] md:h-150 overflow-y-auto space-y-5 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 rounded-xl">
+        <div className="p-5 sm:p-8 w-80 sm:w-full max-w-lg sm:max-w-xl h-[80vh] md:h-150 overflow-y-auto space-y-5 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 rounded-xl">
           <p className="text-xl sm:text-[1.7rem] font-bold font-[montserrat] text-gray-900 dark:text-white">Getting Started</p>
 
           <section>
