@@ -2,8 +2,9 @@ import Sidebar from "../../components/layout/Sidebar";
 import { getSubjects, uploadSubject, editSubject, deleteSubject } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
 import { Icon, loadIcon } from "@iconify/react";
-import { handleApiError } from "../../services/errorHandler.ts";
+import { handleApiError, getErrorMessage } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
+import { useToast } from "../../context/toastContext";
 import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 
@@ -37,6 +38,7 @@ function AdminSubjects() {
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState(null);
+  const { showToast } = useToast();
 
   const fetchSubjects = async () => {
     setLoading(true);
@@ -44,6 +46,7 @@ function AdminSubjects() {
       const data = await getSubjects();
       setSubjects(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
       setLoading(false);
     } finally {
@@ -161,6 +164,7 @@ function AdminSubjects() {
       setDeleteModalOpen(false);
       fetchSubjects();
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoadingForm(false);

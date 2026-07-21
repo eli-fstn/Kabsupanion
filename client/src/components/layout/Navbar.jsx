@@ -84,7 +84,7 @@ function Navbar() {
                   : "opacity-0 scale-0 pointer-events-none"
                 }`}
             >
-              {student.user.role === "admin" && 
+              {student?.user?.role === "admin" && 
                 <Button
                   text={
                     <>

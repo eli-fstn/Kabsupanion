@@ -2,8 +2,9 @@ import Sidebar from "../../components/layout/Sidebar";
 import { getMasterlist, addToMasterlist, editMasterlist, deleteMasterlist } from "../../services/masterlist";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { handleApiError } from "../../services/errorHandler.ts";
+import { handleApiError, getErrorMessage } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
+import { useToast } from "../../context/toastContext";
 import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import CountUp from "react-countup";
@@ -43,6 +44,7 @@ function AdminMasterlist() {
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const fetchList = async () => {
     setLoading(true);
@@ -50,6 +52,7 @@ function AdminMasterlist() {
       const data = await getMasterlist();
       setList(data);
     } catch (err) {
+      showToast(getErrorMessage(err));
       console.log(err);
     } finally {
       setLoading(false);
@@ -205,6 +208,7 @@ function AdminMasterlist() {
       setDeleteModalOpen(false);
       fetchList();
     } catch (err) {
+      showToast(getErrorMessage(err));
       console.log(err);
     } finally {
       setLoadingForm(false);

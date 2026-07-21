@@ -52,8 +52,8 @@ function Sidebar() {
 
           <div className="ml-2 flex flex-col">
             <p className="font-bold text-[.9rem] text-white">
-              {student?.user?.name.split(" ").at(0)}{" "}
-              {student?.user?.name.split(" ").at(-1)}
+              {student?.user?.name?.split(" ").at(0)}{" "}
+              {student?.user?.name?.split(" ").at(-1)}
             </p>
             <p className="uppercase text-[.6rem] font-medium text-white/70 flex items-center">
               <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>

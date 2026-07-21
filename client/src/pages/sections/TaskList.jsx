@@ -6,6 +6,8 @@ import { getTasks, finishedTask, unfinishTask } from "../../services/taskList.ts
 import { getSubjects } from "../../services/subjects.ts";
 import { formatDate } from "../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
+import { useToast } from "../../context/toastContext";
+import { getErrorMessage } from "../../services/errorHandler.ts";
 
 function TaskList({ studentName = "Juan" }) {
   const [activeSubject, setActiveSubject] = useState("ALL");
@@ -14,6 +16,7 @@ function TaskList({ studentName = "Juan" }) {
   const { student } = useUser();
   const [loading, setLoading] = useState(false);
   const sectionRef = useRef(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,6 +45,7 @@ function TaskList({ studentName = "Juan" }) {
       const data = await getTasks();
       setTask(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoading(false);
@@ -53,6 +57,7 @@ function TaskList({ studentName = "Juan" }) {
       const data = await getSubjects();
       setSubject(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     }
   };
@@ -68,6 +73,7 @@ function TaskList({ studentName = "Juan" }) {
       // Refresh tasks so the completed state updates
       fetchTask();
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.error(error);
     }
   };

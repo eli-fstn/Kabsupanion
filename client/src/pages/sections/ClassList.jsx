@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { getMasterlist } from "../../services/masterlist";
 import Button from "../../components/ui/Button";
+import { useToast } from "../../context/toastContext";
+import { getErrorMessage } from "../../services/errorHandler.ts";
 
 function ClassList() {
   const [academicStatus, setAcademicStatus] = useState("Regular");
   const [masterList, setMasterList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const { showToast } = useToast();
   const itemsPerPage = 10;
 
   const acadStatus = [ "Regular", "Irregular" ];
@@ -16,6 +19,7 @@ function ClassList() {
       const data = await getMasterlist();
       setMasterList(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } 
   }

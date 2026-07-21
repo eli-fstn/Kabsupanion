@@ -4,9 +4,12 @@ import { useUser } from "../../context/userContext";
 import Button from "./Button";
 import { Icon } from "@iconify/react";
 import jsPDF from "jspdf";
+import { useToast } from "../../context/toastContext";
+import { getErrorMessage } from "../../services/errorHandler.ts";
 
-function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
+function ResourceCard({ title, subject, fileUrl, uploadedBy, status }) {
   const { student } = useUser();
+  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [pages, setPages] = useState([1]);
   const [downloading, setDownloading] = useState(false);
@@ -100,6 +103,7 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
 
         pdf.save(title.toLowerCase().endsWith(".pdf") ? title : `${title}.pdf`);
       } catch (error) {
+        showToast(getErrorMessage(error));
         console.log(error);
       } finally {
         setDownloading(false);
@@ -122,8 +126,13 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy }) {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 duration-300 ease-out hover:-translate-y-1 hover:border-gray-300 dark:hover:border-[#7a7a7a] transition flex flex-col h-full"
+        className="relative bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444444] rounded-xl overflow-hidden cursor-pointer hover:shadow-md dark:hover:shadow-black/40 duration-300 ease-out hover:-translate-y-1 hover:border-gray-300 dark:hover:border-[#7a7a7a] transition flex flex-col h-full"
       >
+        {status === "pending" && (
+          <span className="absolute top-2 right-2 z-10 bg-yellow-400 text-yellow-900 text-[.65rem] font-bold px-2 py-0.5 rounded-full shadow-sm">
+            Pending approval
+          </span>
+        )}
         <div className="h-36 md:h-40 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#1a1a1a] flex items-center justify-center overflow-hidden shrink-0">
           {previewUrl ? (
             <img src={previewUrl} alt={title} loading="lazy" className="w-full h-full object-cover" />

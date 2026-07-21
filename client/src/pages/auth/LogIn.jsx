@@ -21,17 +21,11 @@ function LogIn() {
   const { student } = useUser();
 
   useEffect(() => {
-    refetchUser();
-
-    if (localStorage.getItem("token")) {
-      if (student.user?.role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/student/dashboard");
-      }
-    } else {
+    if (!localStorage.getItem("token")) {
       navigate("/");
+      return;
     }
+    navigate(student?.user?.role === "admin" ? "/admin/dashboard" : "/student/dashboard");
   }, []);
 
   const handleLogIn = async (e) => {

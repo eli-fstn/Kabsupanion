@@ -2,16 +2,20 @@ import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import { useState, useEffect } from "react";
 import { getActivity } from "../../services/activityTracker.ts";
+import { useToast } from "../../context/toastContext";
+import { getErrorMessage } from "../../services/errorHandler.ts";
 
 function ActivityTracker() {
   const [activeSubject, setActiveSubject] = useState("All");
   const [activity, setActivity] = useState([]);
+  const { showToast } = useToast();
 
   const fetchActivity = async () => {
     try {
       const data = await getActivity();
       setActivity(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } 
   }

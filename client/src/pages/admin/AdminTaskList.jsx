@@ -3,8 +3,9 @@ import { getTasks, uploadTask, editTask, deleteTask } from "../../services/taskL
 import { getSubjects } from "../../services/subjects.ts";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { handleApiError } from "../../services/errorHandler.ts";
+import { handleApiError, getErrorMessage } from "../../services/errorHandler.ts";
 import Button from "../../components/ui/Button";
+import { useToast } from "../../context/toastContext";
 import Modal from "../../components/ui/Modal";
 import { formatDate } from "../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
@@ -43,6 +44,7 @@ function AdminList() {
 
   // Delete
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -50,6 +52,7 @@ function AdminList() {
       const data = await getTasks();
       setTasks(Array.isArray(data) ? [...data].reverse() : []);
     } catch (err) {
+      showToast(getErrorMessage(err));
       console.log(err);
     } finally {
       setLoading(false);
@@ -61,6 +64,7 @@ function AdminList() {
       const data = await getSubjects();
       setSubjects(data);
     } catch (err) {
+      showToast(getErrorMessage(err));
       console.log(err);
     }
   };
@@ -194,6 +198,7 @@ function AdminList() {
       setDeleteModalOpen(false);
       fetchTasks();
     } catch (err) {
+      showToast(getErrorMessage(err));
       console.log(err);
     } finally {
       setLoadingForm(false);
