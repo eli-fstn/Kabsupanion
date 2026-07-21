@@ -22,6 +22,10 @@ function AdminDashboard() {
   const [resourcePage, setResourcePage] = useState(1);
   const [loading, setLoading] = useState(false);
   const greetings = useGreeting();
+  const pendingCount = resources.filter((r) => r.status === "pending").length;
+  const approvedCount = resources.filter((r) => r.status === "approved").length;
+  const irregStudents = masterlist.filter((r) => r.status === "irregular").length;
+  const regStudents = masterlist.filter((r) => r.status === "regular").length;
 
   const fetchMasterlist = async () => {
     try {
@@ -87,163 +91,264 @@ function AdminDashboard() {
     name: subject.code,
     value: task.filter(t => t.subject.code === subject.code).length,
   })).filter(s => s.value > 0);
-  
+
   return (
     <div className="bg-[#fafafa] min-h-screen flex">
       <Sidebar />
-      <div className="flex-1 p-8">
-        <div className="mb-7 leading-5">
-          <p className="font-bold text-[1.7rem] font-[montserrat]">{greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2.2rem] text-[#387c39]">{student?.user?.name.split(" ").slice(-1)[0]}!</span></p>
+      <div className="flex-1 p-6 sm:p-8 max-w-[1600px]">
+
+        {/* HEADER */}
+        <div className="mb-5">
+          <p className="font-bold text-[1.5rem] sm:text-[1.7rem] font-[montserrat] leading-tight">
+            {greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2rem] sm:text-[2.2rem] text-[#387c39]">{student?.user?.name?.split(" ").slice(-1)[0]}!</span>
+          </p>
           <p className="text-gray-400 text-sm mt-1">Here's what's happening in your section.</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700 flex items-center gap-4">
-            <div className="bg-[#eaf3de] rounded-lg p-3">
-              <Icon icon="akar-icons:people-group" className="text-[#1B651B] w-5 h-5" />
+        {/* STAT CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+
+          {/* Total Students */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 transition-shadow duration-200 hover:shadow-md">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#eaf3de] rounded-lg p-3 shrink-0">
+                <Icon icon="akar-icons:people-group" className="w-5 h-5 text-[#1B651B]" />
+              </div>
+              <div className="min-w-0">
+                <label className="text-[.65rem] font-bold uppercase tracking-widest text-gray-400 block truncate">
+                  Total Students
+                </label>
+                <p className="text-[1.6rem] font-bold leading-7 text-[#1B651B]">
+                  <CountUp.default start={0} end={masterlist.length} duration={2} />
+                </p>
+              </div>
             </div>
-            <div>
-              <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Total Students</label>
-              <p className="text-[1.7rem] font-bold text-[#1B651B] leading-7"><CountUp.default start={0} end={masterlist.length} duration={2}/></p>
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                <p className="text-xs text-gray-500">
+                  <span className="font-bold text-amber-700">{irregStudents}</span> Irregular
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#1B651B] shrink-0"></span>
+                <p className="text-xs text-gray-500">
+                  <span className="font-bold text-[#1B651B]">{regStudents}</span> Regular
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700  flex items-center gap-4">
-            <div className="bg-[#e6f1fb] rounded-lg p-3">
-              <Icon icon="ix:tasks-all" className="text-[#185FA5] w-5 h-5" />
+          {/* Uploaded Tasks */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 transition-shadow duration-200 hover:shadow-md">
+            <div className="bg-[#eaf3de] rounded-lg p-3 shrink-0">
+              <Icon icon="ix:tasks-all" className="w-5 h-5 text-[#1B651B]" />
             </div>
-            <div>
-              <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Tasks</label>
-              <p className="text-[1.7rem] font-bold text-[#185FA5] leading-7"><CountUp.default start={0} end={task.length} duration={2}/></p>
+            <div className="min-w-0">
+              <label className="text-[.65rem] font-bold uppercase tracking-widest text-gray-400 block truncate">
+                Uploaded Tasks
+              </label>
+              <p className="text-[1.6rem] font-bold leading-7 text-[#1B651B]">
+                <CountUp.default start={0} end={task.length} duration={2} />
+              </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 border-t-4 border-t-green-700  flex items-center gap-4">
-            <div className="bg-[#faeeda] rounded-lg p-3">
-              <Icon icon="grommet-icons:resources" className="text-[#BA7517] w-5 h-5" />
+          {/* Resources — combined total + pending/approved breakdown */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 transition-shadow duration-200 hover:shadow-md">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#eaf3de] rounded-lg p-3 shrink-0">
+                <Icon icon="grommet-icons:resources" className="w-5 h-5 text-[#1B651B]" />
+              </div>
+              <div className="min-w-0">
+                <label className="text-[.65rem] font-bold uppercase tracking-widest text-gray-400 block truncate">
+                  Uploaded Resources
+                </label>
+                <p className="text-[1.6rem] font-bold leading-7 text-[#1B651B]">
+                  <CountUp.default start={0} end={resources.length} duration={2} />
+                </p>
+              </div>
             </div>
-            <div>
-              <label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Uploaded Resources</label>
-              <p className="text-[1.7rem] font-bold text-[#BA7517] leading-7"><CountUp.default start={0} end={resources.length} duration={2}/></p>
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                <p className="text-xs text-gray-500">
+                  <span className="font-bold text-amber-700">{pendingCount}</span> Pending
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#1B651B] shrink-0"></span>
+                <p className="text-xs text-gray-500">
+                  <span className="font-bold text-[#1B651B]">{approvedCount}</span> Approved
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5 mt-5 flex flex-col">
-          <p className="font-bold text-sm mb-4">Recent Uploaded Resources</p>
+        {/* RECENT RESOURCES */}
+        <div className="bg-white rounded-xl border border-gray-200 mt-5 flex flex-col overflow-hidden">
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+            <div>
+              <p className="font-bold text-sm">Recent Uploaded Resources</p>
+              <p className="text-gray-400 text-xs">Latest files shared across your section</p>
+            </div>
+          </div>
 
-          {/* Recent Resources */}
-          <div className="h-71.25 flex flex-col justify-start">
+          <div className="h-71.25 flex flex-col justify-start px-2">
             {loading ? (
               <div className="flex flex-col">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-3 px-3 py-2 border-b border-gray-100"
+                    className="flex items-center gap-3 px-3 py-2.5 border-b border-gray-100"
                   >
-                    <div className="bg-gray-200 rounded-lg w-9 h-9 animate-pulse" />
+                    <div className="bg-gray-200 rounded-lg w-9 h-9 animate-pulse shrink-0" />
                     <div className="flex-1 flex flex-col gap-1.5">
                       <div className="h-3.5 bg-gray-200 rounded animate-pulse w-40" />
                       <div className="h-3 bg-gray-200 rounded animate-pulse w-24" />
                     </div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse w-14" />
+                    <div className="h-5 bg-gray-200 rounded-full animate-pulse w-16 shrink-0" />
                   </div>
                 ))}
               </div>
             ) : (
               paginatedResources.length > 0 ? (
                 paginatedResources.map((r, i) => (
-                  <Link key={i} to={"/admin/resources"} >
-                  <div key={r.id} className="flex items-center gap-3 px-3 py-2 rounded-md border-b border-gray-100 transition-all duration-100 hover:bg-gray-100">
-                    <div className="bg-[#faeeda] rounded-lg p-2">
-                      <Icon icon="mdi:file-document-outline" width="20" className="text-[#BA7517]" />
+                  <Link key={i} to={"/admin/resources"}>
+                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-md border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50">
+                      <div className="bg-amber-100 rounded-lg p-2 shrink-0">
+                        <Icon icon="mdi:file-document-outline" width="20" className="text-amber-700" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm truncate">{r.title}</p>
+                        <p className="text-gray-400 text-xs truncate">{r.subject.code} · {r.uploadedBy.name}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span
+                          className={`px-2.5 py-0.5 uppercase text-[.6rem] font-bold rounded-full border ${
+                            r.status === "pending"
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-[#eaf3de] text-[#1B651B] border-[#c3ddb4]"
+                          }`}
+                        >
+                          {r.status}
+                        </span>
+                        <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-sm">{r.title}</p>
-                      <p className="text-gray-400 text-xs">{r.subject.code} · {r.uploadedBy.name}</p>
-                    </div>
-                    <p className="text-gray-400 text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
-                  </div>
                   </Link>
                 ))
               ) : (
-                <div className="flex justify-center items-center h-full">
-                  <p className="text-gray-400">No resources uploaded yet.</p>
+                <div className="flex flex-col justify-center items-center h-full gap-2">
+                  <Icon icon="mdi:file-document-outline" width="32" className="text-gray-300" />
+                  <p className="text-gray-400 text-sm">No resources uploaded yet.</p>
                 </div>
               )
             )}
           </div>
-          <Pagination
-            currentPage={resourcePage}
-            totalPages={totalResourcePages}
-            onPageChange={setResourcePage}
-          />
+          <div className="px-3 pb-3">
+            <Pagination
+              currentPage={resourcePage}
+              totalPages={totalResourcePages}
+              onPageChange={setResourcePage}
+            />
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-5">
+        {/* CHARTS */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5">
 
           {/* Bar Chart — Resources per Subject */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <p className="font-bold text-sm mb-1">Resources per Subject</p>
-            <p className="text-gray-400 text-xs mb-4">Number of uploaded files per subject</p>
-            {loading ? (
-              <div className="flex justify-center items-center h-70">
-                <Icon icon="svg-spinners:3-dots-bounce" width="40" className="text-[#1B651B] " />
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+              <div className="bg-[#eaf3de] rounded-lg p-2 shrink-0">
+                <Icon icon="material-symbols:bar-chart-rounded" width="18" className="text-[#1B651B]" />
               </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={subjectData} barSize={18}>
-                  <XAxis dataKey="name" tick={{ fontSize: 9 }} />
-                  <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="resources" radius={[4, 4, 0, 0]}>
-                    {subjectData.map((entry, index) => (
-                      <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
+              <div>
+                <p className="font-bold text-sm">Resources per Subject</p>
+                <p className="text-gray-400 text-xs">Number of uploaded files per subject</p>
+              </div>
+            </div>
+            <div className="p-5">
+              {loading ? (
+                <div className="flex justify-center items-center h-70">
+                  <Icon icon="svg-spinners:3-dots-bounce" width="40" className="text-[#1B651B]" />
+                </div>
+              ) : subjectData.every(s => s.resources === 0) ? (
+                <div className="flex flex-col justify-center items-center h-70 gap-2">
+                  <Icon icon="material-symbols:bar-chart-rounded" width="32" className="text-gray-300" />
+                  <p className="text-gray-400 text-sm">No resource data yet.</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={subjectData} barSize={18}>
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} />
+                    <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="resources" radius={[4, 4, 0, 0]}>
+                      {subjectData.map((entry, index) => (
+                        <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
 
           {/* Pie Chart — Tasks per Subject */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <p className="font-bold text-sm mb-1">Tasks per Subject</p>
-            <p className="text-gray-400 text-xs mb-4">Distribution of tasks across subjects</p>
-            {loading ? (
-              <div className="flex justify-center items-center h-70">
-                <Icon icon="svg-spinners:3-dots-bounce" width="40" className="text-[#1B651B] " />
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+              <div className="bg-[#eaf3de] rounded-lg p-2 shrink-0">
+                <Icon icon="material-symbols:pie-chart-rounded" width="18" className="text-[#1B651B]" />
               </div>
-            ) : (
-              <>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie
-                      data={taskData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={55}
-                      outerRadius={85}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {taskData.map((entry, index) => (
-                        <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
-                  {taskData.map((entry, index) => (
-                    <div key={index} className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: TASK_COLORS[index % TASK_COLORS.length] }}></div>
-                      <p className="text-xs text-gray-500">{entry.name} ({entry.value})</p>
-                    </div>
-                  ))}
+              <div>
+                <p className="font-bold text-sm">Tasks per Subject</p>
+                <p className="text-gray-400 text-xs">Distribution of tasks across subjects</p>
+              </div>
+            </div>
+            <div className="p-5">
+              {loading ? (
+                <div className="flex justify-center items-center h-70">
+                  <Icon icon="svg-spinners:3-dots-bounce" width="40" className="text-[#1B651B]" />
                 </div>
-              </>
-            )}
+              ) : taskData.length === 0 ? (
+                <div className="flex flex-col justify-center items-center h-70 gap-2">
+                  <Icon icon="material-symbols:pie-chart-rounded" width="32" className="text-gray-300" />
+                  <p className="text-gray-400 text-sm">No task data yet.</p>
+                </div>
+              ) : (
+                <>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={taskData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={85}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {taskData.map((entry, index) => (
+                          <Cell key={index} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
+                    {taskData.map((entry, index) => (
+                      <div key={index} className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: TASK_COLORS[index % TASK_COLORS.length] }}></div>
+                        <p className="text-xs text-gray-500">{entry.name} ({entry.value})</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

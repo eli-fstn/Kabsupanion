@@ -8,6 +8,7 @@ import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon";
 import { useToast } from "../../context/toastContext";
 import { getErrorMessage } from "../../services/errorHandler.ts";
+import CountUp from "react-countup";
 
 function AdminResources() {
   const [resources, setResources] = useState([]);
@@ -22,6 +23,7 @@ function AdminResources() {
   const { showToast } = useToast();
 
   const pendingCount = resources.filter((r) => r.status === "pending").length;
+  const approvedCount = resources.filter((r) => r.status === "approved").length;
 
   const fetchResources = async () => {
     setLoading(true);
@@ -128,16 +130,12 @@ function AdminResources() {
       <Sidebar />
 
       <div className="flex-1 p-8">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-5 flex items-center justify-between">
           <div>
             <p className="font-bold text-[1.5rem] font-[montserrat]">Resources List</p>
             <p className="text-gray-400 text-sm">Manage and monitor uploaded resources for your section.</p>
           </div>
-          {pendingCount > 0 && (
-            <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-              {pendingCount} pending
-            </span>
-          )}
+          
         </div>
 
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
