@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { getSubjects } from "../../services/subjects";
 import { uploadSchedule, editSchedule, deleteSchedule } from "../../services/schedule";
-import { handleApiError } from "../../services/errorHandler";
+import { handleApiError, getErrorMessage } from "../../services/errorHandler";
+import { useToast } from "../../context/toastContext";
 
 function AdminSched() {
   const [subjects, setSubjects] = useState([]);
@@ -19,6 +20,7 @@ function AdminSched() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const { showToast } = useToast();
 
   // Add form
   const [addSubjectId, setAddSubjectId] = useState("");
@@ -98,6 +100,7 @@ function AdminSched() {
       const data = await getSubjects();
       setSubjects(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoading(false);
@@ -228,6 +231,7 @@ function AdminSched() {
       setDeleteModalOpen(false);
       fetchSubjects();
     } catch (err) {
+      showToast(getErrorMessage(err));
       console.log(err);
     } finally {
       setLoadingForm(false);

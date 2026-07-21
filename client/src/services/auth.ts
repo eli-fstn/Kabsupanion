@@ -4,6 +4,7 @@ import type { User } from "./types";
 interface AuthResponse {
   message: string;
   token: string;
+  user: User;
 }
 
 // Register - Student will register if they don't have an acoount yet.
@@ -35,4 +36,3 @@ export async function getMe() : Promise<User> {
   const response = await api.get<User>("/auth/me");
   return response.data;
 }
-

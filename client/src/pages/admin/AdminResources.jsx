@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import UserIcon from "../../components/common/UserIcon";
 import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon";
+import { useToast } from "../../context/toastContext";
+import { getErrorMessage } from "../../services/errorHandler.ts";
 
 function AdminResources() {
   const [resources, setResources] = useState([]);
@@ -17,6 +19,9 @@ function AdminResources() {
   const [pages, setPages] = useState([1]);
   const [openPreview, setOpenPreview] = useState(false); 
   const [loadingForm, setLoadingForm] = useState(false);
+  const { showToast } = useToast();
+
+  const pendingCount = resources.filter((r) => r.status === "pending").length;
 
   const fetchResources = async () => {
     setLoading(true);
@@ -40,7 +45,7 @@ function AdminResources() {
   }, []);
 
   useEffect(() => {
-    if (open) {
+    if (openPreview) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -48,7 +53,7 @@ function AdminResources() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [openPreview]);
 
   const handleDeleteOpen = (resource) => {
     setSelectedResource(resource);
@@ -81,6 +86,21 @@ function AdminResources() {
       setConfirmationModalOpen(false);
       fetchResources();
     } catch (error) {
+      showToast(getErrorMessage(error));
+      console.log(error);
+    } finally {
+      setLoadingForm(false);
+    }
+  }
+
+  const handleRejectStatus = async (resource) => {
+    setLoadingForm(true);
+    try {
+      await rejectedResources(resource.id);
+      setConfirmationModalOpen(false);
+      fetchResources();
+    } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoadingForm(false);
@@ -108,9 +128,16 @@ function AdminResources() {
       <Sidebar />
 
       <div className="flex-1 p-8">
-        <div className="mb-6">
-          <p className="font-bold text-[1.5rem] font-[montserrat]">Resources List</p>
-          <p className="text-gray-400 text-sm">Manage and monitor uploaded resources for your section.</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <p className="font-bold text-[1.5rem] font-[montserrat]">Resources List</p>
+            <p className="text-gray-400 text-sm">Manage and monitor uploaded resources for your section.</p>
+          </div>
+          {pendingCount > 0 && (
+            <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+              {pendingCount} pending
+            </span>
+          )}
         </div>
 
         <div className="bg-white w-full mt-5 border border-gray-200 rounded-xl overflow-hidden">
@@ -212,7 +239,7 @@ function AdminResources() {
           {loadingForm ? (
             <div className="flex flex-col justify-center items-center w-60 h-60">
               <LoadingIcon dimensions="w-20 h-20"/>
-              <p className="text-gray-400 text-sm mt-5">Approving...</p>
+              <p className="text-gray-400 text-sm mt-5">Processing...</p>
             </div>
           ) : (
             <div className="flex flex-col w-100 p-6">
@@ -297,16 +324,28 @@ function AdminResources() {
                     dimensions="w-fit rounded-md"
                   />
                 ) : (
-                  <Button
-                    type="button"
-                    onClick={() => handleApproveStatus(selectedResource)}
-                    text="Approve"
-                    bgColor="bg-[#1B651B]"
-                    typography="text-white font-bold text-xs"
-                    padding="px-4 py-2"
-                    dimensions="w-fit rounded-md"
-                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
-                  />
+                  <>
+                    <Button
+                      type="button"
+                      onClick={() => handleRejectStatus(selectedResource)}
+                      text="Reject"
+                      bgColor="bg-[#A32D2D]"
+                      typography="text-white font-bold text-xs"
+                      padding="px-4 py-2"
+                      dimensions="w-fit rounded-md"
+                      animation="active:scale-95 transition-all duration-100 hover:bg-red-800"
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => handleApproveStatus(selectedResource)}
+                      text="Approve"
+                      bgColor="bg-[#1B651B]"
+                      typography="text-white font-bold text-xs"
+                      padding="px-4 py-2"
+                      dimensions="w-fit rounded-md"
+                      animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                    />
+                  </>
                 )}
               </div>
             </div>
