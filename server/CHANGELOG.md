@@ -20,6 +20,9 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
   endTime`, sanitized upload errors. `GET /health` now pings the DB. Added a **Vitest** test suite
   (`npm test`). New `wrangler.toml` config: `[[ratelimits]]` × 4 + `APP_URL`; new secrets
   `RESEND_API_KEY`/`EMAIL_FROM`.
+- **Backend CI.** `.github/workflows/ci.yml` gained a `server` job (Node 22) running `npm ci`,
+  `npx tsc --noEmit`, and `npm test` on PRs to `dev` and pushes to `dev`. Previously only `client/`
+  was built, so backend regressions went uncaught. The job requires no secrets.
 - **Notes approval workflow.** New `note_status` enum (`pending`/`approved`/`rejected`) and
   `notes.status` (NOT NULL, default `pending`), `notes.approved_by` (FK → users, SET NULL),
   `notes.approved_at`. Migration `drizzle/0007_*.sql` (with a backfill setting existing notes to

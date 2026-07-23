@@ -5,6 +5,70 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-07-24 — Release-readiness: prod deploy verified, backend added to CI
+
+No production changes were needed — this was a verification pass that found the deploy had already
+happened and the docs were lying about it.
+
+### Prod state: everything from PR #77 was already live
+
+`CLAUDE.md` (and commit `c4cf6bd`'s own message) said "verified locally, not deployed". Both were
+stale — written *before* the deploy. Checked against the real thing:
+
+| Thing | Expected | Actual |
+| ----- | -------- | ------ |
+| Migrations `0008` (`token_version`) + `0009` (`password_reset_tokens`) | applied | ✅ applied 2026-07-20 (drizzle ledger ids 9 + 10; `0000`–`0009` all present) |
+| Four `[[ratelimits]]` bindings + `APP_URL` on the *deployed* Worker | present | ✅ all four + `APP_URL` on version `f0803b79` |
+| `RESEND_API_KEY` secret | set | ✅ set (`EMAIL_FROM` not set — optional) |
+| `GET /health` DB ping | `{ok,db}` | ✅ `{"ok":true,"db":"ok"}` |
+| `POST /auth/forgot-password` | generic 200 | ✅ generic 200 |
+| `POST /auth/reset-password` (bad token) | 400 | ✅ 400 |
+| Login rate limiting | 429 after 6 | ✅ exactly 6× 401 then 429 |
+| Cron sweep + notes approval | running | ✅ past-due tasks gone; notes `pending:1, approved:3` |
+
+The deploy (version `f0803b79`, 2026-07-23T15:13Z) landed ~12 minutes *before* commit `c4cf6bd` was
+finalized (23:25 +08:00 = 15:25Z), which is why the timestamps look inverted. **No redeploy was
+needed and none was performed.**
+
+### ⚠️ Gotcha: the rate limiter looks broken from the outside, but isn't
+
+First prod probe: 12 sequential bad logins against one email → **all 401, no 429**. Then 40 requests
+in 2 seconds → still all 401. Locally (`wrangler dev`) the identical code gave a clean 6× 401 → 429.
+
+The difference is **connection reuse**. The Workers rate-limit binding keeps counters cached
+per-machine and updates them asynchronously ("permissive, eventually consistent" — [the docs say so
+explicitly](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)). A plain
+`curl` loop opens a **new TCP connection per request**, and each one lands on a different machine in
+the colo with its own counter, so nothing ever accumulates. Repeating the URL in a single `curl`
+invocation (one keep-alive connection) tripped the limit at exactly 6, as configured.
+
+- **Testing lesson:** don't "fix" this non-bug. Probe rate limits over one keep-alive connection.
+- **Security caveat (real):** the flip side is that the *effective* limit for a distributed attacker
+  is well above the configured 6/min, since they'd naturally spread across machines. The per-email
+  limiter is a speed bump on credential stuffing, not a hard cap. If that's not good enough, a
+  DB/KV-backed counter would be needed — noted as a follow-up, not done here.
+
+### Backend added to CI
+
+`.github/workflows/ci.yml` only built `client/`, so backend regressions shipped silently. Added a
+second `server` job mirroring the client one (Node 22, npm cache keyed to `server/package-lock.json`):
+`npm ci` → `npx tsc --noEmit` → `npm test`.
+
+**No GitHub secrets required.** The 27 tests are pure unit tests (deadline-sweep cutoff, magic bytes,
+password hashing, reset tokens, JWT-secret strength) plus Hono `app.request()` checks that return
+before any DB access; the only env is a dummy `JWT_SECRET` defined inline in
+`src/middleware/auth.test.ts`. `DATABASE_URL` is deliberately **not** wired into CI — it points at the
+shared production Neon DB. Integration tests would need a separate test database first.
+
+Verified by reproducing CI locally from a clean slate: `rm -rf node_modules && npm ci` → `tsc` exit 0
+→ 27/27 passing.
+
+- **Windows gotcha:** `npm ci` failed with `EBUSY` on `node_modules/miniflare/dist/local-explorer-ui`
+  because stopping `wrangler dev` left four orphaned `workerd.exe` processes holding file locks.
+  Killing them fixed it. CI is unaffected (Linux runners start with no `node_modules`).
+
+---
+
 ## 2026-07-16 — Security hardening pass (from audit)
 
 Working through an audit's findings in priority order. This entry grows as items land.

@@ -20,7 +20,7 @@ through **Drizzle** (Neon HTTP driver).
 
 | Method | Path             | Auth   | Description                                                        |
 | ------ | ---------------- | ------ | ------------------------------------------------------------------ |
-| GET    | `/health`        | —      | Liveness check → `{ "ok": true }`                                  |
+| GET    | `/health`        | —      | Liveness check → `{ "ok": true, "db": "ok" }`; `503` if Neon is unreachable |
 | POST   | `/auth/register` | —      | Claim a roster spot: `{ studentNumber, email, password }` → `201 { user, token }`. `name`/`role` come from the masterlist. |
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`. Rate-limited (per-IP + per-email). |
 | POST   | `/auth/forgot-password` | — | `{ email }` → always a generic `200` (no enumeration); emails a reset link if the email is registered. Rate-limited. |
@@ -151,6 +151,9 @@ Every failure returns a JSON body `{ "error": "human-readable message" }` with a
 | `401` | Missing/invalid/expired token, or wrong login credentials |
 | `403` | Student number not on the section roster (on `register`) |
 | `409` | Student number already claimed, or email already registered (on `register`) |
+| `429` | Rate limit hit (login/register/password-reset) or the daily upload quota (20 notes/user/24h). Sends `Retry-After` |
+| `502` | Upstream upload (Cloudinary) failed — details are logged server-side, not returned |
+| `503` | `/health` only: the database is unreachable |
 
 Timestamps are ISO 8601 strings (UTC). Field names are `camelCase`.
 
@@ -194,9 +197,11 @@ const me = (await api.get("/auth/me")).data.user;
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
 | Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
 | Notes (`/notes/*`) | ✅ live | Communal note sharing with Cloudinary-backed file storage. Migration `0005` applied. |
-| Notes approval workflow | 🧪 verified locally | Uploads start `pending`; role-based visibility + admin `?status=`; admin `approve`/`reject` (migration `0007`). Verified locally end-to-end; **not yet deployed**. |
-| Task deadline auto-deletion | 🧪 verified locally | 15-min Cron Trigger deletes tasks past their `dueDate` calendar day (Asia/Manila). No schema change. Logic verified locally (non-destructive dry-run); **not yet deployed**. |
-| Security hardening (audit) | 🧪 verified locally | Auth rate limiting, revocable JWTs (`token_version`), upload magic-byte checks, password reset (Resend), JWT-secret assertion, input validation/length caps, upload quota, `/health` DB ping. Vitest suite (`npm test`). Migrations `0008`/`0009`. **Not yet deployed.** |
+| Notes approval workflow | ✅ live | Uploads start `pending`; role-based visibility + admin `?status=`; admin `approve`/`reject` (migration `0007`). Confirmed on prod (a `pending` note exists alongside `approved` ones). |
+| Task deadline auto-deletion | ✅ live | 15-min Cron Trigger deletes tasks past their `dueDate` calendar day (Asia/Manila). No schema change. Confirmed on prod: the previously past-due tasks have been swept. |
+| Security hardening (audit) | ✅ live | Auth rate limiting, revocable JWTs (`token_version`), upload magic-byte checks, password reset (Resend), JWT-secret assertion, input validation/length caps, upload quota, `/health` DB ping. Migrations `0008`/`0009` applied. Verified on prod 2026-07-24. |
+| Password reset **delivery** | ⚠️ needs a domain | The `/auth/forgot-password` + `/auth/reset-password` endpoints are live and `RESEND_API_KEY` is set, but no verified Resend domain / `EMAIL_FROM` yet — the default `onboarding@resend.dev` sender only delivers to the Resend account owner. No frontend flow yet either. |
+| CI (`.github/workflows/ci.yml`) | ✅ live | Two jobs: `build` (client) and `server` (typecheck + 27-test Vitest suite). The server job needs no secrets. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.
