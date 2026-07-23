@@ -7,7 +7,8 @@ const PH_OFFSET_MS = 8 * 60 * 60 * 1000; // Asia/Manila is UTC+8 year-round, no 
 
 // The end of dueDate's calendar day, evaluated in Manila local time, expressed
 // as the correct UTC instant. E.g. 2026-07-17 14:00 UTC+8 -> 2026-07-17 23:59:59.999 UTC+8.
-function endOfDueDateManila(dueDate: Date): Date {
+// Exported for unit tests (the sweep is destructive, so its cutoff is covered).
+export function endOfDueDateManila(dueDate: Date): Date {
   const manilaWallClock = new Date(dueDate.getTime() + PH_OFFSET_MS);
   manilaWallClock.setUTCHours(23, 59, 59, 999);
   return new Date(manilaWallClock.getTime() - PH_OFFSET_MS);

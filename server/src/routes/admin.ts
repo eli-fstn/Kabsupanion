@@ -29,9 +29,9 @@ function isStatus(value: unknown): value is (typeof STATUSES)[number] {
   return typeof value === "string" && (STATUSES as readonly string[]).includes(value);
 }
 
-// Never leak password hashes.
+// Never leak password hashes (or the internal revocation counter).
 function toPublicUser(user: User) {
-  const { passwordHash: _passwordHash, ...rest } = user;
+  const { passwordHash: _passwordHash, tokenVersion: _tokenVersion, ...rest } = user;
   return rest;
 }
 

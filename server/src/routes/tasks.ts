@@ -4,8 +4,20 @@ import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
 import { tasks, taskCompletions, subjects } from "../db/schema";
 import { requireAuth, requireAdmin } from "../middleware/auth";
+import { MAX_TITLE, MAX_DESCRIPTION } from "../lib/limits";
 
 export const taskRoutes = new Hono<AppEnv>();
+
+// Parses/validates an optional dueDate field. Returns the Date, null (when
+// null/absent), or the string "invalid" so callers can 400. A bare
+// `new Date(bad)` yields an Invalid Date that would never match the deadline
+// sweep's cutoff, so malformed input must be rejected up front.
+function parseDueDate(value: unknown): Date | null | "invalid" {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") return "invalid";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? "invalid" : d;
+}
 
 // All task routes require a valid Bearer token.
 taskRoutes.use("*", requireAuth);
@@ -86,6 +98,19 @@ taskRoutes.post("/", requireAdmin, async (c) => {
   if (typeof title !== "string" || title.trim() === "") {
     return c.json({ error: "`title` is required and must be a non-empty string" }, 400);
   }
+  if (title.trim().length > MAX_TITLE) {
+    return c.json({ error: `\`title\` must be at most ${MAX_TITLE} characters` }, 400);
+  }
+  if (description !== undefined && description !== null && typeof description !== "string") {
+    return c.json({ error: "`description` must be a string" }, 400);
+  }
+  if (typeof description === "string" && description.length > MAX_DESCRIPTION) {
+    return c.json({ error: `\`description\` must be at most ${MAX_DESCRIPTION} characters` }, 400);
+  }
+  const parsedDueDate = parseDueDate(dueDate);
+  if (parsedDueDate === "invalid") {
+    return c.json({ error: "`dueDate` must be a valid date string" }, 400);
+  }
 
   const db = createDb(c.env.DATABASE_URL);
 
@@ -104,7 +129,7 @@ taskRoutes.post("/", requireAdmin, async (c) => {
       subjectId,
       title: title.trim(),
       description: typeof description === "string" ? description : null,
-      dueDate: typeof dueDate === "string" ? new Date(dueDate) : null,
+      dueDate: parsedDueDate,
     })
     .returning();
 
@@ -140,13 +165,26 @@ taskRoutes.patch("/:id", requireAdmin, async (c) => {
     if (typeof title !== "string" || title.trim() === "") {
       return c.json({ error: "`title` must be a non-empty string" }, 400);
     }
+    if (title.trim().length > MAX_TITLE) {
+      return c.json({ error: `\`title\` must be at most ${MAX_TITLE} characters` }, 400);
+    }
     patch.title = title.trim();
   }
   if (description !== undefined) {
+    if (description !== null && typeof description !== "string") {
+      return c.json({ error: "`description` must be a string" }, 400);
+    }
+    if (typeof description === "string" && description.length > MAX_DESCRIPTION) {
+      return c.json({ error: `\`description\` must be at most ${MAX_DESCRIPTION} characters` }, 400);
+    }
     patch.description = typeof description === "string" ? description : null;
   }
   if (dueDate !== undefined) {
-    patch.dueDate = typeof dueDate === "string" ? new Date(dueDate) : null;
+    const parsed = parseDueDate(dueDate);
+    if (parsed === "invalid") {
+      return c.json({ error: "`dueDate` must be a valid date string or null" }, 400);
+    }
+    patch.dueDate = parsed;
   }
 
   if (Object.keys(patch).length === 1) {

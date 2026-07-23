@@ -22,7 +22,9 @@ through **Drizzle** (Neon HTTP driver).
 | ------ | ---------------- | ------ | ------------------------------------------------------------------ |
 | GET    | `/health`        | —      | Liveness check → `{ "ok": true }`                                  |
 | POST   | `/auth/register` | —      | Claim a roster spot: `{ studentNumber, email, password }` → `201 { user, token }`. `name`/`role` come from the masterlist. |
-| POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`                  |
+| POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`. Rate-limited (per-IP + per-email). |
+| POST   | `/auth/forgot-password` | — | `{ email }` → always a generic `200` (no enumeration); emails a reset link if the email is registered. Rate-limited. |
+| POST   | `/auth/reset-password`  | — | `{ token, password }` → sets a new password, invalidates all existing sessions. `400` if the token is invalid/expired. |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
 | GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` + `subject`. Optional `?subjectId=` filter. |
 | POST   | `/tasks`         | Bearer + Admin | Create a task: `{ subjectId, title, description?, dueDate? }` |
@@ -182,18 +184,19 @@ const me = (await api.get("/auth/me")).data.user;
 
 | Capability | Status | Notes |
 | ---------- | ------ | ----- |
-| `GET /health` | ✅ live | Returns `{ "ok": true }`; no DB access. |
+| `GET /health` | ✅ live | Returns `{ "ok": true, "db": "ok" }`; lightweight Neon ping → `503` if the DB is unreachable. |
 | `GET /tasks` / `POST /tasks` | ✅ live | Create/list against Neon; data persists. **Auth-gated** (Bearer token required). |
 | JWT auth (register/login/me) | ✅ live | Full flow verified against prod; token signing confirmed. |
 | Roster-gated registration | ✅ live | `403` off-roster, `409` claimed/dup-email, `201` valid; `name`/`role` from masterlist (body `role` ignored). |
 | Auth-gating `/tasks` | ✅ live | `401` without/with bad token; works with a valid token. |
 | Per-user task completion | ✅ live | `complete`/`uncomplete` endpoints + per-user `completed` flag; idempotent; `404`/`400`/`401` handled. Verified against prod (per-user isolation confirmed). |
-| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`) | ✅ migrated | `0000`–`0007` applied to Neon; masterlist seeded via `npm run db:seed`. `masterlist.status` + `users→masterlist` FK cascade in `0006`; note approval columns (`status`/`approved_by`/`approved_at`) in `0007`. |
+| Neon tables (`tasks`/`users`/`masterlist`/`task_completions`/`subjects`/`schedules`/`notes`/`password_reset_tokens`) | ✅ migrated | `0000`–`0009` applied to Neon; masterlist seeded via `npm run db:seed`. `0006` masterlist.status + FK cascade; `0007` note approval columns; `0008` `users.token_version`; `0009` `password_reset_tokens`. |
 | Admin management API (`/admin/*`) | ✅ live | User/role management + masterlist CRUD. All routes require admin token. |
 | Subjects + schedules (`/subjects/*`) | ✅ live | Full admin CRUD + schedule slots. Migration `0004` applied. |
 | Notes (`/notes/*`) | ✅ live | Communal note sharing with Cloudinary-backed file storage. Migration `0005` applied. |
 | Notes approval workflow | 🧪 verified locally | Uploads start `pending`; role-based visibility + admin `?status=`; admin `approve`/`reject` (migration `0007`). Verified locally end-to-end; **not yet deployed**. |
 | Task deadline auto-deletion | 🧪 verified locally | 15-min Cron Trigger deletes tasks past their `dueDate` calendar day (Asia/Manila). No schema change. Logic verified locally (non-destructive dry-run); **not yet deployed**. |
+| Security hardening (audit) | 🧪 verified locally | Auth rate limiting, revocable JWTs (`token_version`), upload magic-byte checks, password reset (Resend), JWT-secret assertion, input validation/length caps, upload quota, `/health` DB ping. Vitest suite (`npm test`). Migrations `0008`/`0009`. **Not yet deployed.** |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.

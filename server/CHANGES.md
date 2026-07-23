@@ -5,6 +5,162 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-07-16 — Security hardening pass (from audit)
+
+Working through an audit's findings in priority order. This entry grows as items land.
+
+### #1 — Auth rate limiting (CRITICAL) ✅
+
+- Added the **Cloudflare Workers Rate Limiting binding** (`[[ratelimits]]` in `wrangler.toml`) —
+  preferred over a DB/KV counter since we're already on Workers (no extra DB writes on the hot
+  login path, no migration). Three limiters (`period` may only be 10 or 60s):
+  - `AUTH_IP_LIMIT` (30/min) — per client IP on `POST /auth/login`
+  - `AUTH_EMAIL_LIMIT` (6/min) — per target email on `POST /auth/login` (the real brute-force guard
+    for a single account, independent of the attacker's IP)
+  - `REGISTER_IP_LIMIT` (10/min) — per client IP on `POST /auth/register`
+- Keyed off `CF-Connecting-IP` (edge-set, unspoofable) via `src/lib/rateLimit.ts` (`clientIp` +
+  `underLimit`, which tolerates a missing binding so local configs don't crash). On a block: `429`
+  + `Retry-After: 60`. Generous per-IP budgets accommodate shared campus NAT; the strict per-email
+  budget does the account-level protection.
+- **Design:** per-IP is a coarse flood guard; per-email is the account guard. Numbers are tunable in
+  `wrangler.toml`. This also blunts the registration enumeration surface (audit #4) — see that item.
+- **Verified locally** (`wrangler dev` supports the binding): 6 same-email logins → `401`, 7th–8th →
+  `429`; a *different* email still `401` (keying is independent); 10 registrations → then `429`;
+  `Retry-After: 60` present. No deploy yet.
+
+### #2 — Revocable JWTs (CRITICAL) ✅
+
+- **Problem:** `requireAuth` only checked signature + expiry, so a demoted admin kept admin rights and
+  a deleted user kept working for up to the 7-day token life.
+- **Fix:** new `users.token_version` int column (migration `0008`, default 0), embedded in issued
+  tokens as a `tv` claim. `requireAuth` now verifies the signature/expiry, then does **one indexed
+  PK read** of the user and: 401s if the row is gone (deleted), takes `role` **fresh from the DB**
+  (demotion is immediate), and 401s if the token's `tv` ≠ the row's `token_version`. Missing `tv`
+  (legacy tokens) is treated as 0 for a graceful rollout. `token_version` is stripped from all user
+  responses.
+- **Design/tradeoff:** kept the 7-day TTL — revocation is what makes a stale token safe, so TTL
+  length matters less. Cost is one extra indexed read per authed request (same pattern `/auth/me`
+  already used) in exchange for immediate revocation. Did **not** bump `token_version` on role change
+  (fresh-role read already handles demotion without logging users out on every promote); the bump is
+  the "log out everywhere" lever wired to password reset (#5).
+- **Verified locally:** admin B's existing token → `200` on `/admin/users`, then after admin A demotes
+  B → **`403`** (fresh role) while `/auth/me` still `200`; after admin A deletes B → **`401`**; bumping
+  a student's `token_version` → their token **`401`s**, and re-login issues a working fresh token.
+
+### #3 — Upload content verification / magic bytes (HIGH) ✅
+
+- **Problem:** `POST /notes` trusted the client-supplied `file.type` from FormData (spoofable).
+- **Fix:** new `src/lib/fileType.ts` `contentMatchesType(file, mime)` reads the leading bytes and
+  confirms they match a known signature for the declared type (JPEG/PNG/GIF/WEBP/PDF, OLE for
+  legacy .doc/.ppt, ZIP `PK` for .docx/.pptx; WEBP also checks the `WEBP` fourCC). Fails closed for
+  unknown MIMEs. Checked after the existing allowlist + size checks, before the Cloudinary upload.
+- **Note:** .docx vs .pptx (and .doc vs .ppt) share a container signature, so we verify the *family*,
+  not the exact office type — sufficient to block non-office payloads. A determined attacker can still
+  upload a *real* allowed image with a different image MIME, which is harmless (still in the allowlist).
+- **Verified:** 11/11 unit cases on the sniffer (spoofs + unknown MIME rejected); over HTTP, a real PNG
+  → `201`, an HTML payload with a spoofed `image/png` type → `400`, and a real PNG declared
+  `application/pdf` → `400`.
+
+### #4 — Registration enumeration (HIGH) — mitigated via #1, messages kept (decision) ✅
+
+- **Decision (no code change):** keep the distinct register responses — `403` not-on-roster, `409`
+  student-number-claimed, `409` email-taken — and rely on the `REGISTER_IP_LIMIT` throttle from #1
+  (10/min per IP) to make enumeration expensive.
+- **Why not genericize:** the three outcomes have genuinely different, actionable remedies (contact
+  admin / you already have an account, log in / use a different email). Collapsing them into one
+  message is a real UX regression for legitimate users, which the audit explicitly warned against.
+  The roster is also a known class list (low enumeration value among the actual audience).
+- **Extra mitigation already present:** registration validates in order roster → claimed → email, so an
+  attacker only reaches the email-taken response with a **valid, unclaimed** student number — there are
+  few of those, which naturally caps email enumeration through this endpoint.
+- **Login is already non-enumerable** (`/auth/login` returns a single generic "Invalid email or
+  password" for both unknown-email and wrong-password). No change there.
+
+### #5 — Password reset flow (HIGH) ✅
+
+- No email infra existed; chose **Resend** (HTTP API, Workers-native). New `password_reset_tokens`
+  table (migration `0009`): stores only the **SHA-256 hash** of a 256-bit random token (the raw token
+  lives only in the emailed link), with `expires_at` (30 min), single-use `used_at`, FK cascade on
+  user delete.
+- New `src/lib/resetToken.ts` (generate/hash) and `src/lib/email.ts` (`sendPasswordResetEmail` via
+  Resend — provider isolated here so it's swappable; best-effort so a send failure never changes the
+  API response and can't be used to enumerate).
+- `POST /auth/forgot-password` — always returns an identical generic `200` (never reveals whether the
+  email exists); on a real match, stores a token and emails `${APP_URL}/reset-password?token=<raw>`.
+- `POST /auth/reset-password` — validates the token (unused + unexpired), sets the new password, **bumps
+  `token_version`** (reusing #2 to log out every existing session), and burns all of the user's reset
+  tokens. Both endpoints throttled by a new `PASSWORD_RESET_LIMIT` (5/min per IP).
+- **Config:** `RESEND_API_KEY`/`EMAIL_FROM` secrets + `APP_URL` var (`[vars]`, `https://kabsupanion.vercel.app`,
+  reset route `/reset-password`). `EMAIL_FROM` empty → falls back to Resend's `onboarding@resend.dev`.
+  **⚠️ Real delivery to arbitrary students requires verifying a sending domain in Resend and setting
+  `EMAIL_FROM`;** the `onboarding@resend.dev` sender only delivers to the Resend account owner. Local
+  `wrangler dev` has no key in `.dev.vars`, so local sends no-op (logged) — expected.
+- **Verified locally** (token flow, no live email): forgot-password returns an identical generic `200`
+  for known and unknown emails (row created only for the real user); a valid injected token resets the
+  password (new pw logs in, old pw `401`), old session tokens `401` (revoked), and reused / expired /
+  malformed tokens all `400`; reset tokens cascade-delete with the user.
+
+### #6 — JWT_SECRET strength assertion (HIGH) ✅
+
+- `src/lib/jwtSecret.ts` `assertStrongJwtSecret` (memoized per isolate; Workers has no real boot) is
+  called at the start of `issueToken` and `requireAuth`. Throws (fails closed, and keeps failing until
+  fixed) if `JWT_SECRET` is missing or `< 32` chars, so a weak secret can't be silently used to sign
+  forgeable HS256 tokens. Verified by unit tests (short/undefined throw, `>= 32` passes).
+
+### #7 — dueDate validation (MEDIUM) ✅
+
+- `POST`/`PATCH /tasks` now reject a malformed `dueDate` with `400` (via `parseDueDate`). Previously a
+  bad string became an `Invalid Date` that never matched the deadline-sweep cutoff, so the task would
+  never be purged. Verified: `"not-a-date"` → `400`, a valid ISO string → `201`.
+
+### #8 — Cloudinary error passthrough (MEDIUM) ✅
+
+- `POST /notes` no longer returns Cloudinary's raw error message on `502`; it logs the detail
+  server-side (`console.error`) and returns a generic "File upload failed" so provider internals aren't
+  leaked. (Verified by inspection — a real `502` needs broken Cloudinary creds to trigger.)
+
+### #9 — Per-user upload quota (MEDIUM) ✅
+
+- `POST /notes` caps a user at **20 uploads / rolling 24h** — counted from existing `notes` rows
+  (`uploadedBy` + `createdAt`), so **no schema change**. Checked before the Cloudinary upload; over
+  quota → `429` + `Retry-After`. Verified: with 20 recent rows seeded, the 21st upload → `429`.
+
+### #10 — Text length caps (MEDIUM) ✅
+
+- New `src/lib/limits.ts` caps: title 200, name 200, code 32, description 5000, room 100. Enforced in
+  `tasks.ts`, `notes.ts`, and `subjects.ts` create/update handlers → `400` when exceeded. Verified: a
+  201-char task title → `400`, a 33-char subject code → `400`.
+
+### #11 — subjects startTime < endTime (MEDIUM) ✅
+
+- Schedule `POST` and `PATCH` now reject `startTime >= endTime` (`400`). `PATCH` loads the existing
+  slot so the check uses the effective values even when only one time is changed. Verified:
+  `10:00 AM`→`9:00 AM` → `400`; `9:00 AM`→`10:00 AM` → `201`.
+
+### #12 — Automated tests (Vitest) ✅
+
+- Added **Vitest** (`npm test`) + `vitest.config.ts`. 27 tests across 7 files: the deadline-sweep
+  Manila cutoff (`endOfDueDateManila`, exported for testing — it's the destructive path), magic-byte
+  sniffer, password hash/verify, reset-token hash/generate, `assertStrongJwtSecret`, `requireAuth`
+  reject branches + `requireAdmin` gate (via Hono `app.request`), and auth input-validation branches.
+- **Scope note:** happy-path register/login + roster-gating and `requireAuth`'s DB re-check are **not**
+  covered by automated tests — they need a dedicated test database (local dev shares the prod Neon DB,
+  so writing test rows from CI/unit runs is unsafe). Documented in `src/routes/auth.test.ts`. Those
+  paths are covered by the manual local verification recorded above instead.
+
+### #13 — Health check DB ping (MEDIUM) ✅
+
+- `GET /health` now runs a lightweight `masterlist` `LIMIT 1` query: `200 { ok: true, db: "ok" }` when
+  Neon is reachable, `503 { ok: false, db: "unreachable" }` otherwise — so it can't report healthy
+  while the DB is down. Verified: `200 { ok: true, db: "ok" }` locally.
+
+### Wrap-up
+
+All 13 audit items addressed. Migrations applied: `0008` (token_version), `0009` (password_reset_tokens).
+Not deployed. New config a fresh checkout/prod needs: four `[[ratelimits]]` bindings + `APP_URL` var in
+`wrangler.toml`; secrets `RESEND_API_KEY` (+ optional `EMAIL_FROM`). `npm test` green (27), `tsc` clean.
+CORS, Drizzle query patterns, and `client/` were left untouched per scope.
+
 ## 2026-07-16 — Notes approval workflow + task deadline auto-deletion
 
 **Goal:** (1) gate note uploads behind admin approval (new uploads hidden until approved), and

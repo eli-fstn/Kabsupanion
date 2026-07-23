@@ -10,6 +10,16 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
 
 ### Added
 
+- **Security hardening (audit response).** Auth rate limiting via Cloudflare Workers Rate Limiting
+  bindings (login per-IP + per-email, register per-IP, password-reset per-IP; `429` + `Retry-After`).
+  Revocable JWTs: `users.token_version` (`0008`) + a `tv` claim, with `requireAuth` re-checking the DB
+  each request (immediate demotion/deletion/revocation). Upload magic-byte verification. Password reset
+  flow (`password_reset_tokens` `0009`, Resend email): `POST /auth/forgot-password` (generic response)
+  + `POST /auth/reset-password` (single-use, revokes sessions). `JWT_SECRET` strength assertion.
+  `dueDate` validation, text-length caps, per-user upload quota (20/day), `subjects` `startTime <
+  endTime`, sanitized upload errors. `GET /health` now pings the DB. Added a **Vitest** test suite
+  (`npm test`). New `wrangler.toml` config: `[[ratelimits]]` × 4 + `APP_URL`; new secrets
+  `RESEND_API_KEY`/`EMAIL_FROM`.
 - **Notes approval workflow.** New `note_status` enum (`pending`/`approved`/`rejected`) and
   `notes.status` (NOT NULL, default `pending`), `notes.approved_by` (FK → users, SET NULL),
   `notes.approved_at`. Migration `drizzle/0007_*.sql` (with a backfill setting existing notes to
