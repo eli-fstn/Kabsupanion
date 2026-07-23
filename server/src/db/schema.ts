@@ -56,6 +56,10 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   name: text("name").notNull(),
   role: userRole("role").notNull().default("student"),
+  // Revocation counter embedded in issued JWTs as the `tv` claim. requireAuth
+  // rejects a token whose `tv` != this value, so bumping it (e.g. on password
+  // reset) invalidates every outstanding token for the user.
+  tokenVersion: integer("token_version").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -175,3 +179,21 @@ export const notes = pgTable("notes", {
 });
 
 export type Note = typeof notes.$inferSelect;
+
+// Password reset. We store only the SHA-256 hash of the reset token (the raw
+// token goes in the emailed link and is never persisted). Single-use via
+// `usedAt`; short-lived via `expiresAt`. Rows cascade-delete with the user.
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;

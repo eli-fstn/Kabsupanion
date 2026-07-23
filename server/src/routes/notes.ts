@@ -1,11 +1,13 @@
 import { Hono } from "hono";
-import { eq, and, or } from "drizzle-orm";
+import { eq, and, or, count, gt } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
 import { notes, subjects, users, noteStatus } from "../db/schema";
 import { requireAuth } from "../middleware/auth";
 import { uploadFile } from "../lib/cloudinary";
 import { purgeNote } from "../lib/notes";
+import { contentMatchesType } from "../lib/fileType";
+import { MAX_TITLE, MAX_DESCRIPTION } from "../lib/limits";
 
 export const noteRoutes = new Hono<AppEnv>();
 
@@ -18,6 +20,7 @@ function isNoteStatus(value: unknown): value is (typeof NOTE_STATUSES)[number] {
   return typeof value === "string" && (NOTE_STATUSES as readonly string[]).includes(value);
 }
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const DAILY_UPLOAD_LIMIT = 20; // notes per user per rolling 24h
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -115,6 +118,12 @@ noteRoutes.post("/", async (c) => {
   if (typeof title !== "string" || title.trim() === "") {
     return c.json({ error: "`title` is required" }, 400);
   }
+  if (title.trim().length > MAX_TITLE) {
+    return c.json({ error: `\`title\` must be at most ${MAX_TITLE} characters` }, 400);
+  }
+  if (typeof description === "string" && description.length > MAX_DESCRIPTION) {
+    return c.json({ error: `\`description\` must be at most ${MAX_DESCRIPTION} characters` }, 400);
+  }
   if (!file) {
     return c.json({ error: "`file` is required" }, 400);
   }
@@ -126,6 +135,14 @@ noteRoutes.post("/", async (c) => {
   }
   if (file.size > MAX_BYTES) {
     return c.json({ error: "File exceeds the 10 MB limit" }, 400);
+  }
+  // Defense against a spoofed `file.type`: verify the actual magic bytes match
+  // the declared type before the upload reaches Cloudinary.
+  if (!(await contentMatchesType(file, file.type))) {
+    return c.json(
+      { error: "File contents do not match the declared file type" },
+      400
+    );
   }
 
   const db = createDb(c.env.DATABASE_URL);
@@ -139,14 +156,29 @@ noteRoutes.post("/", async (c) => {
     return c.json({ error: "Subject not found" }, 404);
   }
 
+  // Per-user daily upload quota — checked before the Cloudinary upload so an
+  // over-quota request doesn't waste an upload.
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const [{ n: recentUploads }] = await db
+    .select({ n: count() })
+    .from(notes)
+    .where(and(eq(notes.uploadedBy, c.get("user").id), gt(notes.createdAt, since)));
+  if (recentUploads >= DAILY_UPLOAD_LIMIT) {
+    return c.json(
+      { error: `Upload limit reached (${DAILY_UPLOAD_LIMIT} per day). Please try again later.` },
+      429,
+      { "Retry-After": "3600" }
+    );
+  }
+
   let upload: Awaited<ReturnType<typeof uploadFile>>;
   try {
     upload = await uploadFile(file, "kabsupanion/notes", c.env);
   } catch (err) {
-    return c.json(
-      { error: err instanceof Error ? err.message : "Upload failed" },
-      502
-    );
+    // Log the provider detail server-side; return a generic message so we don't
+    // leak Cloudinary internals (keys, config, infra) to the client.
+    console.error("Cloudinary upload failed:", err instanceof Error ? err.message : err);
+    return c.json({ error: "File upload failed. Please try again later." }, 502);
   }
 
   const [created] = await db
@@ -200,9 +232,15 @@ noteRoutes.patch("/:id", async (c) => {
     if (typeof title !== "string" || title.trim() === "") {
       return c.json({ error: "`title` must be a non-empty string" }, 400);
     }
+    if (title.trim().length > MAX_TITLE) {
+      return c.json({ error: `\`title\` must be at most ${MAX_TITLE} characters` }, 400);
+    }
     patch.title = title.trim();
   }
   if (description !== undefined) {
+    if (typeof description === "string" && description.length > MAX_DESCRIPTION) {
+      return c.json({ error: `\`description\` must be at most ${MAX_DESCRIPTION} characters` }, 400);
+    }
     patch.description =
       typeof description === "string" && description.trim()
         ? description.trim()

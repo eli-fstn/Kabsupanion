@@ -7,6 +7,8 @@ import { adminRoutes } from "./routes/admin";
 import { subjectRoutes } from "./routes/subjects";
 import { noteRoutes } from "./routes/notes";
 import { purgeOverdueTasks } from "./lib/tasks";
+import { createDb } from "./db/client";
+import { masterlist } from "./db/schema";
 
 const app = new Hono<AppEnv>();
 
@@ -23,7 +25,17 @@ app.use(
   })
 );
 
-app.get("/health", (c) => c.json({ ok: true }));
+// Liveness + DB readiness. A lightweight query confirms Neon is actually
+// reachable, so /health can't report healthy while the database is down.
+app.get("/health", async (c) => {
+  try {
+    const db = createDb(c.env.DATABASE_URL);
+    await db.select({ id: masterlist.studentNumber }).from(masterlist).limit(1);
+    return c.json({ ok: true, db: "ok" });
+  } catch {
+    return c.json({ ok: false, db: "unreachable" }, 503);
+  }
+});
 
 app.route("/auth", authRoutes);
 app.route("/tasks", taskRoutes);
