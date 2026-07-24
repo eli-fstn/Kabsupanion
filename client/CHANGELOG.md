@@ -2,7 +2,7 @@
 
 All notable changes to the Kabsupanion **Frontend** are documented in this file.
 
-This project follows the **Keep a Changelog** format and adheres to **Semantic Versioning**. Only frontend-related changes are included.
+The format is based on [Keep a Changelog](https://keepachangelog.com/) and follows Semantic Versioning.
 
 ---
 
