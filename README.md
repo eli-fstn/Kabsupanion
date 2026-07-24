@@ -1,5 +1,7 @@
 # Kabsupanion
 
+![Kabsupanion](./client/src/assets/images/kabsupanion-advertisement.png)
+
 **Kabsupanion** is a section-centric academic web portal developed to support the academic needs of students through a centralized and accessible platform. It streamlines academic organization by providing tools for task management, scheduling, activity tracking, and collaborative resource sharing within a section-based environment.
 
 ![Status](https://img.shields.io/badge/Status-Deployed-00C853)
