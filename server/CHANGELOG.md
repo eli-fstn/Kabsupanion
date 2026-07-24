@@ -8,6 +8,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 _Phase 1 complete. Announcements feature cut — the section already has an existing system for that._
 
+### Fixed
+
+- **`PATCH /tasks/:id` now accepts `subjectId`.** The handler previously ignored `subjectId`, so a
+  task could not be moved to another subject. It's now honored (with UUID validation and a `404` if
+  the target subject doesn't exist), on its own or alongside the other fields.
+
 ### Added
 
 - **Security hardening (audit response).** Auth rate limiting via Cloudflare Workers Rate Limiting

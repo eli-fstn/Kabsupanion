@@ -28,7 +28,7 @@ through **Drizzle** (Neon HTTP driver).
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
 | GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` + `subject`. Optional `?subjectId=` filter. |
 | POST   | `/tasks`         | Bearer + Admin | Create a task: `{ subjectId, title, description?, dueDate? }` |
-| PATCH  | `/tasks/:id`     | Bearer + Admin | Update a task: `{ title?, description?, dueDate? }`; at least one field required |
+| PATCH  | `/tasks/:id`     | Bearer + Admin | Update a task: `{ subjectId?, title?, description?, dueDate? }`; at least one field required. `subjectId` reassigns the task to another subject (`400` bad UUID, `404` unknown subject) |
 | DELETE | `/tasks/:id`     | Bearer + Admin | Delete a task and all its completions |
 | POST   | `/tasks/:id/complete` | Bearer | Mark the task done **for the current user** (idempotent) |
 | DELETE | `/tasks/:id/complete` | Bearer | Unmark the task for the current user (idempotent) |
