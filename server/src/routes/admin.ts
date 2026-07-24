@@ -1,0 +1,303 @@
+import { Hono } from "hono";
+import { eq } from "drizzle-orm";
+import type { AppEnv } from "../types";
+import { createDb } from "../db/client";
+import { masterlist, users, userRole, studentStatus, notes, type User } from "../db/schema";
+import { requireAuth, requireAdmin } from "../middleware/auth";
+import { purgeNote } from "../lib/notes";
+
+export const adminRoutes = new Hono<AppEnv>();
+
+// Every admin route requires a valid token AND the `admin` role.
+// requireAuth must run first (it sets the user that requireAdmin reads).
+adminRoutes.use("*", requireAuth, requireAdmin);
+
+const ROLES = userRole.enumValues; // ["student", "admin"]
+const STATUSES = studentStatus.enumValues; // ["regular", "irregular"]
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isRole(value: unknown): value is (typeof ROLES)[number] {
+  return typeof value === "string" && (ROLES as readonly string[]).includes(value);
+}
+
+function isStatus(value: unknown): value is (typeof STATUSES)[number] {
+  return typeof value === "string" && (STATUSES as readonly string[]).includes(value);
+}
+
+// Never leak password hashes (or the internal revocation counter).
+function toPublicUser(user: User) {
+  const { passwordHash: _passwordHash, tokenVersion: _tokenVersion, ...rest } = user;
+  return rest;
+}
+
+// GET /admin/users — every registered account (no password hashes).
+adminRoutes.get("/users", async (c) => {
+  const db = createDb(c.env.DATABASE_URL);
+  const rows = await db.select().from(users).orderBy(users.name);
+  return c.json(rows.map(toPublicUser));
+});
+
+// PATCH /admin/users/:id/role — promote/demote a user. Body: { role }.
+adminRoutes.patch("/users/:id/role", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid user id" }, 400);
+  }
+
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
+  const { role } = (body ?? {}) as { role?: unknown };
+  if (!isRole(role)) {
+    return c.json({ error: "`role` must be 'student' or 'admin'" }, 400);
+  }
+
+  // Guard: an admin can't demote themselves (avoids locking out the last admin).
+  if (id === c.get("user").id && role !== "admin") {
+    return c.json({ error: "You cannot demote your own account" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [updated] = await db
+    .update(users)
+    .set({ role, updatedAt: new Date() })
+    .where(eq(users.id, id))
+    .returning();
+  if (!updated) {
+    return c.json({ error: "User not found" }, 404);
+  }
+  return c.json(toPublicUser(updated));
+});
+
+// DELETE /admin/users/:id — remove a user account. Blocked if the target is
+// the requesting admin (can't delete yourself).
+adminRoutes.delete("/users/:id", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid user id" }, 400);
+  }
+
+  if (id === c.get("user").id) {
+    return c.json({ error: "You cannot delete your own account" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [deleted] = await db
+    .delete(users)
+    .where(eq(users.id, id))
+    .returning({ id: users.id });
+
+  if (!deleted) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  return c.json({ id: deleted.id, deleted: true });
+});
+
+// GET /admin/masterlist — the full section roster.
+adminRoutes.get("/masterlist", async (c) => {
+  const db = createDb(c.env.DATABASE_URL);
+  const rows = await db.select().from(masterlist).orderBy(masterlist.fullName);
+  return c.json(rows);
+});
+
+// POST /admin/masterlist — add a roster entry. Body: { studentNumber, fullName, role?, status? }.
+adminRoutes.post("/masterlist", async (c) => {
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
+  const { studentNumber, fullName, role, status } = (body ?? {}) as {
+    studentNumber?: unknown;
+    fullName?: unknown;
+    role?: unknown;
+    status?: unknown;
+  };
+
+  if (!isNonEmptyString(studentNumber)) {
+    return c.json({ error: "`studentNumber` is required" }, 400);
+  }
+  if (!isNonEmptyString(fullName)) {
+    return c.json({ error: "`fullName` is required" }, 400);
+  }
+  if (role !== undefined && !isRole(role)) {
+    return c.json({ error: "`role` must be 'student' or 'admin'" }, 400);
+  }
+  if (status !== undefined && !isStatus(status)) {
+    return c.json({ error: "`status` must be 'regular' or 'irregular'" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const sn = studentNumber.trim();
+
+  const [existing] = await db
+    .select({ studentNumber: masterlist.studentNumber })
+    .from(masterlist)
+    .where(eq(masterlist.studentNumber, sn))
+    .limit(1);
+  if (existing) {
+    return c.json({ error: "That student number is already on the roster" }, 409);
+  }
+
+  const [created] = await db
+    .insert(masterlist)
+    .values({
+      studentNumber: sn,
+      fullName: fullName.trim(),
+      role: role ?? "student",
+      status: status ?? "regular",
+    })
+    .returning();
+  return c.json(created, 201);
+});
+
+// PATCH /admin/masterlist/:studentNumber — edit a roster entry's name, role, and/or status.
+adminRoutes.patch("/masterlist/:studentNumber", async (c) => {
+  const studentNumber = c.req.param("studentNumber");
+
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
+  const { fullName, role, status } = (body ?? {}) as {
+    fullName?: unknown;
+    role?: unknown;
+    status?: unknown;
+  };
+
+  const updates: {
+    fullName?: string;
+    role?: (typeof ROLES)[number];
+    status?: (typeof STATUSES)[number];
+  } = {};
+  if (fullName !== undefined) {
+    if (!isNonEmptyString(fullName)) {
+      return c.json({ error: "`fullName` must be a non-empty string" }, 400);
+    }
+    updates.fullName = fullName.trim();
+  }
+  if (role !== undefined) {
+    if (!isRole(role)) {
+      return c.json({ error: "`role` must be 'student' or 'admin'" }, 400);
+    }
+    updates.role = role;
+  }
+  if (status !== undefined) {
+    if (!isStatus(status)) {
+      return c.json({ error: "`status` must be 'regular' or 'irregular'" }, 400);
+    }
+    updates.status = status;
+  }
+  if (Object.keys(updates).length === 0) {
+    return c.json(
+      { error: "Provide `fullName`, `role`, and/or `status` to update" },
+      400
+    );
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [updated] = await db
+    .update(masterlist)
+    .set(updates)
+    .where(eq(masterlist.studentNumber, studentNumber))
+    .returning();
+  if (!updated) {
+    return c.json({ error: "Roster entry not found" }, 404);
+  }
+  return c.json(updated);
+});
+
+// DELETE /admin/masterlist/:studentNumber — remove a roster entry.
+// The users FK cascades, so deleting a claimed entry also deletes the linked
+// user account (no longer blocked with 409).
+adminRoutes.delete("/masterlist/:studentNumber", async (c) => {
+  const studentNumber = c.req.param("studentNumber");
+  const db = createDb(c.env.DATABASE_URL);
+
+  const [deleted] = await db
+    .delete(masterlist)
+    .where(eq(masterlist.studentNumber, studentNumber))
+    .returning({ studentNumber: masterlist.studentNumber });
+  if (!deleted) {
+    return c.json({ error: "Roster entry not found" }, 404);
+  }
+  return c.json({ studentNumber: deleted.studentNumber, deleted: true });
+});
+
+// PATCH /admin/notes/:id/approve — make a pending note visible to everyone.
+// `404` if missing, `409` if the note is not currently pending.
+adminRoutes.patch("/notes/:id/approve", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid note id" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+
+  const [note] = await db
+    .select({ id: notes.id, status: notes.status })
+    .from(notes)
+    .where(eq(notes.id, id))
+    .limit(1);
+  if (!note) {
+    return c.json({ error: "Note not found" }, 404);
+  }
+  if (note.status !== "pending") {
+    return c.json({ error: "Note is not pending approval" }, 409);
+  }
+
+  const [updated] = await db
+    .update(notes)
+    .set({
+      status: "approved",
+      approvedBy: c.get("user").id,
+      approvedAt: new Date(),
+    })
+    .where(eq(notes.id, id))
+    .returning();
+  return c.json(updated);
+});
+
+// POST /admin/notes/:id/reject — reject a pending note. Purges it immediately
+// (Cloudinary asset best-effort + DB row) rather than persisting a `rejected`
+// row. `404` if missing, `409` if the note is not currently pending.
+adminRoutes.post("/notes/:id/reject", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid note id" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+
+  const [note] = await db
+    .select({
+      id: notes.id,
+      status: notes.status,
+      publicId: notes.publicId,
+      resourceType: notes.resourceType,
+    })
+    .from(notes)
+    .where(eq(notes.id, id))
+    .limit(1);
+  if (!note) {
+    return c.json({ error: "Note not found" }, 404);
+  }
+  if (note.status !== "pending") {
+    return c.json({ error: "Note is not pending approval" }, 409);
+  }
+
+  await purgeNote(db, c.env, note);
+  return c.json({ id, status: "rejected", deleted: true });
+});

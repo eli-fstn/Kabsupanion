@@ -1,0 +1,10 @@
+node_modules
+.dev.vars
+.env
+.wrangler
+dist
+*.log
+CLAUDE.md
+
+# Real section roster (PII) — only the .example is committed
+seed/masterlist.json

@@ -1,0 +1,552 @@
+import Sidebar from "../../components/layout/Sidebar";
+import { getTasks, uploadTask, editTask, deleteTask } from "../../services/taskList.ts";
+import { getSubjects } from "../../services/subjects.ts";
+import { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import { handleApiError, getErrorMessage } from "../../services/errorHandler.ts";
+import Button from "../../components/ui/Button";
+import { useToast } from "../../context/toastContext";
+import Modal from "../../components/ui/Modal";
+import { formatDate } from "../../utils/FormattedDate.ts";
+import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
+
+function AdminList() {
+  const [tasks, setTasks] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
+
+  // Add form
+  const [title, setTitle] = useState("");
+  const [subjectID, setSubjectID] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [error, setError] = useState({ 
+    title: "", 
+    subject: "", 
+    dueDate: "", 
+    general: "" 
+  });
+
+  // Edit
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editSubjectID, setEditSubjectID] = useState("");
+  const [editDueDate, setEditDueDate] = useState("");
+  const [editError, setEditError] = useState({ 
+    title: "", 
+    subject: "", 
+    dueDate: "", 
+    general: "" 
+  });
+
+  // Delete
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { showToast } = useToast();
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const data = await getTasks();
+      setTasks(Array.isArray(data) ? [...data].reverse() : []);
+    } catch (err) {
+      showToast(getErrorMessage(err));
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSubjects = async () => {
+    try {
+      const data = await getSubjects();
+      setSubjects(data);
+    } catch (err) {
+      showToast(getErrorMessage(err));
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchSubjects();
+  }, []);
+
+  const resetForm = () => {
+    setTitle("");
+    setSubjectID("");
+    setDueDate("");
+    setError({
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    });
+  };
+
+  const handleClose = () => {
+    resetForm();
+    setModalOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let hasError = false;
+    const newError = { 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    };
+
+    if (!title) { 
+      newError.title = "Task title is required."; 
+      hasError = true; 
+    }
+    if (!subjectID) { 
+      newError.subject = "Subject is required."; 
+      hasError = true; 
+    }
+    if (!dueDate) { 
+      newError.dueDate = "Due date is required."; 
+      hasError = true; }
+    if (hasError) { 
+      setError(newError); 
+      return; 
+    }
+
+    setLoadingForm(true);
+
+    try {
+      await uploadTask(title, subjectID, dueDate);
+      setModalOpen(false);
+      resetForm();
+      fetchTasks();
+    } catch (err) {
+      handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      console.log(err);
+    } finally {
+      setLoadingForm(false);
+    }
+  };
+
+  const handleEditOpen = (t) => {
+    setSelectedTask(t);
+    setEditTitle(t.title);
+    setEditSubjectID(t.subject?.id || "");
+    setEditDueDate(t.dueDate ? new Date(t.dueDate).toISOString().slice(0,10) : "");
+    setEditError({ 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    let hasError = false;
+    const newError = { 
+      title: "", 
+      subject: "", 
+      dueDate: "", 
+      general: "" 
+    };
+
+    if (!editTitle) { 
+      newError.title = "Task title is required."; 
+      hasError = true; 
+    }
+    if (!editSubjectID) { 
+      newError.subject = "Subject is required."; 
+      hasError = true; 
+    }
+    if (!editDueDate) { 
+      newError.dueDate = "Due date is required."; 
+      hasError = true;
+     }
+    if (hasError) { 
+      setEditError(newError); 
+      return; 
+    }
+    setLoadingForm(true);
+    
+    try {
+      if (!selectedTask) return;
+      await editTask(selectedTask.id, editTitle, editSubjectID, editDueDate);
+      setEditModalOpen(false);
+      fetchTasks();
+    } catch (err) {
+      handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
+    } finally {
+      setLoadingForm(false);
+    }
+  };
+
+  const handleDeleteOpen = (t) => {
+    setSelectedTask(t);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setLoadingForm(true);
+    try {
+      if (!selectedTask) return;
+      await deleteTask(selectedTask.id);
+      setDeleteModalOpen(false);
+      fetchTasks();
+    } catch (err) {
+      showToast(getErrorMessage(err));
+      console.log(err);
+    } finally {
+      setLoadingForm(false);
+    }
+  };
+
+  const filteredTasks = [...tasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+
+  const getDueDateColor = (daysRemaining) =>
+    daysRemaining === 3
+      ? "text-amber-500"
+      : daysRemaining === 2
+      ? "text-orange-500 font-medium"
+      : daysRemaining === 1
+      ? "text-red-500 font-bold"
+      : daysRemaining === 0
+      ? "text-purple-900 font-bold"
+      : "";
+
+  return (
+    <div className="bg-[#fafafa] min-h-screen flex">
+      <Sidebar />
+
+      <div className="flex-1 p-8">
+        <div className="">
+          <p className="font-bold text-[1.5rem] font-[montserrat]">Task List</p>
+          <p className="text-gray-400 text-sm">Manage and monitor student tasks, assignments, and deadlines.</p>
+        </div>
+
+        {/* Legend */}
+        <div className="my-5">
+          <p className="text-sm font-medium text-gray-700 dark:text-[#E0E0E0]">Remaining days before the deadline:</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-2">
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-amber-500 dark:bg-amber-400 rounded-full inline-block mr-1"></span> - 3 days
+            </p>
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-orange-500 dark:bg-orange-400 rounded-full inline-block mr-1"></span> - 2 days
+            </p>
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full inline-block mr-1"></span> - Due tomorrow
+            </p>
+            <p className="text-xs font-medium text-gray-500 dark:text-[#E0E0E0] flex items-center whitespace-nowrap">
+              <span className="w-3 h-3 bg-purple-900 dark:bg-purple-400 rounded-full inline-block mr-1"></span> - Due today
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white w-full border border-gray-200 rounded-xl overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
+                <th className="flex items-center">No.</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="ix:tasks-all" width="20" height="20" />Task</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="material-symbols:book-outline" width="20" height="20" />Subject</th>
+                <th className="flex items-center"><Icon className="mr-2" icon="mingcute:time-line" width="20" height="20" />Due Date</th>
+                <th className="flex items-center">Actions</th>
+              </tr>
+            </thead>
+          </table>
+
+          <div className="h-95 overflow-y-auto flex flex-col">
+            {loading ? (
+              <div className="flex flex-col">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
+                  >
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-4" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-40" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-16" />
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-20" />
+                    <div className="flex gap-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              tasks.length > 0 ? (
+                <table className="w-full">
+                  <tbody>
+                    {filteredTasks.map((t, i) => {
+                      const oneDay = 24 * 60 * 60 * 1000;
+                      const currentDate = new Date().getTime();
+                      const dueDate = new Date(t.dueDate);
+                      const daysRemaining = Math.ceil((dueDate - currentDate) / oneDay);
+                      const dueDateColor = getDueDateColor(daysRemaining);
+
+                      return (
+                        <tr key={i} className="grid grid-cols-[.2fr_3fr_1fr_1fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                        <td className="text-[#4a4a4a88]">{i + 1}</td>
+                        <td>{t.title}</td>
+                        <td>{t.subject?.code}</td>
+                        <td className={`${dueDateColor}`}>
+                          {formatDate(t.dueDate)}
+                        </td> 
+                        <td className="flex gap-2">
+                          <Button
+                            text={<Icon icon="mdi:pencil-outline" width="16" height="16" />}
+                            onClick={() => handleEditOpen(t)}
+                            bgColor="hover:bg-gray-200"
+                            typography="text-gray-700 hover:text-gray-500"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                          <Button
+                            text={<Icon icon="mdi:trash-can-outline" width="16" height="16" />}
+                            onClick={() => handleDeleteOpen(t)}
+                            bgColor="hover:bg-red-100"
+                            typography="text-red-500 hover:text-red-700"
+                            dimensions="rounded-md"
+                            padding="p-1.5"
+                            animation="transition-all duration-200 active:scale-95"
+                          />
+                        </td>
+                      </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex justify-center items-center flex-1">
+                  <p className="text-gray-400">No tasks added yet.</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <div className="flex justify-center items-center mb-5 mt-4">
+            <Button
+              text="+ Add Task"
+              onClick={() => setModalOpen(true)}
+              bgColor="bg-[#1B651B]"
+              typography="text-white font-bold text-xs"
+              padding="px-6 py-2"
+              dimensions="w-fit rounded-md"
+              animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+            />
+          </div>
+        </div>
+
+        {/* Add Modal */}
+        <Modal isOpen={modalOpen} onClose={handleClose}>
+          <form onSubmit={handleSubmit} className="flex flex-col w-80 p-6">
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-70">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Submitting...</p>
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Add Task</p>
+                <p className="text-gray-400 text-xs mb-5">Add a new task for your section.</p>
+
+                <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
+                <input 
+                  type="text" 
+                  value={title} 
+                  placeholder="Enter task title" 
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setError((prev) => ({ ...prev, title: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                    ${error.title ? "border-red-500" : "border-gray-300"}`}/>
+                {error.title && (<p className="text-red-500 text-xs">{error.title}</p>)}
+
+                <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
+                <select 
+                  value={subjectID} 
+                  onChange={(e) => {
+                    setSubjectID(e.target.value); 
+                    setError((prev) => ({ ...prev, subject: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
+                    ${error.subject ? "border-red-500" : "border-gray-300"}`}>
+                  <option value="">Select a subject</option>
+                  {subjects.map((subject) => (
+                    <option key={subject.id} value={subject.id}>
+                      {subject.code}
+                    </option>
+                  ))}
+                </select>
+                {error.subject && (<p className="text-red-500 text-xs">{error.subject}</p>)}
+
+                <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
+                <input 
+                  type="date" 
+                  value={dueDate} 
+                  onChange={(e) => {
+                    setDueDate(e.target.value); 
+                    setError((prev) => ({ ...prev, dueDate: "" }));}} 
+                  className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700
+                    ${ error.dueDate ? "border-red-500" : "border-gray-300"}`}/>
+                {error.dueDate && (<p className="text-red-500 text-xs">{error.dueDate}</p>)}
+
+                {error.general && (<p className="text-red-500 text-[.8rem] leading-4 font-bold my-1 text-center">{error.general}</p>)}
+
+                <div className="flex flex-row justify-end gap-3 mt-5">
+                  <Button 
+                    type="button" 
+                    onClick={handleClose} 
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="submit" 
+                    text="Submit"
+                    bgColor="bg-[#1B651B]" 
+                    typography="text-white font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+                  />
+                </div>
+              </>
+              )
+            }
+          </form>
+        </Modal>
+
+        {/* Edit Modal */}
+        <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
+          <form onSubmit={handleEditSubmit} className="flex flex-col w-80 p-6">
+            {loadingForm ? (
+               <div className="flex flex-col justify-center items-center h-70">
+                  <LoadingIcon dimensions="w-20 h-20"/>
+                  <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Saving Changes...</p>
+                </div>
+            ) : (
+              <>
+              <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Edit Task</p>
+              <p className="text-gray-400 text-xs mb-5">Update the task details.</p>
+
+              <label className="text-xs font-bold mb-1 mt-2">Task Title <span className="text-red-400">*</span></label>
+              <input 
+                type="text" 
+                value={editTitle} 
+                onChange={(e) => {
+                  setEditTitle(e.target.value);
+                  setEditError((prev) => ({ ...prev, title: "" })); }} 
+                className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                  ${editError.title ? "border-red-500" : "border-gray-300"}`} />
+              {editError.title && <p className="text-red-500 text-xs">{editError.title}</p>}
+
+              <label className="text-xs font-bold mb-1 mt-4">Subject <span className="text-red-400">*</span></label>
+              <select 
+                value={editSubjectID} 
+                onChange={(e) => {
+                  setEditSubjectID(e.target.value); 
+                  setEditError((prev) => ({ ...prev, subject: "" })); }} 
+                className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 bg-white 
+                  ${editError.subject ? "border-red-500" : "border-gray-300"}`}>
+                <option value="">Select a subject</option>
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.id}>{subject.code}</option>
+                ))}
+              </select>
+              {editError.subject && <p className="text-red-500 text-xs">{editError.subject}</p>}
+
+              <label className="text-xs font-bold mb-1 mt-4">Due Date <span className="text-red-400">*</span></label>
+              <input 
+                type="date" 
+                value={editDueDate} 
+                onChange={(e) => {
+                  setEditDueDate(e.target.value);
+                  setEditError((prev) => ({ ...prev, dueDate: "" })); }} 
+                className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 
+                  ${editError.dueDate ? "border-red-500" : "border-gray-300"}`} />
+              {editError.dueDate && <p className="text-red-500 text-xs">{editError.dueDate}</p>}
+
+              {editError.general && (<p className="text-red-500 text-xs font-bold text-center my-1">{editError.general}</p>)}
+
+              <div className="flex flex-row justify-end gap-3 mt-5">
+                <Button 
+                  type="button" 
+                  onClick={() => setEditModalOpen(false)} 
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200" 
+                  typography="text-gray-600 font-bold text-xs" 
+                  padding="px-4 py-2" 
+                  dimensions="w-fit rounded-md"
+                />
+                <Button 
+                  type="submit" 
+                  text="Save Changes" 
+                  bgColor="bg-[#1B651B]" 
+                  typography="text-white font-bold text-xs" 
+                  padding="px-4 py-2" 
+                  dimensions="w-fit rounded-md" 
+                  animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]" />
+              </div>
+                </>
+              )
+            }
+          </form>
+        </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+          <div className="flex flex-col items-center w-72 p-6">
+            {loadingForm ? (
+              <div className="flex flex-col justify-center items-center h-50">
+                <LoadingIcon dimensions="w-20 h-20"/>
+                <p className="text-gray-400 text-sm mt-5 ">Deleting...</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-[#fcebeb] rounded-full p-4 mb-4">
+                  <Icon icon="mdi:trash-can-outline" width="30" className="text-[#A32D2D]" />
+                </div>
+                <p className="font-bold text-[1.1rem] text-center text-[#A32D2D]">Delete Task?</p>
+                <p className="text-gray-400 text-sm text-center mt-2 mb-6">Are you sure you want to delete <span className="font-bold text-[#3a3a3a]">{selectedTask?.title}?</span> This action cannot be undone.</p>
+                <div className="flex justify-center items-center gap-3 w-full">
+                  <Button 
+                    type="button" 
+                    onClick={() => setDeleteModalOpen(false)} 
+                    text="Cancel" 
+                    bgColor="bg-gray-100 hover:bg-gray-200" 
+                    typography="text-gray-600 font-bold text-xs" 
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md"
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={handleDeleteConfirm}
+                    text="Delete"
+                    bgColor="bg-[#A32D2D] hover:bg-red-800" 
+                    typography="text-white font-bold text-xs"
+                    padding="px-4 py-2" 
+                    dimensions="w-fit rounded-md" 
+                    animation="active:scale-95 transition-all duration-100"
+                  />
+                </div>
+              </>
+              )
+            }
+          </div>
+        </Modal>
+      </div>
+    </div>
+  );
+}
+
+export default AdminList;

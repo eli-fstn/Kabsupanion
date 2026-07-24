@@ -1,0 +1,21 @@
+# Local Worker runtime secrets for `wrangler dev`.
+# Copy this file to `.dev.vars` and fill in real values.
+# Use the Neon POOLED connection string (the one containing `-pooler`).
+DATABASE_URL="postgresql://USER:PASSWORD@ep-xxxx-pooler.REGION.aws.neon.tech/DBNAME?sslmode=require"
+# Used to sign/verify auth JWTs. Generate a strong value, e.g.:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+JWT_SECRET="generate-a-strong-random-secret"
+# Cloudinary — from the Cloudinary Dashboard > Settings > API Keys.
+CLOUDINARY_CLOUD_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_api_key"
+CLOUDINARY_API_SECRET="your_api_secret"
+# Password-reset email via Resend (https://resend.com). Optional locally — if
+# unset, forgot-password still returns success but sends no email.
+#   RESEND_API_KEY: from Resend dashboard > API Keys (prod: `wrangler secret put`).
+#   EMAIL_FROM:     a verified sender, e.g. "KabsuPanion <no-reply@yourdomain>".
+#                   Defaults to Resend's onboarding@resend.dev if unset.
+RESEND_API_KEY=""
+EMAIL_FROM=""
+# APP_URL (frontend base for the reset link) is set in wrangler.toml [vars];
+# override here if your local frontend runs elsewhere, e.g. http://localhost:5173
+# APP_URL="http://localhost:5173"
