@@ -11,6 +11,8 @@ const PrivateRoute = ({ requiredRole }) => {
 
   if (!token) return <Navigate to="/" />;
 
+  if (!student) return <LoadingScreen />;
+
   if (requiredRole && student?.user?.role !== requiredRole) {
     return <Error403 />
   } 
