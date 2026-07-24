@@ -160,8 +160,7 @@ function Footer() {
             </ul>
 
             <div className="mt-3 sm:mt-5 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40 p-4">
-              <p className="text-xs md:text-sm text-green-800 dark:text-green-300"><strong>Note:</strong> Tasks are created and managed by your section administrator. Students can only update the completion status of their own tasks.
-              </p>
+              <p className="text-xs md:text-sm text-green-800 dark:text-green-300"><strong>Note:</strong> Tasks are created and managed by your section administrator. Students can only update the completion status of their own tasks. Task are automatically deleted within the end of the day.</p>
             </div>
           </section>
 
