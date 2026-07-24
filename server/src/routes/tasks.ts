@@ -151,16 +151,23 @@ taskRoutes.patch("/:id", requireAdmin, async (c) => {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
 
-  const { title, description, dueDate } = (body ?? {}) as {
+  const { subjectId, title, description, dueDate } = (body ?? {}) as {
+    subjectId?: unknown;
     title?: unknown;
     description?: unknown;
     dueDate?: unknown;
   };
 
-  const patch: { title?: string; description?: string | null; dueDate?: Date | null; updatedAt: Date } = {
+  const patch: { subjectId?: string; title?: string; description?: string | null; dueDate?: Date | null; updatedAt: Date } = {
     updatedAt: new Date(),
   };
 
+  if (subjectId !== undefined) {
+    if (typeof subjectId !== "string" || !UUID_RE.test(subjectId)) {
+      return c.json({ error: "`subjectId` must be a valid UUID" }, 400);
+    }
+    patch.subjectId = subjectId;
+  }
   if (title !== undefined) {
     if (typeof title !== "string" || title.trim() === "") {
       return c.json({ error: "`title` must be a non-empty string" }, 400);
@@ -192,6 +199,20 @@ taskRoutes.patch("/:id", requireAdmin, async (c) => {
   }
 
   const db = createDb(c.env.DATABASE_URL);
+
+  // If reassigning the subject, confirm the target exists so we return a clean
+  // 404 rather than letting the FK constraint surface as a 500.
+  if (patch.subjectId !== undefined) {
+    const [subject] = await db
+      .select({ id: subjects.id })
+      .from(subjects)
+      .where(eq(subjects.id, patch.subjectId))
+      .limit(1);
+    if (!subject) {
+      return c.json({ error: "Subject not found" }, 404);
+    }
+  }
+
   const [updated] = await db
     .update(tasks)
     .set(patch)
