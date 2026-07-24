@@ -5,6 +5,28 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-07-24 — Fix: `PATCH /tasks/:id` couldn't change the subject
+
+Reported: editing a task's subject did nothing. Cause: the `PATCH /tasks/:id` handler only
+destructured `title`/`description`/`dueDate` from the body — `subjectId` was never read, so it was
+silently ignored (no error, no change). `POST /tasks` accepted `subjectId`; `PATCH` never did.
+
+Fix (`src/routes/tasks.ts`), mirroring `POST`'s handling:
+- `PATCH` now accepts an optional `subjectId`; must be a valid UUID or `400`.
+- When reassigning, the target subject is looked up first — a missing one returns a clean `404
+  Subject not found` instead of letting the FK constraint surface as a `500`.
+- Works alone or combined with `title`/`dueDate` in one request.
+
+Verified end-to-end against local `wrangler dev` (13/13 checks, throwaway ZZ-prefixed data, fully
+cleaned up): create under subject A → `PATCH` to B (response + DB row updated, appears under
+`?subjectId=B`); bad UUID → `400`; nonexistent subject → `404`; subject+title combined patch → `200`.
+Existing 27-test suite and `tsc` still green.
+
+**Frontend note:** an edit form can now include `subjectId` in the same `PATCH` body as the other
+fields to move a task between subjects.
+
+---
+
 ## 2026-07-24 — Release-readiness: prod deploy verified, backend added to CI
 
 No production changes were needed — this was a verification pass that found the deploy had already
