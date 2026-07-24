@@ -36,12 +36,16 @@ The platform consolidates essential academic resources into a single interface, 
 
 | Layer              | Technology                    | Version |
 | ------------------ | ----------------------------- | ------- |
-| Frontend Language  | Javascript                    | ES2024  |
-| Frontend Framework | React                         | 19.2.7  |
-| Build Tool         | Vite                          | 8.0.16  |
-| Routing            | React Router DOM              | 7.18.0  |
-| Styling            | Tailwind CSS                  | v4      |
-| HTTP Client        | Axios                         | 1.18.0  |
+| Frontend Language  | JavaScript (JSX)              | ES2024  |
+| Frontend Framework | React                         | 19.2.6  |
+| Build Tool         | Vite                          | 8.0.12  |
+| Routing            | React Router DOM              | 7.17.0  |
+| Styling            | Tailwind CSS                  | 4.3.0   |
+| HTTP Client        | Axios                         | 1.17.0  |
+| Charts & Graphs    | Recharts                      | 3.8.1   |
+| PDF Rendering      | react-pdf                     | 10.4.1  |
+| Icons              | Iconify                       | 6.0.2   |
+| PWA Support        | vite-plugin-pwa               | 1.3.0   |
 | API                | REST API                      | —       |
 | Backend Language   | TypeScript                    | 5.7.3   |
 | Backend Framework  | Hono                          | 4.7.2   |
@@ -57,7 +61,7 @@ The platform consolidates essential academic resources into a single interface, 
 | Name          | Role                                  |
 | ------------- | ------------------------------------- |
 | Elijah Festin | Front-End Developer, UI/UX Designer   |
-| Lorenz Tuboro | Back-End Developer, Lead Dev          |
+| Lorenz Tuboro | Back-End Developer, Lead Deveveloper  |
 
 ---
 

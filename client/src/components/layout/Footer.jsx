@@ -136,20 +136,21 @@ function Footer() {
 
           <section>
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Sign In</h2>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Log in using your registered student account credentials. Once signed in, you will be redirected to your dashboard, where you can access the platform's available features.
-            </p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Log in using your registered student account credentials. Once signed in, you will be redirected to your dashboard, where you can access the platform's available features.</p>
+
+            <div className="mt-3 sm:mt-5 rounded-lg border border-green-200 dark:border-green-800 bg-blue-50 dark:bg-blue-950/40 p-4">
+              <p className="text-xs md:text-sm text-green-800 dark:text-green-300"><strong>Note:</strong> Once signed in, you'll stay logged in for <strong>7 days</strong>, no need to log in and out every day. You'll only be asked to sign in again after that period, or if you manually sign out.</p>
+            </div>
           </section>
 
           <section>
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Dashboard</h2>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Your dashboard serves as the central hub for your academic activities. From here, you can access your tasks, class schedule, and shared learning resources.
-            </p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Your dashboard serves as the central hub for your academic activities. From here, you can access your tasks, class schedule, and shared learning resources.</p>
           </section>
 
           <section>
             <h2 className="text-lg sm:text-xl mt-5 sm:mt-10 font-semibold font-[montserrat] text-gray-900 dark:text-gray-100">Task List</h2>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Task List</strong> displays academic tasks and deadlines assigned by your section administrator. Use it to stay informed about upcoming requirements and keep track of your progress throughout the semester.
-            </p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Task List</strong> displays academic tasks and deadlines assigned by your section administrator. Use it to stay informed about upcoming requirements and keep track of your progress throughout the semester.</p>
 
             <h4 className="font-medium mt-3 sm:mt-5  font-[montserrat] text-gray-900 dark:text-gray-100">What You Can Do</h4>
             <ul className="mt-2 text-xs md:text-sm list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
@@ -167,8 +168,7 @@ function Footer() {
           <section>
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Class Schedule</h2>
 
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Class Schedule</strong> provides a clear view of your weekly classes, making it easier to plan your day and stay on time.
-            </p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Class Schedule</strong> provides a clear view of your weekly classes, making it easier to plan your day and stay on time.</p>
 
             <h4 className="font-medium mt-3 sm:mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">Tips</h4>
             <ul className="mt-2 text-xs md:text-sm list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
@@ -181,8 +181,7 @@ function Footer() {
           <section>
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Class Resources</h2>
 
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Class Resources</strong> section allows students to share and access learning materials within their section, including lecture notes, reviewers, presentations, and other academic references.
-            </p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">The <strong>Class Resources</strong> section allows students to share and access learning materials within their section, including lecture notes, reviewers, presentations, and other academic references.</p>
 
             <h4 className="font-medium mt-3 sm:mt-5 font-[montserrat] text-gray-900 dark:text-gray-100">What You Can Do</h4>
             <ul className="mt-2 text-xs md:text-sm list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
@@ -193,8 +192,7 @@ function Footer() {
             </ul>
 
             <div className="mt-3 sm:mt-5 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-4">
-              <p className="text-xs md:text-sm text-amber-800 dark:text-amber-300"><strong>Review Process:</strong> Resources uploaded by students are placed in a <strong>Pending</strong> state and reviewed by a section administrator before becoming available to everyone. This helps ensure that all shared materials are relevant, appropriate, and intended for academic use.
-              </p>
+              <p className="text-xs md:text-sm text-amber-800 dark:text-amber-300"><strong>Review Process:</strong> Resources uploaded by students are placed in a <strong>Pending</strong> state and reviewed by a section administrator before becoming available to everyone. This helps ensure that all shared materials are relevant, appropriate, and intended for academic use.</p>
             </div>
           </section>
 
@@ -212,8 +210,7 @@ function Footer() {
           <section>
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Need Help?</h2>
 
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">If you encounter technical issues, notice incorrect information, or have suggestions for improving Kabsupanion, use the <strong>Report a Problem</strong> button or Feedback located in the footer to let us know.
-            </p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">If you encounter technical issues, notice incorrect information, or have suggestions for improving Kabsupanion, use the <strong>Report a Problem</strong> button or Feedback located in the footer to let us know.</p>
           </section>
 
           <div className="border-t border-gray-200 dark:border-[#2a2a2a] pt-5">

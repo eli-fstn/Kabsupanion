@@ -49,7 +49,10 @@ function AdminDashboard() {
     setLoading(true);
     try {
       const data = await getResources();
-      setResources(data);
+      const sorted = [...data].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setResources(sorted);
     } catch (error) {
       console.log(error);
     } finally {
@@ -102,7 +105,7 @@ function AdminDashboard() {
           <p className="font-bold text-[1.5rem] sm:text-[1.7rem] font-[montserrat] leading-tight">
             {greetings}, <span className="font-[parisienne] font-bold pl-1 text-[2rem] sm:text-[2.2rem] text-[#387c39]">{student?.user?.name?.split(" ").slice(-1)[0]}!</span>
           </p>
-          <p className="text-gray-400 text-sm mt-1">Here's what's happening in your section.</p>
+          <p className="text-gray-400 text-sm">Here's what's happening in your section.</p>
         </div>
 
         {/* STAT CARDS */}
