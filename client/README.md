@@ -60,40 +60,36 @@
 client/
 ├── public/
 │   ├── icon/                    # PWA and application icons
-│   ├── favicon.ico
-│   └── site.webmanifest
+│   └── site.webmanifest        # Web app manifest
 │
 ├── src/
 │   ├── assets/
-│   │   ├── illustrations/       # SVGs and illustrations
+│   │   ├── illustrations/       # SVGs and illustration assets
 │   │   └── images/              # Images and other media assets
 │   │
 │   ├── components/
 │   │   ├── common/              # Shared reusable components
-│   │   ├── layout/              # Layout components (Navbar, Sidebar, Footer, etc.)
-│   │   └── ui/                  # Reusable UI components
+│   │   ├── layout/              # Layout components like sidebar and footer
+│   │   └── ui/                  # Reusable UI primitives
 │   │
-│   ├── context/                 # React Context providers
+│   ├── context/                 # React context providers and hooks
 │   ├── hooks/                   # Custom React hooks
-│   │
 │   ├── pages/
-│   │   ├── admin/               # Administrator pages
-│   │   ├── auth/                # Authentication pages
+│   │   ├── admin/               # Admin pages
+│   │   ├── auth/                # Authentication screens
 │   │   ├── errors/              # Error pages
-│   │   ├── sections/            # Shared section pages
-│   │   └── student/             # Student pages
+│   │   ├── sections/            # Shared section-related pages
+│   │   └── student/             # Student-facing pages
 │   │
-│   ├── routes/                  # Route configuration
-│   ├── services/                # API and service functions
-│   ├── styles/                  # Global styles
-│   ├── utils/                   # Utility/helper functions
+│   ├── routes/                  # Route configuration and guards
+│   ├── services/                # API and service layer modules
+│   ├── styles/                  # Global styles and theme helpers
+│   ├── utils/                   # Utility helpers and formatters
 │   │
 │   ├── App.jsx                  # Root application component
-│   ├── main.jsx                 # Application entry point
+│   ├── main.jsx                 # Entry point
 │   └── vite-env.d.ts            # Vite TypeScript declarations
 │
-├── .env                         # Environment variables
-├── .gitignore
 ├── CHANGELOG.md
 ├── eslint.config.js
 ├── index.html

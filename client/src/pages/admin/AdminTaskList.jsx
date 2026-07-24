@@ -173,6 +173,7 @@ function AdminList() {
       return; 
     }
     setLoadingForm(true);
+    
     try {
       if (!selectedTask) return;
       await editTask(selectedTask.id, editTitle, editSubjectID, editDueDate);
