@@ -20,7 +20,11 @@ export function UserProvider({ children }) {
       const data = await getMe();
       setStudent(data);
     } catch (error) {
-      console.log(error);
+      if (!error.response) {
+        setTimeout(fetchMe, 1000);
+        return;
+      }
+
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem("token");
         await clearApiCache();
