@@ -30,8 +30,6 @@ function ClassSched() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  // Controls the export-only header below — true only for the brief moment
-  // we're taking the screenshot, so it never shows up on the live page.
   const [isExporting, setIsExporting] = useState(false);
   const scheduleRef = useRef(null);
   const { darkMode } = useTheme();
@@ -50,9 +48,7 @@ function ClassSched() {
       { threshold: 0.5 }
     );
 
-    const elements =
-      sectionRef.current.querySelectorAll(".animate-on-scroll");
-
+    const elements = sectionRef.current.querySelectorAll(".animate-on-scroll");
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
@@ -129,6 +125,13 @@ function ClassSched() {
   const isStart = (subject, slot) =>
     subject && to24hr(subject.startTime) === slot;
 
+  const getSlotSpan = (subject) => {
+    if (!subject) return 1;
+    const start = to24hr(subject.startTime);
+    const end = to24hr(subject.endTime);
+    return TIME_SLOTS.filter((slot) => slot >= start && slot < end).length;
+  };
+
   return (
     <section ref={sectionRef} className="min-h-screen p-4 sm:p-5 lg:px-20" id="class-sched">
       <header className="mt-3 mb-6">
@@ -146,17 +149,15 @@ function ClassSched() {
         </div>
       ) : (
         <>
-          {/* Horizontally scrollable schedule — table keeps its natural width and scrolls under this wrapper on narrow screens */}
           <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-[#1a1a1a] [-webkit-overflow-scrolling:touch]">
             <div ref={scheduleRef} className="min-w-290 bg-white dark:bg-[#1a1a1a]">
 
-              {/* Text that appears in the downloaded schedule but doesn't appear in the website */}
               <div className="flex flex-row items-center justify-between bg-white dark:bg-[#1a1a1a]">
                 <p className={`${isExporting ? "block" : "hidden"} font-bold text-[1.5rem] text-black dark:text-white p-3 bg-white dark:bg-[#1a1a1a]`}> BSCS-2A | 1<sup>st</sup> Semester A.Y. 2026-2027</p>
 
                 <div className={`${isExporting ? "block" : "hidden"} flex items-center p-3 bg-white dark:bg-[#1a1a1a]`}>
                   <img src={CvSULogo} alt="CvSU Logo" className="w-8 h-7"></img>
-                  <p className="text-black dark:text-white text-[1rem] ml-2">Cavite State University - Imus campus</p>
+                  <p className="text-black dark:text-white font-semibold text-[1rem] ml-2">Cavite State University - Imus campus</p>
                 </div>
               </div>
 
@@ -190,24 +191,33 @@ function ClassSched() {
                       {DAYS.map((d) => {
                         const subject = getSubjectAt(d, slot);
                         const start = isStart(subject, slot);
-                        const colorIdx = subject ? getColorIndex(subject.code) : -1;
+
+                        if (subject && !start) return null;
+
+                        if (!subject) {
+                          return (
+                            <td
+                              key={d}
+                              className="border border-gray-300 dark:border-[#444444] w-32"
+                            />
+                          );
+                        }
+
+                        const colorIdx = getColorIndex(subject.code);
                         const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
-                        const textColor =
-                          colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
+                        const textColor = colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
+                        const span = getSlotSpan(subject);
 
                         return (
                           <td
                             key={d}
-                            className={`animate-on-scroll border border-gray-300 dark:border-[#444444] w-32 text-center text-xs font-bold ${bgColor}`}
+                            rowSpan={span}
+                            className={`animate-on-scroll border border-gray-300 dark:border-[#444444] w-32 text-left text-xs font-bold align-top ${bgColor}`}
                           >
-                            {subject && start ? (
-                              <div className={`animate-on-scroll px-2 py-3 ${textColor}`}>
-                                <p className="font-bold">{subject.code}</p>
-                                <p className="font-normal opacity-70 text-[10px]">
-                                  {subject.room}
-                                </p>
-                              </div>
-                            ) : null}
+                            <div className={`animate-on-scroll mt-2 px-2 ${textColor}`}>
+                              <p className="font-bold">{subject.code}</p>
+                              <p className={`text-[10px] ${subject.room?.toUpperCase() === "ASYNC" ? "text-red-500 font-bold" : subject.room?.toUpperCase() === "TBA" ? "text-amber-400 font-semibold" : "font-normal opacity-70"}`}>{subject.room}</p>
+                            </div>
                           </td>
                         );
                       })}
