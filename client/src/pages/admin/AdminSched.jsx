@@ -65,6 +65,13 @@ function AdminSched() {
 
   const getColorIndex = (code) => subjects.findIndex((s) => s.code === code);
 
+  const getSlotSpan = (subject) => {
+    if (!subject) return 1;
+    const start = to24hr(subject.startTime);
+    const end = to24hr(subject.endTime);
+    return time_slots.filter((slot) => slot >= start && slot < end).length;
+  };
+
   const scheduleData = subjects.flatMap((subject) =>
     (subject.schedules || []).map((sched) => ({
       subjectId: subject.id,
@@ -289,34 +296,43 @@ function AdminSched() {
                         const subject = scheduleData.find(
                           (s) => s.day === d && timeStart >= to24hr(s.startTime) && timeStart < to24hr(s.endTime)
                         );
-                        const colorIdx = subject ? getColorIndex(subject.code) : -1;
-                        const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
-                        const textColor =
-                          colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
                         const isStart = subject && timeStart === to24hr(subject.startTime);
 
+                        if (subject && !isStart) return null;
+
+                        if (!subject) {
+                          return <td key={d} className="border border-gray-300 w-32" />;
+                        }
+
+                        const colorIdx = getColorIndex(subject.code);
+                        const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
+                        const textColor = colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
+                        const span = getSlotSpan(subject);
+
                         return (
-                          <td key={d} className={`border border-gray-300 py-3 w-32 text-center text-xs font-bold ${subject ? getColor(subject.code) : ""}`}>
-                            {subject && isStart ? (
-                              <div className={`relative group px-1 ${textColor}`}>
-                                <p className="font-bold">{subject.code}</p>
-                                <p className="font-normal opacity-70">{subject.room}</p>
-                                <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
-                                  <button
-                                    onClick={() => handleEditOpen(subject)}
-                                    className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
-                                  >
-                                    <Icon icon="mdi:pencil-outline" width="12" className="text-gray-700" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteOpen(subject)}
-                                    className="bg-white rounded p-0.5 shadow hover:bg-red-100"
-                                  >
-                                    <Icon icon="mdi:trash-can-outline" width="12" className="text-red-500" />
-                                  </button>
-                                </div>
+                          <td
+                            key={d}
+                            rowSpan={span}
+                            className={`border border-gray-300 w-32 text-left text-xs font-bold align-top ${bgColor}`}
+                          >
+                            <div className={`relative group px-2 mt-2 ${textColor}`}>
+                              <p className={`font-bold ${textColor}`}>{subject.code}</p>
+                              <p className={`text-[10px] ${subject.room?.toUpperCase() === "ASYNC" ? "text-red-500 font-bold" : subject.room?.toUpperCase() === "TBA" ? "text-amber-400 font-semibold" : "font-normal opacity-70"}`}>{subject.room}</p>
+                              <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
+                                <button
+                                  onClick={() => handleEditOpen(subject)}
+                                  className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
+                                >
+                                  <Icon icon="mdi:pencil-outline" width="12" className="text-gray-700" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteOpen(subject)}
+                                  className="bg-white rounded p-0.5 shadow hover:bg-red-100"
+                                >
+                                  <Icon icon="mdi:trash-can-outline" width="12" className="text-red-500" />
+                                </button>
                               </div>
-                            ) : null}
+                            </div>
                           </td>
                         );
                       })}
