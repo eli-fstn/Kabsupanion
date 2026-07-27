@@ -138,7 +138,7 @@ function Footer() {
             <h2 className="text-lg sm:text-xl font-semibold mt-5 sm:mt-10 font-[montserrat] text-gray-900 dark:text-gray-100">Sign In</h2>
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Log in using your registered student account credentials. Once signed in, you will be redirected to your dashboard, where you can access the platform's available features.</p>
 
-            <div className="mt-3 sm:mt-5 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-blue-950/40 p-4">
+            <div className="mt-3 sm:mt-5 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40 p-4">
               <p className="text-xs md:text-sm text-green-800 dark:text-green-300"><strong>Note:</strong> Once signed in, you'll stay logged in for <strong>7 days</strong>, no need to log in and out every day. You'll only be asked to sign in again after that period, or if you manually sign out.</p>
             </div>
           </section>
