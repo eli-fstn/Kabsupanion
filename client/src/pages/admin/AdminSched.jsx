@@ -318,7 +318,7 @@ function AdminSched() {
                             <div className={`relative group px-2 mt-2 ${textColor}`}>
                               <p className={`font-bold ${textColor}`}>{subject.code}</p>
                               <p className={`text-[10px] ${subject.room?.toUpperCase() === "ASYNC" ? "text-red-500 font-bold" : subject.room?.toUpperCase() === "TBA" ? "text-amber-400 font-semibold" : "font-normal opacity-70"}`}>{subject.room}</p>
-                              <div className="absolute top-0 right-0 hidden group-hover:flex gap-1 p-1">
+                              <div className="absolute top-0 right-0 flex gap-1 p-1">
                                 <button
                                   onClick={() => handleEditOpen(subject)}
                                   className="bg-white rounded p-0.5 shadow hover:bg-gray-100"
@@ -397,7 +397,7 @@ function AdminSched() {
                 </div>
 
                 <label className="text-xs font-bold mb-1 mt-4">Room <span className="text-red-400">*</span></label>
-                <input type="text" value={addRoom} placeholder="e.g. A-304" onChange={(e) => { setAddRoom(e.target.value); setError((prev) => ({ ...prev, room: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${error.room ? "border-red-500" : "border-gray-300"}`} />
+                <input type="text" value={addRoom} placeholder="e.g. A-304 | ASYNC | TBA" onChange={(e) => { setAddRoom(e.target.value); setError((prev) => ({ ...prev, room: "" })); }} className={`border rounded-md mt-1 mb-1 p-2 w-full outline-none text-xs focus:border-green-700 ${error.room ? "border-red-500" : "border-gray-300"}`} />
                 {error.room && <p className="text-red-500 text-xs">{error.room}</p>}
 
                 {error.general && <p className="text-red-500 text-xs font-bold text-center my-1">{error.general}</p>}
