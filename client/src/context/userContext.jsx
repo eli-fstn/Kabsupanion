@@ -2,6 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getMe } from "../services/auth";
 import LoadingScreen from "../components/ui/LoadingScreen";
 import { clearApiCache } from "../utils/clearApiCache.js";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 const UserContext = createContext(null);
 
@@ -18,6 +23,16 @@ export function UserProvider({ children }) {
     }
     try {
       const data = await getMe();
+      const user = data?.user;
+
+      if (isPostHogConfigured && user?.id) {
+        posthog.identify(String(user.id), {
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        });
+      }
+
       setStudent(data);
     } catch (error) {
       if (!error.response) {
@@ -27,6 +42,7 @@ export function UserProvider({ children }) {
 
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem("token");
+        if (isPostHogConfigured) posthog.reset();
         await clearApiCache();
       }
     } finally {

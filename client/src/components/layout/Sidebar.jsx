@@ -7,6 +7,11 @@ import LoadingScreen from "../ui/LoadingScreen";
 import { useState } from "react";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
 import { clearApiCache } from "../../utils/clearApiCache.js";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function Sidebar() {
   const { student } = useUser();
@@ -17,6 +22,7 @@ function Sidebar() {
   const userSignOut = async () => {
     setLoading(true);
     localStorage.removeItem("token");
+    if (isPostHogConfigured) posthog.reset();
     await clearApiCache();
     navigate("/", { replace: true });
   };

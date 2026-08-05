@@ -5,6 +5,11 @@ import Button from "../../components/ui/Button";
 import { useTheme } from "../../context/themeContext";
 import LoadingIcon from "../../components/ui/LoadingIcon";
 import CvSULogo from "../../assets/images/CvSU-logo.png";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME_SLOTS = [
@@ -69,6 +74,9 @@ function ClassSched() {
       link.download = "BSCS-2A-Class-Schedule.png";
       link.href = dataUrl;
       link.click();
+      if (isPostHogConfigured) {
+        posthog.capture("schedule_downloaded");
+      }
     } catch (err) {
       console.error("Download failed:", err);
     } finally {

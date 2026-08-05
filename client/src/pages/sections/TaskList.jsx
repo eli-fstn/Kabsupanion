@@ -8,6 +8,11 @@ import { formatDate } from "../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import { useToast } from "../../context/toastContext";
 import { getErrorMessage } from "../../services/errorHandler.ts";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function TaskList({ studentName = "Juan" }) {
   const [activeSubject, setActiveSubject] = useState("ALL");
@@ -68,6 +73,13 @@ function TaskList({ studentName = "Juan" }) {
         await unfinishTask(task.id);
       } else {
         await finishedTask(task.id);
+      }
+
+      if (isPostHogConfigured) {
+        posthog.capture("task_completion_updated", {
+          task_id: task.id,
+          completed: !task.completed,
+        });
       }
 
       // Refresh tasks so the completed state updates

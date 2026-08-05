@@ -6,6 +6,11 @@ import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler.ts";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function LogIn() {
   const [email, setEmail] = useState("");
@@ -62,6 +67,10 @@ function LogIn() {
       localStorage.setItem("token", data.token);
       await refetchUser();
       const user = data.user;
+
+      if (isPostHogConfigured) {
+        posthog.capture("user_logged_in", { role: user?.role });
+      }
 
       if (user?.role === "admin") {
         navigate("/admin/dashboard");

@@ -9,6 +9,11 @@ import LoadingIcon from "../../components/ui/LoadingIcon";
 import { useToast } from "../../context/toastContext";
 import { getErrorMessage } from "../../services/errorHandler.ts";
 import CountUp from "react-countup";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function AdminResources() {
   const [resources, setResources] = useState([]);
@@ -85,6 +90,9 @@ function AdminResources() {
     setLoadingForm(true);
     try {
       await approvedResources(resource.id);
+      if (isPostHogConfigured) {
+        posthog.capture("resource_approved", { resource_id: resource.id });
+      }
       setConfirmationModalOpen(false);
       fetchResources();
     } catch (error) {
@@ -99,6 +107,9 @@ function AdminResources() {
     setLoadingForm(true);
     try {
       await rejectedResources(resource.id);
+      if (isPostHogConfigured) {
+        posthog.capture("resource_rejected", { resource_id: resource.id });
+      }
       setConfirmationModalOpen(false);
       fetchResources();
     } catch (error) {

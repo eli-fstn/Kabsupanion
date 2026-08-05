@@ -8,6 +8,11 @@ import Modal from "../../components/ui/Modal";
 import { handleApiError } from "../../services/errorHandler.ts";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+	import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function Register(){
 	const isNumber = (value) => /^[0-9]+$/.test(value);
@@ -89,6 +94,16 @@ function Register(){
       const data = await registerAccount(email, studentNumber, password);
       localStorage.setItem('token', data.token);
       setStudent(data.user);
+
+			if (isPostHogConfigured && data.user?.id) {
+				posthog.identify(String(data.user.id), {
+					email: data.user.email,
+					name: data.user.name,
+					role: data.user.role,
+				});
+				posthog.capture("account_registered", { role: data.user.role });
+			}
+
 			setModalOpen(true);
 			const timer = setTimeout(() => navigate("/student/dashboard"), 4000);
 		} catch (error) {

@@ -11,6 +11,11 @@ import UserIcon from "../../components/common/UserIcon";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import { useToast } from "../../context/toastContext";
 import { getErrorMessage } from "../../services/errorHandler.ts";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_MIME_TYPES = [
@@ -136,6 +141,12 @@ export default function ClassResources() {
     setLoadingForm(true);
     try {
       await uploadResource(title, subjectID, student?.user?.name, file);
+      if (isPostHogConfigured) {
+        posthog.capture("resource_submitted", {
+          subject_id: subjectID,
+          file_type: file.type,
+        });
+      }
       setShowSuccess(true);
       fetchResources();
 

@@ -9,6 +9,11 @@ import { useToast } from "../../context/toastContext";
 import Modal from "../../components/ui/Modal";
 import { formatDate } from "../../utils/FormattedDate.ts";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function AdminList() {
   const [tasks, setTasks] = useState([]);
@@ -121,6 +126,9 @@ function AdminList() {
 
     try {
       await uploadTask(title, subjectID, dueDate);
+      if (isPostHogConfigured) {
+        posthog.capture("task_created", { subject_id: subjectID });
+      }
       setModalOpen(false);
       resetForm();
       fetchTasks();

@@ -8,6 +8,11 @@ import { getSubjects } from "../../services/subjects";
 import { uploadSchedule, editSchedule, deleteSchedule } from "../../services/schedule";
 import { handleApiError, getErrorMessage } from "../../services/errorHandler";
 import { useToast } from "../../context/toastContext";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function AdminSched() {
   const [subjects, setSubjects] = useState([]);
@@ -182,6 +187,9 @@ function AdminSched() {
     setLoadingForm(true);
     try {
       await uploadSchedule(addSubjectId, addDay, to12hr(addStartTime), to12hr(addEndTime), addRoom);
+      if (isPostHogConfigured) {
+        posthog.capture("schedule_created", { subject_id: addSubjectId, day: addDay });
+      }
       setAddModalOpen(false);
       resetForm();
       fetchSubjects();

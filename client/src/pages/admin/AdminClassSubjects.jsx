@@ -7,6 +7,11 @@ import Button from "../../components/ui/Button";
 import { useToast } from "../../context/toastContext";
 import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function AdminSubjects() {
   const [loading, setLoading] = useState(false);
@@ -81,6 +86,9 @@ function AdminSubjects() {
     setLoadingForm(true);
     try {
       await uploadSubject(code, name, description);
+      if (isPostHogConfigured) {
+        posthog.capture("subject_created");
+      }
       setModalOpen(false);
       resetForm();
       fetchSubjects();

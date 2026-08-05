@@ -7,6 +7,11 @@ import UserIcon from "../common/UserIcon";
 import DarkModeToggle from "../../components/ui/DarkModeToggle";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
 import { clearApiCache } from "../../utils/clearApiCache.js";
+import posthog from "posthog-js";
+
+const isPostHogConfigured = Boolean(
+  import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST
+);
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -17,6 +22,7 @@ function Navbar() {
   const userSignOut = async () => {
     setDropdownOpen(false);
     localStorage.removeItem("token");
+    if (isPostHogConfigured) posthog.reset();
     await clearApiCache();
     navigate("/", { replace: true });
   }
