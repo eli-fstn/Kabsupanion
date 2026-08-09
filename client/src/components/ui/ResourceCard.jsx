@@ -149,7 +149,7 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy, status }) {
 
       {open && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/70 dark:bg-black/80 flex items-center justify-center p-3 sm:p-6"
+          className="fixed inset-0 z-50 bg-black/70 dark:bg-black/80 flex items-center justify-center p-3 sm:p-6 backdrop-blur-xs"
           onClick={handleClose}
         >
           <div

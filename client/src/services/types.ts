@@ -1,15 +1,17 @@
+export type userRole = "student" | "admin";
+
 export interface User {
   id: number;
   studentNumber: number;
   email: string;
   name: string;
-  role: "student" | "admin";
+  role: userRole;
 }
 
 export interface Masterlist {
   studentNumber: number;
   fullName: string;
-  role: "student" | "admin";
+  role: userRole;
   status: string;
 }
 
@@ -38,4 +40,11 @@ export interface Resources {
   title: string;
   description: string;
   file: File | null;
+}
+
+export interface AdminUsers {
+  id: number;
+  name: string;
+  email: string;
+  role: userRole;
 }

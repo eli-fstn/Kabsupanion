@@ -28,6 +28,7 @@ function Sidebar() {
     ["Class Resources", "grommet-icons:resources", "/admin/resources"],
     ["Class Subjects", "material-symbols:book-outline", "/admin/subjects"],
     ["Masterlist", "solar:list-bold", "/admin/masterlist"],
+    ["Users", "eos-icons:admin-outlined", "/admin/users"],
   ];
 
   if (loading) return <LoadingScreen />
