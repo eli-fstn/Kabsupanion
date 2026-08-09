@@ -2,9 +2,18 @@ import { Hono } from "hono";
 import { eq } from "drizzle-orm";
 import type { AppEnv } from "../types";
 import { createDb } from "../db/client";
-import { masterlist, users, userRole, studentStatus, notes, type User } from "../db/schema";
+import {
+  masterlist,
+  users,
+  userRole,
+  studentStatus,
+  notes,
+  passwordResetTokens,
+  type User,
+} from "../db/schema";
 import { requireAuth, requireAdmin } from "../middleware/auth";
 import { purgeNote } from "../lib/notes";
+import { generateResetToken, hashResetToken, RESET_TOKEN_TTL_MS } from "../lib/resetToken";
 
 export const adminRoutes = new Hono<AppEnv>();
 
@@ -100,6 +109,41 @@ adminRoutes.delete("/users/:id", async (c) => {
   }
 
   return c.json({ id: deleted.id, deleted: true });
+});
+
+// POST /admin/users/:id/reset-password — mint a one-time reset link for a user
+// and return it directly. There is no email delivery: the admin relays the link
+// out-of-band (chat, in person). The trust anchor is the admin vouching for the
+// student rather than the student proving they own an inbox — acceptable at this
+// app's class-roster scale. The token is the same one `POST /auth/reset-password`
+// consumes (30-min TTL, single-use, bumps `token_version`).
+adminRoutes.post("/users/:id/reset-password", async (c) => {
+  const id = c.req.param("id");
+  if (!UUID_RE.test(id)) {
+    return c.json({ error: "Invalid user id" }, 400);
+  }
+
+  const db = createDb(c.env.DATABASE_URL);
+  const [user] = await db
+    .select({ id: users.id, name: users.name, email: users.email })
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  if (!user) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  const rawToken = generateResetToken();
+  const expiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+  await db.insert(passwordResetTokens).values({
+    userId: user.id,
+    tokenHash: await hashResetToken(rawToken),
+    expiresAt,
+  });
+
+  const base = (c.env.APP_URL || "https://kabsupanion.vercel.app").replace(/\/$/, "");
+  const resetUrl = `${base}/reset-password?token=${rawToken}`;
+  return c.json({ resetUrl, expiresAt, user });
 });
 
 // GET /admin/masterlist — the full section roster.

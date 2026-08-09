@@ -9,6 +9,7 @@ import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import CountUp from "react-countup";
 import Pagination from "../../components/ui/Pagination.jsx";
+import { useUser } from "../../context/userContext.jsx";
 
 function AdminMasterlist() {
   const [list, setList] = useState([]);
@@ -23,6 +24,8 @@ function AdminMasterlist() {
     registrationStatus: "", 
     general: "" 
   });
+  const { student } = useUser()
+  const currentUserId = student?.user?.studentNumber;
 
   // Add forms
   const [name, setName] = useState("");
@@ -50,6 +53,7 @@ function AdminMasterlist() {
     setLoading(true);
     try {
       const data = await getMasterlist();
+      console.log(data);
       setList(data);
     } catch (err) {
       showToast(getErrorMessage(err));
@@ -66,8 +70,8 @@ function AdminMasterlist() {
   const regStatus = ["All", "regular", "irregular"];
 
   const filteredStudents = (activeStatus === "All" ? list : list.filter((t) => t.status === activeStatus)).sort((a, b) => {
-    const surnameA = a.fullName.split(" ").at(-1);
-    const surnameB = b.fullName.split(" ").at(-1);
+    const surnameA = a.fullName.split(" ").at(-1) ?? "";
+    const surnameB = b.fullName.split(" ").at(-1) ?? "";
     return surnameA.localeCompare(surnameB);
   });
 
@@ -298,7 +302,10 @@ function AdminMasterlist() {
                     {paginatedMasterlist.map((s, i) => (
                       <tr key={i} className="grid grid-cols-[.2fr_2fr_2fr_2fr_.5fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
                         <td className="text-[#828282]">{(listPage - 1) * masterlistPerPage + i + 1}</td>
-                        <td>{s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}</td>
+                        <td>
+                          {s.fullName.split(" ").at(-1)}, {s.fullName.split(" ").slice(0, -1).join(" ")}
+                          {s.studentNumber === currentUserId && <span className="text-gray-400 font-normal"> (you)</span>}
+                          </td>
                         <td>{s.studentNumber}</td>
                         <td>
                           <span
@@ -523,19 +530,33 @@ function AdminMasterlist() {
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <div className="flex flex-col items-center w-72 p-6">
-            {selected?.role == "admin" ? (
+             {selected?.studentNumber === currentUserId ? (
               <div className="flex flex-col justify-center items-center h-50">
                 <Icon icon="mdi:alert-circle-outline" className="text-[#A32D2D] w-20 h-20" />
-                <p className="text-sm text-gray-400 text-center my-5">You can not delete another admin from the masterlist.</p>
-                <Button 
-                    type="button" 
-                    onClick={() => setDeleteModalOpen(false)} 
-                    text="Cancel" 
-                    bgColor="bg-gray-100 hover:bg-gray-200" 
-                    typography="text-gray-600 font-bold text-xs" 
-                    padding="px-4 py-2" 
-                    dimensions="w-fit rounded-md"
-                  />
+                <p className="text-sm text-gray-400 text-center my-5">You can not remove yourself from the masterlist.</p>
+                <Button
+                  type="button"
+                  onClick={() => setDeleteModalOpen(false)}
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200"
+                  typography="text-gray-600 font-bold text-xs"
+                  padding="px-4 py-2"
+                  dimensions="w-fit rounded-md"
+                />
+              </div>
+            ) : selected?.role === "admin" ? (
+              <div className="flex flex-col justify-center items-center h-50">
+                <Icon icon="mdi:alert-circle-outline" className="text-[#A32D2D] w-20 h-20" />
+                <p className="text-sm text-gray-400 text-center my-5">You can not remove another admin from the masterlist, you can demote them from the Admin Users first.</p>
+                <Button
+                  type="button"
+                  onClick={() => setDeleteModalOpen(false)}
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200"
+                  typography="text-gray-600 font-bold text-xs"
+                  padding="px-4 py-2"
+                  dimensions="w-fit rounded-md"
+                />
               </div>
             ) : (loadingForm ? (
               <div className="flex flex-col justify-center items-center h-50">
