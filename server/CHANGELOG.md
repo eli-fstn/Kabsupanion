@@ -8,6 +8,16 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 _Phase 1 complete. Announcements feature cut — the section already has an existing system for that._
 
+### Removed
+
+- **Self-service `POST /auth/forgot-password` and the Resend email integration.** The route was
+  never usable end-to-end — Resend's default `onboarding@resend.dev` sender only delivers to the
+  account owner, and verifying a sending domain is not planned. Deleted `src/lib/email.ts`
+  (`sendPasswordResetEmail`) and dropped the `RESEND_API_KEY` / `EMAIL_FROM` config. The now-unused
+  prod `RESEND_API_KEY` secret has been deleted.
+  **`POST /auth/reset-password`, the `password_reset_tokens` table, and `src/lib/resetToken.ts` are
+  unchanged** — only how a token reaches the student changed.
+
 ### Fixed
 
 - **`PATCH /tasks/:id` now accepts `subjectId`.** The handler previously ignored `subjectId`, so a
@@ -16,16 +26,24 @@ _Phase 1 complete. Announcements feature cut — the section already has an exis
 
 ### Added
 
+- **`POST /admin/users/:id/reset-password` — admin-generated password-reset links.** Replaces the
+  removed self-service flow. Mints a 30-minute, single-use token and returns
+  `{ resetUrl, expiresAt, user }` **directly in the response** — no email is sent; the admin relays
+  the link to the student out-of-band. `400` on a malformed id, `404` on an unknown user; admin-only
+  via the existing `requireAuth` + `requireAdmin` router gate (so no extra rate limit). A deliberate
+  trust shift: an admin who knows the student vouches for them instead of the student proving inbox
+  ownership — appropriate at class-roster scale. Tokens are consumed by the unchanged
+  `POST /auth/reset-password`.
 - **Security hardening (audit response).** Auth rate limiting via Cloudflare Workers Rate Limiting
   bindings (login per-IP + per-email, register per-IP, password-reset per-IP; `429` + `Retry-After`).
   Revocable JWTs: `users.token_version` (`0008`) + a `tv` claim, with `requireAuth` re-checking the DB
   each request (immediate demotion/deletion/revocation). Upload magic-byte verification. Password reset
-  flow (`password_reset_tokens` `0009`, Resend email): `POST /auth/forgot-password` (generic response)
-  + `POST /auth/reset-password` (single-use, revokes sessions). `JWT_SECRET` strength assertion.
+  flow (`password_reset_tokens` `0009`): `POST /auth/reset-password` (single-use, revokes sessions).
+  `JWT_SECRET` strength assertion.
   `dueDate` validation, text-length caps, per-user upload quota (20/day), `subjects` `startTime <
   endTime`, sanitized upload errors. `GET /health` now pings the DB. Added a **Vitest** test suite
-  (`npm test`). New `wrangler.toml` config: `[[ratelimits]]` × 4 + `APP_URL`; new secrets
-  `RESEND_API_KEY`/`EMAIL_FROM`.
+  (`npm test`). New `wrangler.toml` config: `[[ratelimits]]` × 4 + `APP_URL`. (This originally
+  shipped with a Resend-backed `POST /auth/forgot-password`; see **Removed** above.)
 - **Backend CI.** `.github/workflows/ci.yml` gained a `server` job (Node 22) running `npm ci`,
   `npx tsc --noEmit`, and `npm test` on PRs to `dev` and pushes to `dev`. Previously only `client/`
   was built, so backend regressions went uncaught. The job requires no secrets.

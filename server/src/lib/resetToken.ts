@@ -2,8 +2,9 @@
 //
 // The raw token is high-entropy random, so it needs no salt/PBKDF2 — a plain
 // SHA-256 hash is enough to store (an attacker with DB read still can't reverse
-// it, and can't use it without the raw value from the email). We store the hash,
-// email the raw token, and compare by hashing the presented token.
+// it, and can't use it without the raw value). We store the hash, hand the raw
+// token to the admin who minted the link (POST /admin/users/:id/reset-password),
+// and compare by hashing the token the student later presents.
 
 const TOKEN_BYTES = 32; // 256 bits of entropy
 export const RESET_TOKEN_TTL_MS = 30 * 60 * 1000; // 30 minutes

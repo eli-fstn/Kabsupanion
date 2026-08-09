@@ -41,10 +41,20 @@ describe("POST /auth/login validation", () => {
   });
 });
 
+describe("POST /auth/reset-password validation", () => {
+  it("400 when the token is missing", async () => {
+    const res = await app().request("/auth/reset-password", post({ password: "password123" }), ENV);
+    expect(res.status).toBe(400);
+  });
+  it("400 on a too-short password", async () => {
+    const res = await app().request("/auth/reset-password", post({ token: "abc", password: "short" }), ENV);
+    expect(res.status).toBe(400);
+  });
+});
+
 describe("POST /auth/forgot-password", () => {
-  it("returns a generic 200 even for a malformed email (no enumeration, no DB)", async () => {
-    const res = await app().request("/auth/forgot-password", post({ email: "not-an-email" }), ENV);
-    expect(res.status).toBe(200);
-    expect(await res.json()).toMatchObject({ ok: true });
+  it("is gone — self-service reset was replaced by admin-generated links", async () => {
+    const res = await app().request("/auth/forgot-password", post({ email: "a@b.com" }), ENV);
+    expect(res.status).toBe(404);
   });
 });

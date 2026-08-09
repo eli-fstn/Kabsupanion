@@ -9,13 +9,6 @@ JWT_SECRET="generate-a-strong-random-secret"
 CLOUDINARY_CLOUD_NAME="your_cloud_name"
 CLOUDINARY_API_KEY="your_api_key"
 CLOUDINARY_API_SECRET="your_api_secret"
-# Password-reset email via Resend (https://resend.com). Optional locally — if
-# unset, forgot-password still returns success but sends no email.
-#   RESEND_API_KEY: from Resend dashboard > API Keys (prod: `wrangler secret put`).
-#   EMAIL_FROM:     a verified sender, e.g. "KabsuPanion <no-reply@yourdomain>".
-#                   Defaults to Resend's onboarding@resend.dev if unset.
-RESEND_API_KEY=""
-EMAIL_FROM=""
-# APP_URL (frontend base for the reset link) is set in wrangler.toml [vars];
+# APP_URL (frontend base for the admin-generated reset link) is set in wrangler.toml [vars];
 # override here if your local frontend runs elsewhere, e.g. http://localhost:5173
 # APP_URL="http://localhost:5173"

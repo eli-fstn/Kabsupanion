@@ -5,6 +5,97 @@ version-grouped summary see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
+## 2026-08-08 — Killed self-service forgot-password; admins now generate reset links
+
+The password-reset flow shipped in the hardening pass (`POST /auth/forgot-password` → Resend email)
+was never usable end-to-end: `onboarding@resend.dev` only delivers to the Resend account owner, and
+verifying a sending domain isn't viable now or planned going forward. Rather than keep dead-end
+email code sitting in the tree pretending to work, the delivery half is gone and replaced.
+
+### What was removed
+
+- `POST /auth/forgot-password` — the whole handler, plus `GENERIC_RESET_RESPONSE` (the
+  anti-enumeration constant that only that route needed).
+- `src/lib/email.ts` (`sendPasswordResetEmail`, the Resend HTTP integration) — deleted; no other
+  callers.
+- `RESEND_API_KEY` / `EMAIL_FROM` from the `Env` type and `.dev.vars.example`.
+
+### What replaced it — `POST /admin/users/:id/reset-password`
+
+Admin-only (inherits the router-level `requireAuth` + `requireAdmin`). Validates `:id` against the
+existing `UUID_RE` (`400`), looks the user up (`404`), then mints a token exactly the way
+`forgot-password` did — `generateResetToken()` → `hashResetToken()` → insert into
+`password_reset_tokens` with a 30-min expiry — and returns the link **in the response body**:
+
+```json
+{ "resetUrl": "…/reset-password?token=…", "expiresAt": "…", "user": { "id", "name", "email" } }
+```
+
+The admin relays it to the student out-of-band. **This is a deliberate trust shift:** an admin who
+knows the student vouches for them, instead of the student proving they control an inbox. At
+class-roster scale (37 people who see each other in person) that's a reasonable trade — it would not
+be at a larger scale, so revisit if the roster ever grows.
+
+No enumeration concern here, so unlike the old route this one returns honest `404`s — the admin
+already knows exactly who they're targeting. No new rate limit either: the route is already behind
+the admin gate.
+
+### What deliberately did **not** change
+
+`POST /auth/reset-password`, the `password_reset_tokens` table, and `src/lib/resetToken.ts` are all
+untouched — the token contract is identical, only the delivery channel changed. Tokens are still
+single-use, still burn every other outstanding token for that user, and still bump `token_version`
+to revoke live sessions. `PASSWORD_RESET_LIMIT` stays bound too: `reset-password` still uses it via
+the `reset:ip:…` key; only the `forgot:ip:…` call site went away with the deleted route.
+
+### Verification
+
+`tsc --noEmit` clean (which also confirms no dangling `lib/email` imports), `npm test` green at
+**29** (was 27: the forgot-password generic-200 test was replaced by a `404`-now-that-it's-gone
+assertion, plus two new `reset-password` validation tests).
+
+Full matrix against local `wrangler dev`, using the restored `test@claude.com` admin account:
+
+| # | Check | Expected | Actual |
+| - | ----- | -------- | ------ |
+| 1 | `POST /auth/forgot-password` | `404` (route gone) | ✅ `404 Not Found` |
+| 2 | New route, no token | `401` | ✅ `401 Missing or malformed Authorization header` |
+| 3 | New route, malformed id | `400` | ✅ `400 Invalid user id` |
+| 4 | New route, well-formed but unknown id | `404` | ✅ `404 User not found` |
+| 5 | New route, real user id | `200 { resetUrl, expiresAt, user }` | ✅ shape correct; token 43 chars (base64url of 32 bytes); `expiresAt` exactly +30 min |
+| 6 | `POST /auth/reset-password` with that token | `200` | ✅ `200 { ok: true }` |
+| 7 | Reuse the same token | `400` (single-use) | ✅ `400 Invalid or expired reset token` |
+| 8 | Pre-reset JWT after the reset | `401` (`token_version` bump) | ✅ `401 Invalid or expired token` |
+| 9 | Login after the reset | `200` | ✅ `200` |
+| 10 | `POST /auth/reset-password`, bad token | `400` | ✅ `400 Invalid or expired reset token` |
+
+The `403` non-admin branch wasn't re-checked over HTTP because it's router-level `requireAdmin`, not
+per-route logic, and is already unit-tested (`src/middleware/auth.test.ts` "403 for a non-admin user").
+
+**Test-data note:** steps 5–8 ran against the test admin's **own** account, and step 6 reset its
+password to the same value it already had, so the documented credentials still work. The only
+durable effect on the shared DB is one consumed row in `password_reset_tokens` and
+`test@claude.com`'s `token_version` incrementing by 1. No real student's account was touched.
+
+⚠️ **Behavior worth knowing before building the admin UI:** `POST /auth/reset-password` burns *every*
+outstanding token for that user, not just the one presented (pre-existing behavior, unchanged here).
+So if an admin generates two links for the same student, whichever gets used first invalidates the
+other. Generate one at a time.
+
+**Deployed 2026-08-09** and confirmed on prod: `GET /health` → `{"ok":true,"db":"ok"}`,
+`POST /auth/forgot-password` → `404` (gone), `POST /admin/users/:id/reset-password` unauthenticated
+→ `401` (route present). The now-unused `RESEND_API_KEY` prod secret was deleted after the deploy
+(order matters — deleting it first would have broken the still-live forgot-password route).
+
+### Follow-ups
+
+- ✅ **Deployed** + ✅ **`RESEND_API_KEY` secret deleted** (both done 2026-08-09).
+- **Frontend (still open)** — an admin "generate reset link" affordance and the public
+  `/reset-password` page. The backend half is live; the links it mints currently point at a page
+  that doesn't exist yet.
+
+---
+
 ## 2026-07-24 — Fix: `PATCH /tasks/:id` couldn't change the subject
 
 Reported: editing a task's subject did nothing. Cause: the `PATCH /tasks/:id` handler only

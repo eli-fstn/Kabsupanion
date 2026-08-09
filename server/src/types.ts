@@ -7,11 +7,8 @@ export interface Env {
   CLOUDINARY_CLOUD_NAME: string;
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
-  // Password-reset email (Resend). RESEND_API_KEY + EMAIL_FROM are secrets; if
-  // unset, forgot-password still succeeds generically but no mail is sent (dev).
-  // APP_URL is the frontend base for the reset link (a non-secret `[vars]` entry).
-  RESEND_API_KEY?: string;
-  EMAIL_FROM?: string;
+  // Frontend base for the admin-generated password-reset link
+  // (`${APP_URL}/reset-password?token=...`). A non-secret `[vars]` entry.
   APP_URL?: string;
   // Cloudflare Workers Rate Limiting bindings (see wrangler.toml `[[ratelimits]]`).
   // Auth-endpoint throttling: coarse per-IP flood guards + a strict per-account
@@ -20,7 +17,7 @@ export interface Env {
   AUTH_IP_LIMIT: RateLimit; // per-IP login guard
   AUTH_EMAIL_LIMIT: RateLimit; // per-account (email) login guard
   REGISTER_IP_LIMIT: RateLimit; // per-IP registration guard
-  PASSWORD_RESET_LIMIT: RateLimit; // per-IP guard on forgot/reset password
+  PASSWORD_RESET_LIMIT: RateLimit; // per-IP guard on POST /auth/reset-password
 }
 
 // Single source of truth for roles — derived from the DB enum.
