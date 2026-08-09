@@ -5,6 +5,7 @@ import AdminRoutes from "./AdminRoutes";
 
 const LogIn = lazy(() => import("../pages/auth/LogIn"));
 const Register = lazy(() => import("../pages/auth/Register"));
+const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 const Error404 = lazy(() => import("../pages/errors/Error404"));
 const Error503 = lazy(() => import("../pages/errors/Error503"));
 const Error403 = lazy(() => import("../pages/errors/Error403"));
@@ -21,6 +22,9 @@ function AppRoutes() {
 
       {/* Student Route */}
       <Route path="/student/*" element={<StudentRoutes />} />
+
+      {/* Reset Password */}
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route path="/error/403" element={<Error403 />} />
       <Route path="/error/404" element={<Error404 />} />

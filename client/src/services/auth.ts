@@ -36,3 +36,12 @@ export async function getMe() : Promise<User> {
   const response = await api.get<User>("/auth/me");
   return response.data;
 }
+
+// Reset password
+export async function resetPasswordConfirm(
+  token: string,
+  password: string
+): Promise<{ message: string }> {
+  const response = await api.post("/auth/reset-password", { token, password });
+  return response.data;
+}
