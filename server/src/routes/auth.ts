@@ -7,8 +7,7 @@ import { masterlist, users, passwordResetTokens, type User } from "../db/schema"
 import { hashPassword, verifyPassword } from "../lib/password";
 import { requireAuth } from "../middleware/auth";
 import { clientIp, underLimit } from "../lib/rateLimit";
-import { generateResetToken, hashResetToken, RESET_TOKEN_TTL_MS } from "../lib/resetToken";
-import { sendPasswordResetEmail } from "../lib/email";
+import { hashResetToken } from "../lib/resetToken";
 import { assertStrongJwtSecret } from "../lib/jwtSecret";
 
 export const authRoutes = new Hono<AppEnv>();
@@ -19,12 +18,6 @@ const RETRY_AFTER = { "Retry-After": "60" };
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
-
-// Identical response whether or not the email exists — prevents enumeration.
-const GENERIC_RESET_RESPONSE = {
-  ok: true,
-  message: "If that email is registered, a password reset link has been sent.",
-};
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -189,50 +182,10 @@ authRoutes.post("/login", async (c) => {
   return c.json({ user: toPublicUser(user), token });
 });
 
-// POST /auth/forgot-password — begin a reset. Always returns the same generic
-// success (never reveals whether the email is registered). If it is, a one-time,
-// 30-min token is stored (hashed) and a reset link is emailed (best-effort).
-authRoutes.post("/forgot-password", async (c) => {
-  if (!(await underLimit(c.env.PASSWORD_RESET_LIMIT, `forgot:ip:${clientIp(c)}`))) {
-    return c.json({ error: RATE_LIMIT_MESSAGE }, 429, RETRY_AFTER);
-  }
-
-  let body: unknown;
-  try {
-    body = await c.req.json();
-  } catch {
-    return c.json({ error: "Invalid JSON body" }, 400);
-  }
-  const { email } = (body ?? {}) as { email?: unknown };
-  if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
-    return c.json(GENERIC_RESET_RESPONSE); // don't leak validation detail either
-  }
-
-  const normalizedEmail = email.trim().toLowerCase();
-  const db = createDb(c.env.DATABASE_URL);
-  const [user] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.email, normalizedEmail))
-    .limit(1);
-
-  if (user) {
-    const rawToken = generateResetToken();
-    await db.insert(passwordResetTokens).values({
-      userId: user.id,
-      tokenHash: await hashResetToken(rawToken),
-      expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
-    });
-    const base = (c.env.APP_URL || "https://kabsupanion.vercel.app").replace(/\/$/, "");
-    const resetUrl = `${base}/reset-password?token=${rawToken}`;
-    await sendPasswordResetEmail(normalizedEmail, resetUrl, c.env); // best-effort
-  }
-
-  return c.json(GENERIC_RESET_RESPONSE);
-});
-
 // POST /auth/reset-password — consume a token, set a new password, and bump the
-// user's token_version so every existing session is invalidated.
+// user's token_version so every existing session is invalidated. Tokens are
+// minted by an admin via POST /admin/users/:id/reset-password and relayed to the
+// student out-of-band (there is no self-service email flow).
 authRoutes.post("/reset-password", async (c) => {
   if (!(await underLimit(c.env.PASSWORD_RESET_LIMIT, `reset:ip:${clientIp(c)}`))) {
     return c.json({ error: RATE_LIMIT_MESSAGE }, 429, RETRY_AFTER);

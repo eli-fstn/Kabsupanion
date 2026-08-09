@@ -23,8 +23,7 @@ through **Drizzle** (Neon HTTP driver).
 | GET    | `/health`        | —      | Liveness check → `{ "ok": true, "db": "ok" }`; `503` if Neon is unreachable |
 | POST   | `/auth/register` | —      | Claim a roster spot: `{ studentNumber, email, password }` → `201 { user, token }`. `name`/`role` come from the masterlist. |
 | POST   | `/auth/login`    | —      | Log in: `{ email, password }` → `{ user, token }`. Rate-limited (per-IP + per-email). |
-| POST   | `/auth/forgot-password` | — | `{ email }` → always a generic `200` (no enumeration); emails a reset link if the email is registered. Rate-limited. |
-| POST   | `/auth/reset-password`  | — | `{ token, password }` → sets a new password, invalidates all existing sessions. `400` if the token is invalid/expired. |
+| POST   | `/auth/reset-password`  | — | `{ token, password }` → sets a new password, invalidates all existing sessions. `400` if the token is invalid/expired. Tokens are minted by an admin (see `/admin/users/:id/reset-password`). Rate-limited. |
 | GET    | `/auth/me`       | Bearer | Current user from the JWT                                          |
 | GET    | `/tasks`         | Bearer | List all tasks, newest first; each includes `completed` + `subject`. Optional `?subjectId=` filter. |
 | POST   | `/tasks`         | Bearer + Admin | Create a task: `{ subjectId, title, description?, dueDate? }` |
@@ -48,6 +47,7 @@ through **Drizzle** (Neon HTTP driver).
 | GET    | `/admin/users`        | Bearer + Admin | List all registered users (no password hash) |
 | PATCH  | `/admin/users/:id/role` | Bearer + Admin | Change a user's role: `{ role }`. Cannot demote yourself. |
 | DELETE | `/admin/users/:id`      | Bearer + Admin | Delete a user account. Cannot delete yourself. |
+| POST   | `/admin/users/:id/reset-password` | Bearer + Admin | Mint a one-time password-reset link for a user → `{ resetUrl, expiresAt, user }`. **No email is sent** — the admin relays the link to the student out-of-band. `400` bad uuid, `404` unknown user |
 | GET    | `/admin/masterlist`   | Bearer + Admin | List the full section roster |
 | POST   | `/admin/masterlist`   | Bearer + Admin | Add a roster entry: `{ studentNumber, fullName, role?, status? }` (`status` = `regular`/`irregular`, defaults `regular`) |
 | PATCH  | `/admin/masterlist/:studentNumber` | Bearer + Admin | Update a roster entry: `{ fullName?, role?, status? }` |
@@ -84,6 +84,36 @@ Vercel URL exists, the backend must add it — ping the backend dev.
 
 Registration error codes: `400` malformed input · `403` student number not on the roster ·
 `409` student number already claimed **or** email already in use.
+
+### Password reset (admin-generated links)
+
+There is **no self-service "forgot password" endpoint** — email delivery isn't available, so the
+flow is admin-mediated instead:
+
+1. A student who's locked out asks an admin (chat, in person).
+2. The admin finds them in `GET /admin/users` and calls
+   `POST /admin/users/:id/reset-password`, which returns:
+
+   ```json
+   {
+     "resetUrl": "https://kabsupanion.vercel.app/reset-password?token=...",
+     "expiresAt": "2026-08-08T12:30:00.000Z",
+     "user": { "id": "uuid", "name": "Test Student", "email": "student@kabsu.edu" }
+   }
+   ```
+
+3. The admin relays `resetUrl` to the student out-of-band. It expires in **30 minutes**.
+4. The student's browser opens `/reset-password?token=...`; the page reads `token` from the query
+   string and `POST`s `{ token, password }` to `/auth/reset-password`.
+5. On success the token is burned (along with any other outstanding tokens for that user) and
+   **every existing session for that user is invalidated** — they must log in again.
+
+⚠️ **Generate one link at a time.** `/auth/reset-password` burns *every* outstanding token for that
+user, not just the one presented. If an admin generates two links for the same student, whichever is
+used first invalidates the other.
+
+**Frontend work needed:** an admin-side "generate reset link" button (show + copy `resetUrl`) and a
+public `/reset-password` page. Neither exists yet.
 
 ### Response shapes
 
@@ -199,9 +229,9 @@ const me = (await api.get("/auth/me")).data.user;
 | Notes (`/notes/*`) | ✅ live | Communal note sharing with Cloudinary-backed file storage. Migration `0005` applied. |
 | Notes approval workflow | ✅ live | Uploads start `pending`; role-based visibility + admin `?status=`; admin `approve`/`reject` (migration `0007`). Confirmed on prod (a `pending` note exists alongside `approved` ones). |
 | Task deadline auto-deletion | ✅ live | 15-min Cron Trigger deletes tasks past their `dueDate` calendar day (Asia/Manila). No schema change. Confirmed on prod: the previously past-due tasks have been swept. |
-| Security hardening (audit) | ✅ live | Auth rate limiting, revocable JWTs (`token_version`), upload magic-byte checks, password reset (Resend), JWT-secret assertion, input validation/length caps, upload quota, `/health` DB ping. Migrations `0008`/`0009` applied. Verified on prod 2026-07-24. |
-| Password reset **delivery** | ⚠️ needs a domain | The `/auth/forgot-password` + `/auth/reset-password` endpoints are live and `RESEND_API_KEY` is set, but no verified Resend domain / `EMAIL_FROM` yet — the default `onboarding@resend.dev` sender only delivers to the Resend account owner. No frontend flow yet either. |
-| CI (`.github/workflows/ci.yml`) | ✅ live | Two jobs: `build` (client) and `server` (typecheck + 27-test Vitest suite). The server job needs no secrets. |
+| Security hardening (audit) | ✅ live | Auth rate limiting, revocable JWTs (`token_version`), upload magic-byte checks, password reset, JWT-secret assertion, input validation/length caps, upload quota, `/health` DB ping. Migrations `0008`/`0009` applied. Verified on prod 2026-07-24. |
+| Password reset **delivery** | ✅ live (backend) | Reworked 2026-08-09: self-service `/auth/forgot-password` + the Resend integration were **removed** (no verified sending domain, and none is planned). An admin now mints a link via `POST /admin/users/:id/reset-password` and relays it out-of-band; `POST /auth/reset-password` is unchanged. Full mint→reset round-trip verified locally; confirmed on prod (forgot-password `404`s, the new route `401`s unauthenticated). `RESEND_API_KEY` secret deleted. **Still needs a frontend `/reset-password` page + an admin "generate link" affordance.** |
+| CI (`.github/workflows/ci.yml`) | ✅ live | Two jobs: `build` (client) and `server` (typecheck + 29-test Vitest suite). The server job needs no secrets. |
 
 See [CHANGELOG.md](./CHANGELOG.md) for the release summary and [CHANGES.md](./CHANGES.md)
 for the development journal.
