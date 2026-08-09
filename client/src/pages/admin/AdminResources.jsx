@@ -225,7 +225,7 @@ function AdminResources() {
                 </table>
               ) : (
                 <div className="flex justify-center items-center flex-1">
-                  <p className="text-gray-400">No subjects added yet.</p>
+                  <p className="text-gray-400">No resources uploaded yet.</p>
                 </div>
               )
             )}
