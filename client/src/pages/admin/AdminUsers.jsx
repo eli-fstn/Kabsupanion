@@ -41,7 +41,6 @@ function AdminUsers() {
     setLoading(true);
     try {
       const data = await getUsers();
-      console.log(data);
       setList(Array.isArray(data) ? data : []);
     } catch (err) {
       showToast(getErrorMessage(err));
