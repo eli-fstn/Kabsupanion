@@ -53,7 +53,6 @@ function AdminMasterlist() {
     setLoading(true);
     try {
       const data = await getMasterlist();
-      console.log(data);
       setList(data);
     } catch (err) {
       showToast(getErrorMessage(err));
@@ -220,7 +219,11 @@ function AdminMasterlist() {
   };
 
   const masterlistPerPage = 10;
-  const totalMasterlistPages = Math.ceil(list.length / masterlistPerPage);
+
+  const totalMasterlistPages = Math.ceil(
+    filteredStudents.length / masterlistPerPage
+  );
+
   const paginatedMasterlist = filteredStudents.slice(
     (listPage - 1) * masterlistPerPage,
     listPage * masterlistPerPage

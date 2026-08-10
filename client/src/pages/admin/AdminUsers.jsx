@@ -10,6 +10,7 @@ import Modal from "../../components/ui/Modal";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import CountUp from "react-countup";
 import Pagination from "../../components/ui/Pagination.jsx";
+import { isDeveloper } from "../../utils/developers.ts";
 
 function AdminUsers() {
   const [list, setList] = useState([]);
@@ -40,7 +41,6 @@ function AdminUsers() {
     setLoading(true);
     try {
       const data = await getUsers();
-      console.log(data);
       setList(Array.isArray(data) ? data : []);
     } catch (err) {
       showToast(getErrorMessage(err));
@@ -53,6 +53,9 @@ function AdminUsers() {
   useEffect(() => {
     fetchList();
   }, []);
+
+  const isRowDeveloper = (id) => isDeveloper(id);
+  const isCurrentUserDeveloper = isDeveloper(currentUserId);
 
   const roleFilters = ["All", "student", "admin"];
 
@@ -194,7 +197,7 @@ function AdminUsers() {
         <div className="bg-white w-full mt-4 border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="grid grid-cols-[.2fr_1fr_2fr_1fr_1fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
+              <tr className="grid grid-cols-[.2fr_2fr_2fr_2fr_1fr] gap-4 bg-[#F5F5F5] p-2 items-center text-[#888888] text-xs font-bold border-b border-gray-200">
                 <th className="flex items-center">No.</th>
                 <th className="flex items-center"><Icon className="mr-2" icon="akar-icons:person" width="20" height="20" />Name</th>
                 <th className="flex items-center"><Icon className="mr-2" icon="ic:baseline-email" width="20" height="20" />Email</th>
@@ -210,7 +213,7 @@ function AdminUsers() {
                 {Array.from({ length: 10 }).map((_, i) => (
                   <div
                     key={i}
-                    className="grid grid-cols-[.2fr_1fr_2fr_1fr_1fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
+                    className="grid grid-cols-[.2fr_2fr_2fr_2fr_1fr] gap-5 border-b border-gray-100 px-3 py-2 items-center"
                   >
                     <div className="h-3 bg-gray-200 rounded animate-pulse w-4" />
                     <div className="h-3 bg-gray-200 rounded animate-pulse w-32" />
@@ -229,7 +232,7 @@ function AdminUsers() {
                 <table className="w-full">
                   <tbody>
                     {paginatedUsers.map((u, i) => (
-                      <tr key={u.id} className="grid grid-cols-[.2fr_1fr_2fr_1fr_1fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
+                      <tr key={u.id} className="grid grid-cols-[.2fr_2fr_2fr_2fr_1fr] gap-5 border-b border-gray-100 px-3 py-1 items-center text-xs font-medium transition-all duration-200 hover:bg-gray-100">
                         <td className="text-[#828282]">{(listPage - 1) * usersPerPage + i + 1}</td>
                         <td className="truncate">
                           {u.name?.split(" ").at(-1)}, {u.name?.split(" ").slice(0, -1).join(" ")}
@@ -239,24 +242,28 @@ function AdminUsers() {
                         <td>
                           <span
                             className={`px-3 py-0.5 text-xs font-semibold rounded-full border uppercase ${
-                              u.role === "admin"
-                                ? "bg-purple-50 text-purple-500 border-purple-200"
-                                : "bg-gray-50 text-gray-600 border-gray-200"
+                              isRowDeveloper(u?.id)
+                                ? "bg-purple-50 text-purple-800 border-purple-500"
+                                : u.role === "admin"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : "bg-green-50 text-green-700 border-green-200"
                             }`}
                           >
-                            {u.role}
+                            {isRowDeveloper(u?.id) ? "DEVELOPER" : u.role}
                           </span>
                         </td>
                         <td className="flex gap-2">
-                          <Button
-                            text={<Icon icon="mdi:account-switch-outline" width="16" height="16" />}
-                            onClick={() => handleRoleOpen(u)}
-                            bgColor="hover:bg-gray-200"
-                            typography="text-gray-700 hover:text-gray-500"
-                            dimensions="rounded-md"
-                            padding="p-1.5"
-                            animation="transition-all duration-200 active:scale-95"
-                          />
+                          {isCurrentUserDeveloper && (
+                            <Button
+                              text={<Icon icon="mdi:account-switch-outline" width="16" height="16" />}
+                              onClick={() => handleRoleOpen(u)}
+                              bgColor="hover:bg-gray-200"
+                              typography="text-gray-700 hover:text-gray-500"
+                              dimensions="rounded-md"
+                              padding="p-1.5"
+                              animation="transition-all duration-200 active:scale-95"
+                            />
+                          )}
                           <Button
                             text={<Icon icon="mdi:key-outline" width="16" height="16" />}
                             onClick={() => handleResetOpen(u)}
@@ -304,12 +311,32 @@ function AdminUsers() {
                 <LoadingIcon dimensions="w-20 h-20"/>
                 <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Saving Changes...</p>
               </div>
+            ) : isRowDeveloper(selected?.id) ? (
+                <div className="flex flex-col justify-center items-center h-60">
+                  <Icon icon="mdi:alert-circle-outline" className="text-[#A32D2D] w-20 h-20 mb-3" />
+                  <p className="font-bold text-[1.2rem] text-[#A32D2D] text-center">Action Not Allowed</p>
+                  <p className="text-sm text-gray-400 text-center my-5">
+                    <span className="font-bold text-[#3a3a3a]">
+                      {selected?.name}
+                    </span>{" "}
+                    is a protected developer account. The user's role cannot be changed.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={() => setRoleModalOpen(false)}
+                    text="Cancel"
+                    bgColor="bg-gray-100 hover:bg-gray-200"
+                    typography="text-gray-600 font-bold text-xs"
+                    padding="px-4 py-2"
+                    dimensions="w-fit rounded-md"
+                  />
+                </div>
             ) : (
               <>
                 <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Change Role</p>
                 <p className="text-gray-400 text-xs mb-5">Update the role for <span className="font-bold text-[#3a3a3a]">{selected?.name}</span>.</p>
 
-                <label className="text-xs font-bold mb-1 mt-2">Role <span className="text-red-400">*</span></label>
+                <label className="text-xs font-bold mb-1">Role <span className="text-red-400">*</span></label>
                 <select
                   value={newRole}
                   onChange={(e) => { setNewRole(e.target.value); setRoleError(""); }}
@@ -320,7 +347,7 @@ function AdminUsers() {
                 </select>
 
                 {selected?.id === currentUserId && (
-                  <p className="text-amber-600 text-xs mt-2">You're editing your own account — role changes to yourself aren't allowed.</p>
+                  <p className="text-amber-600 text-xs mt-2">You're editing your own account, role changes to yourself aren't allowed.</p>
                 )}
 
                 {roleError && <p className="text-red-500 text-xs font-bold text-center my-1">{roleError}</p>}
@@ -358,6 +385,26 @@ function AdminUsers() {
                 <LoadingIcon dimensions="w-20 h-20"/>
                 <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Generating link...</p>
               </div>
+            ) : isRowDeveloper(selected?.id) && selected?.id !== currentUserId ? (
+              <div className="flex flex-col justify-center items-center h-60">
+                <Icon icon="mdi:alert-circle-outline" className="text-[#A32D2D] w-20 h-20 mb-3" />
+                <p className="font-bold text-[1.2rem] text-[#A32D2D] text-center">Action Not Allowed</p>
+                <p className="text-sm text-gray-400 text-center my-5">
+                  <span className="font-bold text-[#3a3a3a]">
+                    {selected?.name}
+                  </span>{" "}
+                  is a protected developer account. A password reset link cannot be generated.
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => setResetModalOpen(false)}
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200"
+                  typography="text-gray-600 font-bold text-xs"
+                  padding="px-4 py-2"
+                  dimensions="w-fit rounded-md"
+                />
+              </div>
             ) : resetResult ? (
               <>
                 <div className="bg-[#eaf3de] rounded-full p-4 mb-4 mx-auto w-fit">
@@ -393,8 +440,8 @@ function AdminUsers() {
               </>
             ) : (
               <>
-                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat']">Reset Password</p>
-                <p className="text-gray-400 text-xs mb-5">Generate a one-time password reset link for <span className="font-bold text-[#3a3a3a]">{selected?.name}</span>. You'll need to send it to them yourself.</p>
+                <p className="font-bold text-[1.2rem] text-[#1B651B] font-['Montserrat'] mb-1">Reset Password</p>
+                <p className="text-gray-400 text-xs mb-4">Generate a one-time password reset link for <span className="font-bold text-[#3a3a3a]">{selected?.name}</span>. You'll need to send it to them yourself.</p>
 
                 {resetError && <p className="text-red-500 text-xs font-bold text-center my-1">{resetError}</p>}
 
@@ -445,6 +492,26 @@ function AdminUsers() {
               <div className="flex flex-col justify-center items-center h-50">
                 <LoadingIcon dimensions="w-20 h-20"/>
                 <p className="text-gray-400 text-sm mt-5 animate-[pulse_1s_ease-in-out_infinite]">Deleting...</p>
+              </div>
+            ) : isRowDeveloper(selected?.id) ? (
+              <div className="flex flex-col justify-center items-center h-60">
+                <Icon icon="mdi:alert-circle-outline" className="text-[#A32D2D] w-20 h-20 mb-3" />
+                <p className="font-bold text-[1.2rem] text-[#A32D2D] text-center">Action Not Allowed</p>
+                <p className="text-sm text-gray-400 text-center my-5">
+                  <span className="font-bold text-[#3a3a3a]">
+                    {selected?.name}
+                  </span>{" "}
+                  is a protected developer account. The account cannot be deleted.
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => setDeleteModalOpen(false)}
+                  text="Cancel"
+                  bgColor="bg-gray-100 hover:bg-gray-200"
+                  typography="text-gray-600 font-bold text-xs"
+                  padding="px-4 py-2"
+                  dimensions="w-fit rounded-md"
+                />
               </div>
             ) : (
               <>
