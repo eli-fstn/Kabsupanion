@@ -4,6 +4,7 @@ import { getTasks } from "../../services/taskList.ts";
 import { getMasterlist } from "../../services/masterlist.ts";
 import { getResources } from "../../services/resources.ts";
 import { getSubjects } from "../../services/subjects.ts";
+import { getUsers } from "../../services/adminUser.ts";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/userContext";
 import { Icon } from "@iconify/react";
@@ -12,12 +13,14 @@ import CountUp from 'react-countup';
 import Pagination from "../../components/ui/Pagination.jsx";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import { useGreeting } from "../../hooks/useGreeting.js";
+import { isDeveloper } from "../../utils/developers.ts";
 
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);
   const [task, setTask] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [resources, setResources] = useState([]);
+  const [users, setUsers] = useState([]);
   const { student } = useUser();
   const [resourcePage, setResourcePage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -26,6 +29,9 @@ function AdminDashboard() {
   const approvedCount = resources.filter((r) => r.status === "approved").length;
   const irregStudents = masterlist.filter((r) => r.status === "irregular").length;
   const regStudents = masterlist.filter((r) => r.status === "regular").length;
+  const students = users.filter((r) => r.role === "student").length;
+  const admins = users.filter((r) => r.role === "admin").length;
+  const isRowDeveloper = (id) => isDeveloper(id).length();
 
   const fetchMasterlist = async () => {
     try {
@@ -69,11 +75,21 @@ function AdminDashboard() {
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     fetchMasterlist();
     fetchResources();
     fetchTask();
     fetchSubjects();
+    fetchUsers();
   }, []);
 
   const resourcesPerPage = 5;
@@ -109,7 +125,7 @@ function AdminDashboard() {
         </div>
 
         {/* STAT CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
           {/* Total Students */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 transition-shadow duration-200 hover:shadow-md">
@@ -142,18 +158,34 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Uploaded Tasks */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 transition-shadow duration-200 hover:shadow-md">
-            <div className="bg-[#eaf3de] rounded-lg p-3 shrink-0">
-              <Icon icon="ix:tasks-all" className="w-5 h-5 text-[#1B651B]" />
+          {/* Total Registered Users */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 transition-shadow duration-200 hover:shadow-md">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#eaf3de] rounded-lg p-3 shrink-0">
+                <Icon icon="akar-icons:people-group" className="w-5 h-5 text-[#1B651B]" />
+              </div>
+              <div className="min-w-0">
+                <label className="text-[.65rem] font-bold uppercase tracking-widest text-gray-400 block truncate">
+                  Total Users
+                </label>
+                <p className="text-[1.6rem] font-bold leading-7 text-[#1B651B]">
+                  <CountUp.default start={0} end={users.length} duration={2} />
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <label className="text-[.65rem] font-bold uppercase tracking-widest text-gray-400 block truncate">
-                Uploaded Tasks
-              </label>
-              <p className="text-[1.6rem] font-bold leading-7 text-[#1B651B]">
-                <CountUp.default start={0} end={task.length} duration={2} />
-              </p>
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                <p className="text-xs text-gray-500">
+                  <span className="font-bold text-amber-700">{admins}</span> Admins
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#1B651B] shrink-0"></span>
+                <p className="text-xs text-gray-500">
+                  <span className="font-bold text-[#1B651B]">{students}</span> Students
+                </p>
+              </div>
             </div>
           </div>
 
@@ -187,6 +219,22 @@ function AdminDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Uploaded Tasks */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 transition-shadow duration-200 hover:shadow-md">
+            <div className="bg-[#eaf3de] rounded-lg p-3 shrink-0">
+              <Icon icon="ix:tasks-all" className="w-5 h-5 text-[#1B651B]" />
+            </div>
+            <div className="min-w-0">
+              <label className="text-[.65rem] font-bold uppercase tracking-widest text-gray-400 block truncate">
+                Uploaded Tasks
+              </label>
+              <p className="text-[1.6rem] font-bold leading-7 text-[#1B651B]">
+                <CountUp.default start={0} end={task.length} duration={2} />
+              </p>
+            </div>
+          </div>
+
         </div>
 
         {/* RECENT RESOURCES */}
