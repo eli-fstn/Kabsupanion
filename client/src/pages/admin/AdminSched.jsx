@@ -186,7 +186,11 @@ function AdminSched() {
       resetForm();
       fetchSubjects();
     } catch (err) {
-      handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        err,
+        (msg) => setError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
     } finally {
       setLoadingForm(false);
     }
@@ -220,7 +224,11 @@ function AdminSched() {
       setEditModalOpen(false);
       fetchSubjects();
     } catch (err) {
-      handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        err,
+        (msg) => setEditError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
     } finally {
       setLoadingForm(false);
     }

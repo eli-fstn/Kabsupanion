@@ -14,6 +14,8 @@ import Pagination from "../../components/ui/Pagination.jsx";
 import LoadingIcon from "../../components/ui/LoadingIcon.jsx";
 import { useGreeting } from "../../hooks/useGreeting.js";
 import { isDeveloper } from "../../utils/developers.ts";
+import { useToast } from "../../context/toastContext.jsx";
+import { getErrorMessage } from "../../services/errorHandler.ts";
 
 function AdminDashboard() {
   const [masterlist, setMasterlist] = useState([]);
@@ -25,6 +27,7 @@ function AdminDashboard() {
   const [resourcePage, setResourcePage] = useState(1);
   const [loading, setLoading] = useState(false);
   const greetings = useGreeting();
+  const { showToast } = useToast();
   const pendingCount = resources.filter((r) => r.status === "pending").length;
   const approvedCount = resources.filter((r) => r.status === "approved").length;
   const irregStudents = masterlist.filter((r) => r.status === "irregular").length;
@@ -38,6 +41,7 @@ function AdminDashboard() {
       const data = await getMasterlist();
       setMasterlist(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     }
   };
@@ -47,6 +51,7 @@ function AdminDashboard() {
       const data = await getTasks();
       setTask(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     }
   };
@@ -60,6 +65,7 @@ function AdminDashboard() {
       );
       setResources(sorted);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoading(false);
@@ -71,6 +77,7 @@ function AdminDashboard() {
       const data = await getSubjects();
       setSubjects(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     }
   };
@@ -80,6 +87,7 @@ function AdminDashboard() {
       const data = await getUsers();
       setUsers(data);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     }
   }

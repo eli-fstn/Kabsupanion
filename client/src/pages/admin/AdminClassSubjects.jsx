@@ -85,7 +85,11 @@ function AdminSubjects() {
       resetForm();
       fetchSubjects();
     } catch (error) {
-      handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        error,
+        (msg) => setError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
     } finally {
       setLoadingForm(false);
     }
@@ -146,7 +150,11 @@ function AdminSubjects() {
       setEditModalOpen(false);
       fetchSubjects();
     } catch (error) {
-      handleApiError(error, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        error,
+        (msg) => setEditError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
     } finally {
       setLoadingForm(false);
     }

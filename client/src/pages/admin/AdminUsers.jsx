@@ -93,7 +93,9 @@ function AdminUsers() {
       setRoleModalOpen(false);
       fetchList();
     } catch (err) {
-      setRoleError(getErrorMessage(err));
+      const message = getErrorMessage(err);
+      setRoleError(message);
+      showToast(message);
     } finally {
       setLoadingForm(false);
     }
@@ -115,7 +117,9 @@ function AdminUsers() {
       const data = await resetPassword(selected.id);
       setResetResult(data);
     } catch (err) {
-      setResetError(getErrorMessage(err));
+      const message = getErrorMessage(err);
+      setResetError(message);
+      showToast(message);
     } finally {
       setLoadingForm(false);
     }
