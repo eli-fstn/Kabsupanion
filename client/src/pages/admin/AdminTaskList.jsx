@@ -125,7 +125,11 @@ function AdminList() {
       resetForm();
       fetchTasks();
     } catch (err) {
-      handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        err,
+        (msg) => setError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
       console.log(err);
     } finally {
       setLoadingForm(false);
@@ -180,7 +184,11 @@ function AdminList() {
       setEditModalOpen(false);
       fetchTasks();
     } catch (err) {
-      handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        err,
+        (msg) => setEditError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
     } finally {
       setLoadingForm(false);
     }

@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { handleApiError } from "../../services/errorHandler.ts";
+import { useToast } from "../../context/toastContext";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
 
@@ -28,6 +29,7 @@ function Register(){
 	const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const { student, setStudent } = useUser();
+  const { showToast } = useToast();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -92,7 +94,11 @@ function Register(){
 			setModalOpen(true);
 			const timer = setTimeout(() => navigate("/student/dashboard"), 4000);
 		} catch (error) {
-			handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
+			handleApiError(
+			  error,
+			  (msg) => setError((prev) => ({ ...prev, general: msg })),
+			  showToast
+			);
 			setLoading(false);
 		}
   }
