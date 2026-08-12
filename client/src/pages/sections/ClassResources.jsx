@@ -145,7 +145,11 @@ export default function ClassResources() {
         resetForm();
       }, 5000);
     } catch (error) {
-      handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
+      handleApiError(
+        error,
+        (msg) => setError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
       console.log(error);
     } finally {
       setLoadingForm(false);

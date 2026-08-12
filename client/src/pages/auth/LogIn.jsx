@@ -5,6 +5,7 @@ import { useUser } from "../../context/userContext";
 import Button from "../../components/ui/Button.jsx";
 import LoadingScreen from "../../components/ui/LoadingScreen.jsx"
 import { handleApiError } from "../../services/errorHandler.ts";
+import { useToast } from "../../context/toastContext";
 import logo from "../../assets/images/Kabsupanion-Logo.png";
 
 function LogIn() {
@@ -19,6 +20,7 @@ function LogIn() {
   const navigate = useNavigate();
   const { refetchUser } = useUser();
   const { student } = useUser();
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -70,9 +72,13 @@ function LogIn() {
       }
 
     } catch (error) {
-      handleApiError(error, (msg) => setError((prev) => ({ ...prev, general: msg })));
-      setLoading(false)
-    } 
+      handleApiError(
+        error,
+        (msg) => setError((prev) => ({ ...prev, general: msg })),
+        showToast
+      );
+      setLoading(false);
+    }
   };
 
   if (loading) return <LoadingScreen />;

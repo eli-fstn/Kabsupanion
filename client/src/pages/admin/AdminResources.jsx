@@ -36,6 +36,7 @@ function AdminResources() {
       });
       setResources(sorted);
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoading(false);
@@ -69,6 +70,7 @@ function AdminResources() {
       setDeleteModalOpen(false);
       fetchResources();
     } catch (error) {
+      showToast(getErrorMessage(error));
       console.log(error);
     } finally {
       setLoadingForm(false);

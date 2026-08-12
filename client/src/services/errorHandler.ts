@@ -14,7 +14,10 @@ export function getErrorMessage(error: unknown): string {
 
 export function handleApiError(
   error: unknown,
-  setGeneralError: (msg: string) => void
+  setGeneralError: (msg: string) => void,
+  onToast?: (msg: string) => void
 ) {
-  setGeneralError(getErrorMessage(error));
+  const message = getErrorMessage(error);
+  setGeneralError(message);
+  onToast?.(message);
 }
