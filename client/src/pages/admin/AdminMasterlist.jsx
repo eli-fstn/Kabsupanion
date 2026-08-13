@@ -135,11 +135,7 @@ function AdminMasterlist() {
       resetForm();
       fetchList();
     } catch (err) {
-      handleApiError(
-        err,
-        (msg) => setError((prev) => ({ ...prev, general: msg })),
-        showToast
-      );
+      handleApiError(err, (msg) => setError((prev) => ({ ...prev, general: msg })));
     } finally {
       setLoadingForm(false);
     }
@@ -196,11 +192,7 @@ function AdminMasterlist() {
       setEditModalOpen(false);
       fetchList();
     } catch (err) {
-      handleApiError(
-        err,
-        (msg) => setEditError((prev) => ({ ...prev, general: msg })),
-        showToast
-      );
+      handleApiError(err, (msg) => setEditError((prev) => ({ ...prev, general: msg })));
     } finally {
       setLoadingForm(false);
     }
