@@ -137,7 +137,7 @@ function AdminMasterlist() {
     } catch (err) {
       handleApiError(
         err,
-        (msg) => setError((prev) => ({ ...prev, general: msg })),
+        (msg) => setEditError((prev) => ({ ...prev, general: msg })),
         showToast
       );
     } finally {
