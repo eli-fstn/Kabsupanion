@@ -338,7 +338,7 @@ function ClassSched() {
       )}
 
       {!loading && subjects.length > 0 && (
-        <div className="animate-on-scroll flex justify-center items-center mt-5 gap-10">
+        <div className="animate-on-scroll flex flex-col md:flex-row justify-center items-center mt-5 gap-5 md:gap-10">
           <Button
             text={downloading ? "Downloading..." : "Download Schedule"}
             onClick={handleDownload}
