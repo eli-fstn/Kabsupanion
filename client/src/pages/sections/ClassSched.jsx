@@ -30,8 +30,11 @@ function ClassSched() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [downloadingMobile, setDownloadingMobile] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingMobile, setIsExportingMobile] = useState(false);
   const scheduleRef = useRef(null);
+  const scheduleRefMobile = useRef(null);
   const { darkMode } = useTheme();
   const sectionRef = useRef(null);
 
@@ -74,6 +77,29 @@ function ClassSched() {
     } finally {
       setIsExporting(false);
       setDownloading(false);
+    }
+  };
+
+  const handleDownloadMobile = async () => {
+    if (!scheduleRefMobile.current) return;
+    setDownloadingMobile(true);
+    setIsExportingMobile(true);
+
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
+
+    try {
+      const dataUrl = await toPng(scheduleRefMobile.current);
+      const link = document.createElement("a");
+      link.download = "BSCS-2A-Class-Schedule-Wallpaper.png";
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Download failed:", err);
+    } finally {
+      setIsExportingMobile(false);
+      setDownloadingMobile(false);
     }
   };
 
@@ -228,6 +254,83 @@ function ClassSched() {
             </div>
           </div>
 
+          {/* Wallpaper version — never shown in the UI, exists only to be captured by html-to-image */}
+          <div className="fixed left-[-9999px] top-0" aria-hidden="true">
+            <div ref={scheduleRefMobile} className="w-270 h-[1920px] bg-white dark:bg-[#1a1a1a] flex flex-col ijustify-center py-50 px-20">
+
+              <div className={`${isExportingMobile ? "block" : "hidden"} bg-white dark:bg-[#1a1a1a]`}>
+                <div className="">
+                  <p className={`font-bold text-[2rem] text-black dark:text-white bg-white dark:bg-[#1a1a1a]`}> BSCS-2A | 1<sup>st</sup> Semester A.Y. 2026-2027</p>
+                </div>
+
+                <div className={` flex items-center bg-white dark:bg-[#1a1a1a] mb-3`}>
+                  <img src={CvSULogo} alt="CvSU Logo" className="w-8 h-7"></img>
+                  <p className="text-black dark:text-white font-semibold text-[1.3rem] ml-2">Cavite State University - Imus campus</p>
+                </div>
+              </div>
+
+              <table className="border-collapse text-xs w-full h-full">
+                <thead>
+                  <tr>
+                    <th className="bg-[#1B651B] text-white border border-gray-300 dark:border-[#444444] p-2 w-24">
+                      TIME
+                    </th>
+                    {DAYS.map((d) => (
+                      <th
+                        key={d}
+                        className="bg-[#F5F5F5] dark:bg-[#1f1f1f] border border-gray-200 dark:border-[#2b2b2b] text-black dark:text-gray-200 uppercase w-32 p-3"
+                      >
+                        {d}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-[#1a1a1a]">
+                  {TIME_SLOTS.map((slot, si) => (
+                    <tr key={slot}>
+                      <td className="border border-gray-300 dark:border-[#444444] py-3 text-center font-bold text-gray-500 dark:text-[#E0E0E0] bg-gray-50 dark:bg-[#1a1a1a] w-24 whitespace-nowrap px-2">
+                        <div>{TIME_LABELS[si]}</div>
+                        {TIME_LABELS[si + 1] && (
+                          <div className="text-[10px] font-normal opacity-60">
+                            – {TIME_LABELS[si + 1]}
+                          </div>
+                        )}
+                      </td>
+                      {DAYS.map((d) => {
+                        const subject = getSubjectAt(d, slot);
+                        const start = isStart(subject, slot);
+
+                        if (subject && !start) return null;
+
+                        if (!subject) {
+                          return <td key={d} className="border border-gray-300 dark:border-[#444444] w-32" />;
+                        }
+
+                        const colorIdx = getColorIndex(subject.code);
+                        const bgColor = colorIdx >= 0 ? COLORS[colorIdx % COLORS.length] : "";
+                        const textColor = colorIdx >= 0 ? TEXT_COLORS[colorIdx % TEXT_COLORS.length] : "";
+                        const span = getSlotSpan(subject);
+
+                        return (
+                          <td
+                            key={d}
+                            rowSpan={span}
+                            className={`border border-gray-300 dark:border-[#444444] w-32 text-left font-bold align-top ${bgColor}`}
+                          >
+                            <div className={`mt-2 px-2 ${textColor}`}>
+                              <p className="font-bold">{subject.code}</p>
+                              <p className={`text-[10px] ${subject.room?.toUpperCase() === "ASYNC" ? "text-red-500 font-bold" : subject.room?.toUpperCase() === "TBA" ? "text-amber-400 font-semibold" : "font-normal opacity-70"}`}>{subject.room}</p>
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <p className="mt-2 text-xs text-gray-400 dark:text-[#E0E0E0] sm:hidden">
             Swipe sideways to see the full week.
           </p>
@@ -235,11 +338,21 @@ function ClassSched() {
       )}
 
       {!loading && subjects.length > 0 && (
-        <div className="animate-on-scroll flex justify-center items-center mt-5">
+        <div className="animate-on-scroll flex justify-center items-center mt-5 gap-10">
           <Button
             text={downloading ? "Downloading..." : "Download Schedule"}
             onClick={handleDownload}
             disabled={downloading}
+            bgColor="bg-[#1B651B]"
+            typography="text-white font-bold text-xs whitespace-nowrap"
+            padding="px-5 py-2"
+            dimensions="w-fit rounded-md"
+            animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
+          />
+          <Button
+            text={downloadingMobile ? "Downloading..." : "Download as Wallpaper"}
+            onClick={handleDownloadMobile}
+            disabled={downloadingMobile}
             bgColor="bg-[#1B651B]"
             typography="text-white font-bold text-xs whitespace-nowrap"
             padding="px-5 py-2"
