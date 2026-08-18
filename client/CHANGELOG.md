@@ -23,7 +23,35 @@ Ongoing improvements to the frontend experience, focusing on usability, responsi
 
 ---
 
-## [0.1.0] - 2026-07-24
+## [0.0.9] - 2026-08-18
+
+### Frontend Enhancements
+
+This release focuses on improving schedule usability, admin controls, and interface polish across the student experience.
+
+### Added
+
+* Downloadable wallpaper version of the class schedule for easier offline reference.
+* Additional admin dashboard metrics and role-based management actions.
+* Password reset support with admin-generated links and role updates for student accounts.
+* Additional toast feedback for key admin actions.
+
+### Changed
+
+* Improved the schedule layout for clearer viewing on smaller screens and when labels are present.
+* Kept schedule edit and delete actions visible without hover-only access.
+* Refined footer and dark mode text styling for better readability.
+* Expanded the schedule time grid to include the 20:00 slot.
+
+### Fixed
+
+* Resolved service worker runtime caching errors that could trigger unnecessary frontend warnings.
+* Fixed display and text issues in admin interfaces.
+* Improved the loading state when student data is temporarily unavailable during connection issues.
+
+---
+
+## [0.0.8] - 2026-07-24
 
 ### Performance, User Experience, and Frontend Architecture
 
