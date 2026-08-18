@@ -1,6 +1,6 @@
 # Kabsupanion Front-end
 
-**Kabsupanion Front-end** is the client application for **Kabsupanion**, a section-centric academic web portal developed to support the academic needs of students through a centralized and accessible platform. It provides an intuitive user interface for students and administrators to manage academic tasks, schedules, subjects, resources, and section information through a responsive and user-friendly experience.
+**Kabsupanion Front-end** is the client application for **Kabsupanion**, a section-centric academic web application developed to support the academic needs of students through a centralized and accessible platform. It provides an intuitive user interface for students and administrators to manage academic tasks, schedules, subjects, resources, and section information through a responsive and user-friendly experience.
 
 > **Note:** This repository contains only the frontend application. It communicates with a separate backend API.
 
@@ -23,12 +23,13 @@
 
 | Feature | Status | Description |
 |---------|:------:|-------------|
-| Admin Dashboard (`/admin`) | ✅ IMPLEMENTED | Centralized control panel for managing the system. |
-| Task Management (`/admin/tasks`) | ✅ IMPLEMENTED | Create, update, and manage academic tasks and deadlines. |
-| Schedule Management (`/admin/schedule`) | ✅ IMPLEMENTED | Maintain and organize class schedules. |
-| Subject Management (`/admin/subjects`) | ✅ IMPLEMENTED | Create, update, and organize subjects. |
-| Resource Management (`/admin/resources`) | ✅ IMPLEMENTED | Manage shared notes and learning materials. |
-| Student Management (`/admin/masterlist`) | ✅ IMPLEMENTED | Manage student records, registration status, and section assignments. |
+| Dashboard (`/admin`) | ✅ IMPLEMENTED | Centralized control panel for managing the system. |
+| Task List (`/admin/tasks`) | ✅ IMPLEMENTED | Create, update, and manage academic tasks and deadlines. |
+| Class Schedule (`/admin/schedule`) | ✅ IMPLEMENTED | Maintain and organize class schedules. |
+| Class Subjects (`/admin/subjects`) | ✅ IMPLEMENTED | Create, update, and organize subjects. |
+| Class Resources (`/admin/resources`) | ✅ IMPLEMENTED | Manage shared notes and learning materials. |
+| Users (`/admin/users`) | ✅ IMPLEMENTED | Manage user accounts, roles, and password reset access. |
+| Masterlist (`/admin/masterlist`) | ✅ IMPLEMENTED | Manage student records, registration status, and section assignments. |
 
 ---
 

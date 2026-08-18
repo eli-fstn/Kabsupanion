@@ -2,7 +2,7 @@
 
 ![Kabsupanion](./client/src/assets/images/kabsupanion-advertisement.png)
 
-**Kabsupanion** is a section-centric academic web portal developed to support the academic needs of students through a centralized and accessible platform. It streamlines academic organization by providing tools for task management, scheduling, activity tracking, and collaborative resource sharing within a section-based environment.
+**Kabsupanion** is a section-centric academic web application developed to support the academic needs of students through a centralized and accessible platform. It streamlines academic organization by providing tools for task management, scheduling, activity tracking, and collaborative resource sharing within a section-based environment.
 
 ![Status](https://img.shields.io/badge/Status-Deployed-00C853)
 ![Audience](https://img.shields.io/badge/Audience-Section--Based-purple)
@@ -25,12 +25,13 @@ The platform consolidates essential academic resources into a single interface, 
 | Task List (`/dashboard`)                             | ✅ IMPLEMENTED | Manage and track academic tasks and deadlines efficiently.          |
 | Class Schedule (`/dashboard`)                        | ✅ IMPLEMENTED | View weekly class schedules in an organized format.                 |
 | Class Resources(`/dashboard`)                        | ✅ IMPLEMENTED | Upload, access, and share study notes and reviewers.                |
-| Admin Dashboard Panel (`/admin/dashboard`)           | ✅ IMPLEMENTED | Centralized control panel for managing system overview and data.    |
-| Admin Task List Panel (`/admin/tasks`)               | ✅ IMPLEMENTED | Create, update, and manage academic tasks and deadlines.            |
-| Admin Class Schedule Panel (`/admin/schedule`)       | ✅ IMPLEMENTED | Maintain and organize class schedules for the section.              |
-| Admin Class Resources Panel (`/admin/resources`)     | ✅ IMPLEMENTED | Manage and organize shared notes and study materials.               |
-| Admin Class Subjects Panel (`/admin/subjects`)       | ✅ IMPLEMENTED | Create, update, and organize subjects for the assigned class.       |
-| Admin Class List Panel (`/admin/masterlist`)         | ✅ IMPLEMENTED | Manage student records, status, and section membership information. |
+| Admin Dashboard (`/admin/dashboard`)           | ✅ IMPLEMENTED | Centralized control panel for managing system overview and data.    |
+| Admin Task List (`/admin/tasks`)               | ✅ IMPLEMENTED | Create, update, and manage academic tasks and deadlines.            |
+| Admin Class Schedule (`/admin/schedule`)       | ✅ IMPLEMENTED | Maintain and organize class schedules for the section.              |
+| Admin Class Resources (`/admin/resources`)     | ✅ IMPLEMENTED | Manage and organize shared notes and study materials.               |
+| Admin Class Subjects (`/admin/subjects`)       | ✅ IMPLEMENTED | Create, update, and organize subjects for the assigned class.       |
+| Admin Users (`/admin/users`)                   | ✅ IMPLEMENTED | Manage user accounts, roles, and password reset access for admins. |
+| Admin Masterlist (`/admin/masterlist`)         | ✅ IMPLEMENTED | Manage student records, status, and section membership information. |
 
 ---
 
