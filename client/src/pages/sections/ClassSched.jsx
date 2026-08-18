@@ -256,7 +256,7 @@ function ClassSched() {
 
           {/* Wallpaper version — never shown in the UI, exists only to be captured by html-to-image */}
           <div className="fixed left-[-9999px] top-0" aria-hidden="true">
-            <div ref={scheduleRefMobile} className="w-270 h-[1920px] bg-white dark:bg-[#1a1a1a] flex flex-col ijustify-center py-50 px-20">
+            <div ref={scheduleRefMobile} className="w-270 h-[1920px] bg-white dark:bg-[#1a1a1a] flex flex-col ijustify-center py-50 px-40">
 
               <div className={`${isExportingMobile ? "block" : "hidden"} bg-white dark:bg-[#1a1a1a]`}>
                 <div className="">
@@ -350,7 +350,7 @@ function ClassSched() {
             animation="active:scale-95 transition-all duration-100 hover:bg-[#288a28]"
           />
           <Button
-            text={downloadingMobile ? "Downloading..." : "Download as Wallpaper"}
+            text={downloadingMobile ? "Downloading..." : "Download as Phone Wallpaper"}
             onClick={handleDownloadMobile}
             disabled={downloadingMobile}
             bgColor="bg-[#1B651B]"
