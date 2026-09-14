@@ -91,13 +91,17 @@ function ResourceCard({ title, subject, fileUrl, uploadedBy, status }) {
 
         if (pageImages.length === 0) throw new Error("No pages found");
 
+        const firstOrientation = pageImages[0].w > pageImages[0].h ? "landscape" : "portrait";
+
         const pdf = new jsPDF({
           unit: "px",
+          orientation: firstOrientation,
           format: [pageImages[0].w, pageImages[0].h],
         });
 
         pageImages.forEach((img, i) => {
-          if (i > 0) pdf.addPage([img.w, img.h]);
+          const orientation = img.w > img.h ? "landscape" : "portrait";
+          if (i > 0) pdf.addPage([img.w, img.h], orientation);
           pdf.addImage(img.dataUrl, "JPEG", 0, 0, img.w, img.h);
         });
 
