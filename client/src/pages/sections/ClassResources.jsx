@@ -20,6 +20,12 @@ const ALLOWED_MIME_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ];
+const ALLOWED_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".docx", ".pptx"];
+
+const getFileExtension = (filename = "") => {
+  const idx = filename.lastIndexOf(".");
+  return idx === -1 ? "" : filename.slice(idx).toLowerCase();
+};
 
 export default function ClassResources() {
   const [resources, setResources] = useState([]);
@@ -104,7 +110,11 @@ export default function ClassResources() {
       return;
     }
 
-    if (!ALLOWED_MIME_TYPES.includes(selected.type)) {
+    const ext = getFileExtension(selected.name);
+    const mimeOk = ALLOWED_MIME_TYPES.includes(selected.type);
+    const extOk = ALLOWED_EXTENSIONS.includes(ext);
+
+    if (!mimeOk && !extOk) {
       setError((prev) => ({ ...prev, file: "Unsupported file type. Allowed: PDF, PNG, JPG, DOCX, PPTX." }));
       setFile(null);
       e.target.value = "";
@@ -126,7 +136,7 @@ export default function ClassResources() {
     e.preventDefault();
 
     let hasError = false;
-    const newError = { title: "", subject: "", file: "", genral: "" };
+    const newError = { title: "", subject: "", file: "", general: "" };
 
     if (!title) { newError.title = "Title is required."; hasError = true; }
     if (!subjectID) { newError.subject = "Subject is required."; hasError = true; }
@@ -159,8 +169,8 @@ export default function ClassResources() {
   const resetForm = () => {
     setTitle("");
     setSubjectID("");
-    setFile("");
-    setError({ title: "", subjectID: "", file: "" });
+    setFile(null);
+    setError({ title: "", subject: "", file: "", general: "" });
   };
 
   const handleClose = () => {
